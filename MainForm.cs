@@ -37,6 +37,7 @@ internal sealed class MainForm : Form
     private readonly Dictionary<string, CurrencyMappingStore> _genericMappingStores;
     private readonly Dictionary<string, FixedStashScanner> _genericScanners;
     private readonly StashLayoutSettingsStore _layoutSettingsStore;
+    private readonly SlotLayoutOverrideStore _slotLayoutOverrideStore;
     private readonly LatestStashScanStore _latestScanStore;
     private readonly OpenAiVisionHelper _openAiVisionHelper;
     private readonly PoeNinjaIconCache _iconCache;
@@ -52,6 +53,11 @@ internal sealed class MainForm : Form
     private readonly Button _aiAnalyzeButton = new();
     private readonly Button _refreshIconsButton = new();
     private readonly Button _copySummaryButton = new();
+    private readonly CheckBox _editLayoutCheckBox = new();
+    private readonly Button _saveLayoutButton = new();
+    private readonly Button _reloadLayoutButton = new();
+    private readonly Button _resetSelectedSlotButton = new();
+    private readonly Button _resetCurrentTabButton = new();
     private readonly Label _statusLabel = new();
     private readonly Label _totalStashValueLabel = new();
     private readonly TextBox _detailsBox = new();
@@ -67,6 +73,8 @@ internal sealed class MainForm : Form
     private FixedStashScanResult? _lastGenericResult;
     private Image? _stashImage;
     private PoeNinjaIconMatcher? _iconMatcher;
+    private SlotLayoutOverrides _slotLayoutOverrides;
+    private int? _selectedLayoutSlotIndex;
 
     public MainForm()
     {
@@ -77,6 +85,8 @@ internal sealed class MainForm : Form
             FixedStashScannerProfiles.ConfigPath(FixedStashScannerProfiles.AugmentRunes.MappingFileName),
             FixedStashScannerProfiles.ConfigPath(FixedStashScannerProfiles.AugmentRunes.CountOverrideFileName));
         _layoutSettingsStore = new StashLayoutSettingsStore(Path.Combine(AppContext.BaseDirectory, "config", "stash-layout-settings.json"));
+        _slotLayoutOverrideStore = new SlotLayoutOverrideStore(Path.Combine(AppContext.BaseDirectory, "slot-layout-overrides.json"));
+        _slotLayoutOverrides = _slotLayoutOverrideStore.Load();
         _latestScanStore = new LatestStashScanStore(Path.Combine(AppContext.BaseDirectory, "config", "latest-stash-scans.json"));
         _runeScanner = new AugmentRuneScanner(Path.Combine(AppContext.BaseDirectory, "debug"), _runeMappingStore);
         _kalguuranRuneMappingStore = new CurrencyMappingStore(
@@ -146,6 +156,11 @@ internal sealed class MainForm : Form
         base.WndProc(ref m);
     }
 
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        return TryApplyLayoutEditorKey(keyData) || base.ProcessCmdKey(ref msg, keyData);
+    }
+
     private void BuildUi()
     {
         AutoScaleMode = AutoScaleMode.Dpi;
@@ -179,8 +194,10 @@ internal sealed class MainForm : Form
         _modeComboBox.SelectedIndex = 0;
         _modeComboBox.SelectedIndexChanged += (_, _) =>
         {
+            _selectedLayoutSlotIndex = null;
             LoadSelectedModeFolderSetting();
             ShowSavedScanForSelectedMode();
+            UpdateLayoutEditorControls();
         };
 
         _insideFolderCheckBox.Text = "Folder";
@@ -225,8 +242,47 @@ internal sealed class MainForm : Form
         _copySummaryButton.Size = new Size(74, 34);
         _copySummaryButton.Click += (_, _) => CopyCurrentSummary();
 
+        _editLayoutCheckBox.Text = "Edit Layout";
+        _editLayoutCheckBox.Location = new Point(22, 104);
+        _editLayoutCheckBox.AutoSize = true;
+        _editLayoutCheckBox.Padding = new Padding(0, 5, 0, 5);
+        _editLayoutCheckBox.CheckedChanged += (_, _) =>
+        {
+            if (!_editLayoutCheckBox.Checked)
+            {
+                _selectedLayoutSlotIndex = null;
+            }
+            else
+            {
+                _stashPictureBox.Focus();
+            }
+
+            UpdateLayoutEditorControls();
+            _stashPictureBox.Invalidate();
+        };
+
+        _saveLayoutButton.Text = "Save Layout";
+        _saveLayoutButton.Location = new Point(132, 104);
+        _saveLayoutButton.Size = new Size(104, 30);
+        _saveLayoutButton.Click += (_, _) => SaveLayoutOverrides();
+
+        _reloadLayoutButton.Text = "Reload Layout";
+        _reloadLayoutButton.Location = new Point(246, 104);
+        _reloadLayoutButton.Size = new Size(112, 30);
+        _reloadLayoutButton.Click += (_, _) => ReloadLayoutOverrides();
+
+        _resetSelectedSlotButton.Text = "Reset Selected Slot";
+        _resetSelectedSlotButton.Location = new Point(368, 104);
+        _resetSelectedSlotButton.Size = new Size(140, 30);
+        _resetSelectedSlotButton.Click += (_, _) => ResetSelectedLayoutSlot();
+
+        _resetCurrentTabButton.Text = "Reset Current Tab";
+        _resetCurrentTabButton.Location = new Point(518, 104);
+        _resetCurrentTabButton.Size = new Size(130, 30);
+        _resetCurrentTabButton.Click += (_, _) => ResetCurrentLayoutTab();
+
         _statusLabel.Text = "Runeshaping is separate. Choose a stash mode, then Scan Stash. Hotkeys: F8 Runeshaping, F7 selected stash.";
-        _statusLabel.Location = new Point(22, 112);
+        _statusLabel.Location = new Point(22, 140);
         _statusLabel.Size = new Size(1200, 24);
 
         _totalStashValueLabel.Text = "All scanned: 0 tabs | 0ex / 0div";
@@ -238,16 +294,18 @@ internal sealed class MainForm : Form
         _totalStashValueLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         _totalStashValueLabel.AutoEllipsis = true;
 
-        _stashPictureBox.Location = new Point(22, 146);
-        _stashPictureBox.Size = new Size(780, 650);
+        _stashPictureBox.Location = new Point(22, 174);
+        _stashPictureBox.Size = new Size(780, 622);
         _stashPictureBox.BorderStyle = BorderStyle.FixedSingle;
         _stashPictureBox.BackColor = Color.FromArgb(24, 24, 24);
         _stashPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+        _stashPictureBox.TabStop = true;
         _stashPictureBox.Paint += StashPictureBox_Paint;
         _stashPictureBox.MouseClick += StashPictureBox_MouseClick;
+        _stashPictureBox.KeyDown += StashPictureBox_KeyDown;
 
-        _detailsBox.Location = new Point(820, 146);
-        _detailsBox.Size = new Size(420, 650);
+        _detailsBox.Location = new Point(820, 174);
+        _detailsBox.Size = new Size(420, 622);
         _detailsBox.Multiline = true;
         _detailsBox.ReadOnly = true;
         _detailsBox.ScrollBars = ScrollBars.Vertical;
@@ -258,8 +316,9 @@ internal sealed class MainForm : Form
         _detailsBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
         _stashPictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
-        Controls.AddRange([title, _runeshapingButton, _modeComboBox, _insideFolderCheckBox, _scanButton, _refreshButton, _testButton, _captureTabButton, _refreshIconsButton, _copySummaryButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
+        Controls.AddRange([title, _runeshapingButton, _modeComboBox, _insideFolderCheckBox, _scanButton, _refreshButton, _testButton, _captureTabButton, _refreshIconsButton, _copySummaryButton, _editLayoutCheckBox, _saveLayoutButton, _reloadLayoutButton, _resetSelectedSlotButton, _resetCurrentTabButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
         LoadSelectedModeFolderSetting();
+        UpdateLayoutEditorControls();
         UpdateAllScannedTabsTotal();
     }
 
@@ -539,10 +598,12 @@ internal sealed class MainForm : Form
         _lastRuneResult = null;
         _lastKalguuranRuneResult = null;
         _lastGenericResult = null;
+        _selectedLayoutSlotIndex = null;
         _stashImage?.Dispose();
         _stashImage = null;
         _stashPictureBox.Image = null;
         _stashPictureBox.Invalidate();
+        UpdateLayoutEditorControls();
     }
 
     private void SaveLatestScan(ScanModeOption mode, CurrencyScanResult result)
@@ -844,10 +905,12 @@ internal sealed class MainForm : Form
             _lastRuneResult = null;
             _lastKalguuranRuneResult = null;
             _lastGenericResult = null;
+            _selectedLayoutSlotIndex = null;
             _stashImage?.Dispose();
             _stashImage = LoadImageWithoutFileLock(cropPath);
             _stashPictureBox.Image = _stashImage;
             _stashPictureBox.Invalidate();
+            UpdateLayoutEditorControls();
 
             _statusLabel.Text = "Stash tab reference captured.";
             _detailsBox.Text = string.Join(Environment.NewLine, [
@@ -905,10 +968,12 @@ internal sealed class MainForm : Form
             _lastRuneResult = null;
             _lastKalguuranRuneResult = null;
             _lastGenericResult = null;
+            _selectedLayoutSlotIndex = null;
             _stashImage?.Dispose();
             _stashImage = new Bitmap(stashCrop);
             _stashPictureBox.Image = _stashImage;
             _stashPictureBox.Invalidate();
+            UpdateLayoutEditorControls();
 
             _statusLabel.Text = "Sending stash crop to OpenAI...";
             var result = await _openAiVisionHelper.AnalyzeStashAsync(
@@ -1036,12 +1101,14 @@ internal sealed class MainForm : Form
         _lastKalguuranRuneResult = null;
         _lastGenericResult = null;
         _lastCurrencyResult = result;
+        _selectedLayoutSlotIndex = null;
         _stashImage?.Dispose();
         _stashImage = File.Exists(result.StashCropPath)
             ? LoadImageWithoutFileLock(result.StashCropPath)
             : null;
         _stashPictureBox.Image = _stashImage;
         _stashPictureBox.Invalidate();
+        UpdateLayoutEditorControls();
 
         _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}Currency total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div";
 
@@ -1076,12 +1143,14 @@ internal sealed class MainForm : Form
         _lastKalguuranRuneResult = null;
         _lastGenericResult = null;
         _lastRuneResult = result;
+        _selectedLayoutSlotIndex = null;
         _stashImage?.Dispose();
         _stashImage = File.Exists(result.StashCropPath)
             ? LoadImageWithoutFileLock(result.StashCropPath)
             : null;
         _stashPictureBox.Image = _stashImage;
         _stashPictureBox.Invalidate();
+        UpdateLayoutEditorControls();
 
         var profitable = result.UpgradeSuggestions.Count(suggestion => suggestion.IsProfitable);
         _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}Runes total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div. Profitable upgrades: {profitable}.";
@@ -1132,12 +1201,14 @@ internal sealed class MainForm : Form
         _lastRuneResult = null;
         _lastGenericResult = null;
         _lastKalguuranRuneResult = result;
+        _selectedLayoutSlotIndex = null;
         _stashImage?.Dispose();
         _stashImage = File.Exists(result.StashCropPath)
             ? LoadImageWithoutFileLock(result.StashCropPath)
             : null;
         _stashPictureBox.Image = _stashImage;
         _stashPictureBox.Invalidate();
+        UpdateLayoutEditorControls();
 
         _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}Kalguuran Runes total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div.";
 
@@ -1171,12 +1242,14 @@ internal sealed class MainForm : Form
         _lastRuneResult = null;
         _lastKalguuranRuneResult = null;
         _lastGenericResult = result;
+        _selectedLayoutSlotIndex = null;
         _stashImage?.Dispose();
         _stashImage = File.Exists(result.StashCropPath)
             ? LoadImageWithoutFileLock(result.StashCropPath)
             : null;
         _stashPictureBox.Image = _stashImage;
         _stashPictureBox.Invalidate();
+        UpdateLayoutEditorControls();
 
         _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}{result.Profile.Label} total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div.";
 
@@ -1244,7 +1317,7 @@ internal sealed class MainForm : Form
 
             foreach (var slot in _lastCurrencyResult.Slots)
             {
-                DrawSlotOverlay(e.Graphics, imageRect, scaleX, scaleY, slot.OverlayCropBounds ?? slot.CropBounds, slot.Occupied, slot.ItemName, slot.Quantity, slot.Exalts, slot.Divines, slot.IsCustomMapped, slot.IsCountOverridden, slot.CountConfidence);
+                DrawSlotOverlay(e.Graphics, imageRect, scaleX, scaleY, ResolveVisualOverlayBounds(FixedStashScannerProfiles.Currency.Key, slot.SlotIndex, slot.CropBounds, slot.OverlayCropBounds, FixedStashScannerProfiles.DefaultStaticOverlayInset), slot.Occupied, slot.ItemName, slot.Quantity, slot.Exalts, slot.Divines, slot.IsCustomMapped, slot.IsCountOverridden, slot.CountConfidence, slot.SlotIndex);
             }
 
             return;
@@ -1257,7 +1330,7 @@ internal sealed class MainForm : Form
 
             foreach (var slot in _lastRuneResult.Slots)
             {
-                DrawSlotOverlay(e.Graphics, imageRect, scaleX, scaleY, slot.OverlayCropBounds ?? slot.CropBounds, slot.Occupied, slot.ItemName, slot.Quantity, slot.Exalts, slot.Divines, slot.IsCustomMapped, slot.IsCountOverridden, slot.CountConfidence);
+                DrawSlotOverlay(e.Graphics, imageRect, scaleX, scaleY, ResolveVisualOverlayBounds(FixedStashScannerProfiles.AugmentRunes.Key, slot.SlotIndex, slot.CropBounds, slot.OverlayCropBounds, FixedStashScannerProfiles.AugmentRuneOverlayInset), slot.Occupied, slot.ItemName, slot.Quantity, slot.Exalts, slot.Divines, slot.IsCustomMapped, slot.IsCountOverridden, slot.CountConfidence, slot.SlotIndex);
             }
         }
 
@@ -1267,7 +1340,7 @@ internal sealed class MainForm : Form
 
             foreach (var slot in _lastKalguuranRuneResult.Slots)
             {
-                DrawSlotOverlay(e.Graphics, imageRect, scaleX, scaleY, slot.OverlayCropBounds ?? slot.CropBounds, slot.Occupied, slot.ItemName, slot.Quantity, slot.Exalts, slot.Divines, slot.IsCustomMapped, slot.IsCountOverridden, slot.CountConfidence);
+                DrawSlotOverlay(e.Graphics, imageRect, scaleX, scaleY, ResolveVisualOverlayBounds(FixedStashScannerProfiles.KalguuranRunes.Key, slot.SlotIndex, slot.CropBounds, slot.OverlayCropBounds, FixedStashScannerProfiles.KalguuranRuneOverlayInset), slot.Occupied, slot.ItemName, slot.Quantity, slot.Exalts, slot.Divines, slot.IsCustomMapped, slot.IsCountOverridden, slot.CountConfidence, slot.SlotIndex);
             }
         }
 
@@ -1277,12 +1350,27 @@ internal sealed class MainForm : Form
 
             foreach (var slot in _lastGenericResult.Slots)
             {
-                DrawSlotOverlay(e.Graphics, imageRect, scaleX, scaleY, slot.OverlayCropBounds ?? slot.CropBounds, slot.Occupied, slot.ItemName, slot.Quantity, slot.Exalts, slot.Divines, slot.IsCustomMapped, slot.IsCountOverridden, slot.CountConfidence);
+                DrawSlotOverlay(e.Graphics, imageRect, scaleX, scaleY, ResolveVisualOverlayBounds(_lastGenericResult.Profile.Key, slot.SlotIndex, slot.CropBounds, slot.OverlayCropBounds, FixedStashScannerProfiles.DefaultStaticOverlayInset), slot.Occupied, slot.ItemName, slot.Quantity, slot.Exalts, slot.Divines, slot.IsCustomMapped, slot.IsCountOverridden, slot.CountConfidence, slot.SlotIndex);
             }
         }
     }
 
-    private static void DrawSlotOverlay(
+    private Rectangle ResolveVisualOverlayBounds(
+        string profileKey,
+        int slotIndex,
+        Rectangle cropBounds,
+        Rectangle? defaultOverlayCropBounds,
+        int fallbackInset)
+    {
+        if (_slotLayoutOverrides.TryGet(profileKey, slotIndex, out var overrideBounds))
+        {
+            return overrideBounds;
+        }
+
+        return defaultOverlayCropBounds ?? FixedStashSlot.Inset(cropBounds, fallbackInset);
+    }
+
+    private void DrawSlotOverlay(
         Graphics graphics,
         Rectangle imageRect,
         float scaleX,
@@ -1295,14 +1383,15 @@ internal sealed class MainForm : Form
         decimal? divines,
         bool isCustomMapped,
         bool isCountOverridden,
-        double countConfidence)
+        double countConfidence,
+        int slotIndex)
     {
         var forcedEmpty = !occupied && isCountOverridden && quantity == 0;
         var mappedEmpty = !occupied && (itemName is not null || forcedEmpty);
         var color = !occupied
             ? mappedEmpty
                 ? Color.FromArgb(185, 90, 180, 255)
-                : Color.FromArgb(90, 120, 120, 120)
+                : Color.FromArgb(210, 255, 80, 80)
             : itemName is null
                 ? Color.FromArgb(230, 255, 205, 60)
                 : Color.FromArgb(230, 90, 180, 255);
@@ -1314,6 +1403,16 @@ internal sealed class MainForm : Form
             (int)Math.Round(cropBounds.Width * scaleX),
             (int)Math.Round(cropBounds.Height * scaleY));
         graphics.DrawRectangle(pen, rect);
+
+        if (_editLayoutCheckBox.Checked)
+        {
+            DrawReadableSlotLabel(graphics, rect, slotIndex.ToString(System.Globalization.CultureInfo.InvariantCulture), Color.White, 8.5f, SlotLabelAnchor.TopLeft);
+            if (_selectedLayoutSlotIndex == slotIndex)
+            {
+                using var selectedPen = new Pen(Color.White, 4);
+                graphics.DrawRectangle(selectedPen, rect);
+            }
+        }
 
         if (!occupied)
         {
@@ -1617,8 +1716,16 @@ internal sealed class MainForm : Form
             return;
         }
 
+        _stashPictureBox.Focus();
+
         if (!TryTranslatePictureClick(e.Location, _stashPictureBox, out var imagePoint))
         {
+            return;
+        }
+
+        if (_editLayoutCheckBox.Checked)
+        {
+            SelectLayoutSlot(imagePoint);
             return;
         }
 
@@ -1646,6 +1753,221 @@ internal sealed class MainForm : Form
         }
     }
 
+    private void SelectLayoutSlot(Point imagePoint)
+    {
+        var slot = GetCurrentLayoutSlots()
+            .Where(candidate => candidate.VisualBounds.Contains(imagePoint))
+            .OrderBy(candidate => candidate.VisualBounds.Width * candidate.VisualBounds.Height)
+            .FirstOrDefault();
+        if (slot is null)
+        {
+            _selectedLayoutSlotIndex = null;
+            _statusLabel.Text = "Layout editor: no slot at that point.";
+            UpdateLayoutEditorControls();
+            _stashPictureBox.Invalidate();
+            return;
+        }
+
+        _selectedLayoutSlotIndex = slot.SlotIndex;
+        _statusLabel.Text = $"Layout editor: selected {slot.ProfileKey} slot {slot.SlotIndex}. Use arrows to move, Ctrl+arrows to resize, Shift for 10 px.";
+        UpdateLayoutEditorControls();
+        _stashPictureBox.Invalidate();
+    }
+
+    private void StashPictureBox_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (TryApplyLayoutEditorKey(e.KeyData))
+        {
+            e.SuppressKeyPress = true;
+        }
+    }
+
+    private bool TryApplyLayoutEditorKey(Keys keyData)
+    {
+        if (!_editLayoutCheckBox.Checked || _selectedLayoutSlotIndex is null)
+        {
+            return false;
+        }
+
+        var keyCode = keyData & Keys.KeyCode;
+        if (keyCode is not (Keys.Left or Keys.Right or Keys.Up or Keys.Down))
+        {
+            return false;
+        }
+
+        var slot = GetCurrentLayoutSlots().FirstOrDefault(candidate => candidate.SlotIndex == _selectedLayoutSlotIndex.Value);
+        if (slot is null)
+        {
+            return false;
+        }
+
+        var step = keyData.HasFlag(Keys.Shift) ? 10 : 1;
+        var bounds = slot.VisualBounds;
+        if (keyData.HasFlag(Keys.Control))
+        {
+            bounds = keyCode switch
+            {
+                Keys.Left => new Rectangle(bounds.X, bounds.Y, Math.Max(1, bounds.Width - step), bounds.Height),
+                Keys.Right => new Rectangle(bounds.X, bounds.Y, bounds.Width + step, bounds.Height),
+                Keys.Up => new Rectangle(bounds.X, bounds.Y, bounds.Width, Math.Max(1, bounds.Height - step)),
+                Keys.Down => new Rectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height + step),
+                _ => bounds
+            };
+        }
+        else
+        {
+            bounds = keyCode switch
+            {
+                Keys.Left => new Rectangle(bounds.X - step, bounds.Y, bounds.Width, bounds.Height),
+                Keys.Right => new Rectangle(bounds.X + step, bounds.Y, bounds.Width, bounds.Height),
+                Keys.Up => new Rectangle(bounds.X, bounds.Y - step, bounds.Width, bounds.Height),
+                Keys.Down => new Rectangle(bounds.X, bounds.Y + step, bounds.Width, bounds.Height),
+                _ => bounds
+            };
+        }
+
+        _slotLayoutOverrides.Set(slot.ProfileKey, slot.SlotIndex, bounds);
+        _statusLabel.Text = $"Layout editor: {slot.ProfileKey} slot {slot.SlotIndex} = {bounds.X},{bounds.Y},{bounds.Width},{bounds.Height} (unsaved).";
+        _stashPictureBox.Invalidate();
+        return true;
+    }
+
+    private void SaveLayoutOverrides()
+    {
+        try
+        {
+            _slotLayoutOverrideStore.Save(_slotLayoutOverrides);
+            _statusLabel.Text = "Layout overrides saved to slot-layout-overrides.json.";
+        }
+        catch (Exception ex)
+        {
+            _statusLabel.Text = "Layout override save failed.";
+            _detailsBox.Text = ex.ToString();
+        }
+    }
+
+    private void ReloadLayoutOverrides()
+    {
+        _slotLayoutOverrides = _slotLayoutOverrideStore.Load();
+        _selectedLayoutSlotIndex = null;
+        UpdateLayoutEditorControls();
+        _stashPictureBox.Invalidate();
+        _statusLabel.Text = "Layout overrides reloaded from slot-layout-overrides.json.";
+    }
+
+    private void ResetSelectedLayoutSlot()
+    {
+        var profileKey = GetCurrentProfileKey();
+        if (profileKey is null || _selectedLayoutSlotIndex is null)
+        {
+            return;
+        }
+
+        var slotIndex = _selectedLayoutSlotIndex.Value;
+        _slotLayoutOverrides.Remove(profileKey, slotIndex);
+        UpdateLayoutEditorControls();
+        _stashPictureBox.Invalidate();
+        _statusLabel.Text = $"Layout editor: reset {profileKey} slot {slotIndex} to its default visual bounds (unsaved).";
+    }
+
+    private void ResetCurrentLayoutTab()
+    {
+        var profileKey = GetCurrentProfileKey();
+        if (profileKey is null)
+        {
+            return;
+        }
+
+        _slotLayoutOverrides.RemoveProfile(profileKey);
+        _selectedLayoutSlotIndex = null;
+        UpdateLayoutEditorControls();
+        _stashPictureBox.Invalidate();
+        _statusLabel.Text = $"Layout editor: reset all {profileKey} slot overrides to defaults (unsaved).";
+    }
+
+    private void UpdateLayoutEditorControls()
+    {
+        var hasDisplayedProfile = GetCurrentProfileKey() is not null && _stashPictureBox.Image is not null;
+        var enabled = _editLayoutCheckBox.Checked && hasDisplayedProfile;
+        _saveLayoutButton.Enabled = enabled;
+        _reloadLayoutButton.Enabled = enabled;
+        _resetCurrentTabButton.Enabled = enabled;
+        _resetSelectedSlotButton.Enabled = enabled && _selectedLayoutSlotIndex is not null;
+    }
+
+    private string? GetCurrentProfileKey()
+    {
+        if (_lastCurrencyResult is not null)
+        {
+            return FixedStashScannerProfiles.Currency.Key;
+        }
+
+        if (_lastRuneResult is not null)
+        {
+            return FixedStashScannerProfiles.AugmentRunes.Key;
+        }
+
+        if (_lastKalguuranRuneResult is not null)
+        {
+            return FixedStashScannerProfiles.KalguuranRunes.Key;
+        }
+
+        return _lastGenericResult?.Profile.Key;
+    }
+
+    private IEnumerable<LayoutSlotCandidate> GetCurrentLayoutSlots()
+    {
+        if (_lastCurrencyResult is not null)
+        {
+            foreach (var slot in _lastCurrencyResult.Slots)
+            {
+                yield return new LayoutSlotCandidate(
+                    FixedStashScannerProfiles.Currency.Key,
+                    slot.SlotIndex,
+                    ResolveVisualOverlayBounds(FixedStashScannerProfiles.Currency.Key, slot.SlotIndex, slot.CropBounds, slot.OverlayCropBounds, FixedStashScannerProfiles.DefaultStaticOverlayInset));
+            }
+
+            yield break;
+        }
+
+        if (_lastRuneResult is not null)
+        {
+            foreach (var slot in _lastRuneResult.Slots)
+            {
+                yield return new LayoutSlotCandidate(
+                    FixedStashScannerProfiles.AugmentRunes.Key,
+                    slot.SlotIndex,
+                    ResolveVisualOverlayBounds(FixedStashScannerProfiles.AugmentRunes.Key, slot.SlotIndex, slot.CropBounds, slot.OverlayCropBounds, FixedStashScannerProfiles.AugmentRuneOverlayInset));
+            }
+
+            yield break;
+        }
+
+        if (_lastKalguuranRuneResult is not null)
+        {
+            foreach (var slot in _lastKalguuranRuneResult.Slots)
+            {
+                yield return new LayoutSlotCandidate(
+                    FixedStashScannerProfiles.KalguuranRunes.Key,
+                    slot.SlotIndex,
+                    ResolveVisualOverlayBounds(FixedStashScannerProfiles.KalguuranRunes.Key, slot.SlotIndex, slot.CropBounds, slot.OverlayCropBounds, FixedStashScannerProfiles.KalguuranRuneOverlayInset));
+            }
+
+            yield break;
+        }
+
+        if (_lastGenericResult is not null)
+        {
+            foreach (var slot in _lastGenericResult.Slots)
+            {
+                yield return new LayoutSlotCandidate(
+                    _lastGenericResult.Profile.Key,
+                    slot.SlotIndex,
+                    ResolveVisualOverlayBounds(_lastGenericResult.Profile.Key, slot.SlotIndex, slot.CropBounds, slot.OverlayCropBounds, FixedStashScannerProfiles.DefaultStaticOverlayInset));
+            }
+        }
+    }
+
     private async Task EditCurrencySlotAsync(Point imagePoint)
     {
         if (_lastCurrencyResult is null)
@@ -1654,8 +1976,9 @@ internal sealed class MainForm : Form
         }
 
         var slot = _lastCurrencyResult.Slots
-            .Where(candidate => candidate.CropBounds.Contains(imagePoint))
-            .OrderBy(candidate => candidate.CropBounds.Width * candidate.CropBounds.Height)
+            .Where(candidate => ResolveVisualOverlayBounds(FixedStashScannerProfiles.Currency.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.DefaultStaticOverlayInset).Contains(imagePoint))
+            .OrderBy(candidate => ResolveVisualOverlayBounds(FixedStashScannerProfiles.Currency.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.DefaultStaticOverlayInset).Width *
+                ResolveVisualOverlayBounds(FixedStashScannerProfiles.Currency.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.DefaultStaticOverlayInset).Height)
             .FirstOrDefault();
         if (slot is null)
         {
@@ -1708,8 +2031,9 @@ internal sealed class MainForm : Form
         }
 
         var slot = _lastRuneResult.Slots
-            .Where(candidate => candidate.CropBounds.Contains(imagePoint))
-            .OrderBy(candidate => candidate.CropBounds.Width * candidate.CropBounds.Height)
+            .Where(candidate => ResolveVisualOverlayBounds(FixedStashScannerProfiles.AugmentRunes.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.AugmentRuneOverlayInset).Contains(imagePoint))
+            .OrderBy(candidate => ResolveVisualOverlayBounds(FixedStashScannerProfiles.AugmentRunes.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.AugmentRuneOverlayInset).Width *
+                ResolveVisualOverlayBounds(FixedStashScannerProfiles.AugmentRunes.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.AugmentRuneOverlayInset).Height)
             .FirstOrDefault();
         if (slot is null)
         {
@@ -1762,8 +2086,9 @@ internal sealed class MainForm : Form
         }
 
         var slot = _lastKalguuranRuneResult.Slots
-            .Where(candidate => candidate.CropBounds.Contains(imagePoint))
-            .OrderBy(candidate => candidate.CropBounds.Width * candidate.CropBounds.Height)
+            .Where(candidate => ResolveVisualOverlayBounds(FixedStashScannerProfiles.KalguuranRunes.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.KalguuranRuneOverlayInset).Contains(imagePoint))
+            .OrderBy(candidate => ResolveVisualOverlayBounds(FixedStashScannerProfiles.KalguuranRunes.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.KalguuranRuneOverlayInset).Width *
+                ResolveVisualOverlayBounds(FixedStashScannerProfiles.KalguuranRunes.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.KalguuranRuneOverlayInset).Height)
             .FirstOrDefault();
         if (slot is null)
         {
@@ -1816,8 +2141,9 @@ internal sealed class MainForm : Form
         }
 
         var slot = _lastGenericResult.Slots
-            .Where(candidate => candidate.CropBounds.Contains(imagePoint))
-            .OrderBy(candidate => candidate.CropBounds.Width * candidate.CropBounds.Height)
+            .Where(candidate => ResolveVisualOverlayBounds(_lastGenericResult.Profile.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.DefaultStaticOverlayInset).Contains(imagePoint))
+            .OrderBy(candidate => ResolveVisualOverlayBounds(_lastGenericResult.Profile.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.DefaultStaticOverlayInset).Width *
+                ResolveVisualOverlayBounds(_lastGenericResult.Profile.Key, candidate.SlotIndex, candidate.CropBounds, candidate.OverlayCropBounds, FixedStashScannerProfiles.DefaultStaticOverlayInset).Height)
             .FirstOrDefault();
         if (slot is null)
         {
@@ -2104,6 +2430,8 @@ internal sealed class MainForm : Form
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+    private sealed record LayoutSlotCandidate(string ProfileKey, int SlotIndex, Rectangle VisualBounds);
 
     private sealed record ScanModeOption(string Label, string Key, ScanModeKind Kind, FixedStashScannerProfile? Profile = null)
     {

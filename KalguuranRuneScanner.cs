@@ -196,7 +196,7 @@ internal sealed class KalguuranRuneScanner
             slot.Bounds.Y - layout.DisplayCropRegion.Y,
             slot.Bounds.Width,
             slot.Bounds.Height);
-        var overlayBounds = FixedStashSlot.Inset(slot.Bounds, FixedStashScannerProfiles.DefaultStaticOverlayInset);
+        var overlayBounds = FixedStashSlot.Inset(slot.Bounds, FixedStashScannerProfiles.KalguuranRuneOverlayInset);
         var overlayCropBounds = new Rectangle(
             overlayBounds.X - layout.DisplayCropRegion.X,
             overlayBounds.Y - layout.DisplayCropRegion.Y,
@@ -232,87 +232,25 @@ internal sealed class KalguuranRuneScanner
 internal static class KalguuranRuneSlotMap
 {
     private const int FolderCropX = 25;
-    private const int FolderCropY = 400;
+    private const int FolderFullCropY = 330;
 
-    // First pass from AI-assisted Kalguuran rune capture. Stored in folder crop-space plus the crop origin.
+    // Stored in FolderFull crop-space plus the crop origin so final overlays snap to the visible rune frames.
     public static readonly RuneSlot[] Slots =
     [
-        Slot(244, 64, 118, 121),
-        Slot(377, 64, 118, 121),
-        Slot(510, 64, 118, 121),
-        Slot(642, 64, 118, 121),
-        Slot(775, 64, 118, 121),
-        Slot(908, 64, 118, 121),
-
-        Slot(244, 203, 118, 121),
-        Slot(377, 203, 118, 121),
-        Slot(510, 203, 118, 121),
-        Slot(642, 203, 118, 121),
-        Slot(775, 203, 118, 121),
-        Slot(908, 203, 118, 121),
-
-        Slot(312, 341, 118, 121),
-        Slot(445, 341, 118, 121),
-        Slot(578, 341, 118, 121),
-        Slot(711, 341, 118, 121),
-        Slot(843, 341, 118, 121),
-
-        Slot(58, 489, 118, 121),
-        Slot(191, 489, 118, 121),
-        Slot(324, 489, 118, 121),
-        Slot(457, 489, 118, 121),
-        Slot(590, 489, 118, 121),
-        Slot(723, 489, 118, 121),
-        Slot(856, 489, 118, 121),
-        Slot(989, 489, 118, 121),
-        Slot(1122, 489, 118, 121),
-
-        Slot(58, 624, 118, 121),
-        Slot(191, 624, 118, 121),
-        Slot(324, 624, 118, 121),
-        Slot(457, 624, 118, 121),
-        Slot(723, 624, 118, 121),
-        Slot(856, 624, 118, 121),
-        Slot(989, 624, 118, 121),
-        Slot(1122, 624, 118, 121),
-
-        Slot(58, 758, 118, 121),
-        Slot(191, 758, 118, 121),
-        Slot(324, 758, 118, 121),
-        Slot(457, 758, 118, 121),
-        Slot(590, 758, 118, 121),
-        Slot(723, 758, 118, 121),
-        Slot(856, 758, 118, 121),
-        Slot(989, 758, 118, 121),
-        Slot(1122, 758, 118, 121),
-
-        // Slot 43 was originally a false positive in the blank left gutter above the bottom row.
-        // Keep the index stable by moving it to the real bottom-left cell.
-        Slot(58, 1042, 118, 121),
-        Slot(191, 906, 118, 121),
-        Slot(324, 906, 118, 121),
-        Slot(457, 906, 118, 121),
-        Slot(590, 906, 118, 121),
-        Slot(723, 906, 118, 121),
-        Slot(856, 906, 118, 121),
-        Slot(989, 906, 118, 121),
-        // Slot 51 was originally a false positive in the blank right gutter above the bottom row.
-        // Keep the index stable by moving it to the real bottom-right cell.
-        Slot(1122, 1042, 118, 121),
-
-        // Appended to preserve existing user mapping indexes for earlier slots.
-        Slot(191, 1042, 118, 121),
-        Slot(324, 1042, 118, 121),
-        Slot(457, 1042, 118, 121),
-        Slot(590, 1042, 118, 121),
-        Slot(723, 1042, 118, 121),
-        Slot(856, 1042, 118, 121),
+        Slot(245, 137), Slot(380, 137), Slot(515, 137), Slot(650, 137), Slot(785, 137), Slot(920, 137),
+        Slot(245, 271), Slot(380, 271), Slot(515, 271), Slot(650, 271), Slot(785, 271), Slot(920, 271),
+        Slot(310, 404, 125, 126), Slot(445, 404, 125, 126), Slot(580, 404, 125, 126), Slot(715, 404, 125, 126), Slot(850, 404, 125, 126),
+        Slot(42, 554, 121, 121), Slot(177, 554, 121, 121), Slot(312, 554, 121, 121), Slot(447, 554, 121, 121), Slot(582, 554, 121, 121), Slot(717, 554, 121, 121), Slot(852, 554, 121, 121), Slot(987, 554, 121, 121), Slot(1122, 554, 121, 121),
+        Slot(42, 689, 121, 124), Slot(177, 689, 121, 123), Slot(312, 689, 121, 121), Slot(447, 689, 121, 121), Slot(717, 689, 121, 121), Slot(852, 689, 121, 121), Slot(987, 689, 121, 121), Slot(1122, 689, 123, 121),
+        Slot(42, 822, 121, 123), Slot(177, 824, 121, 123), Slot(312, 824, 121, 121), Slot(447, 824, 121, 121), Slot(582, 824, 121, 121), Slot(717, 824, 121, 121), Slot(852, 824, 121, 121), Slot(987, 824, 123, 121), Slot(1119, 824, 124, 121),
+        Slot(174, 969, 126, 128), Slot(310, 971, 125, 126), Slot(445, 971, 125, 126), Slot(580, 971, 125, 126), Slot(715, 971, 125, 126), Slot(850, 971, 125, 126), Slot(985, 971, 125, 126),
+        Slot(40, 1106, 125, 128), Slot(175, 1105, 125, 127), Slot(310, 1106, 125, 126), Slot(445, 1106, 125, 128), Slot(580, 1106, 125, 126), Slot(715, 1106, 125, 126), Slot(850, 1106, 125, 126), Slot(1120, 1106, 126, 126),
     ];
 
-    private static RuneSlot Slot(int cropX, int cropY, int width, int height)
+    private static RuneSlot Slot(int cropX, int folderFullCropY, int width = 120, int height = 120)
     {
         return new RuneSlot(
-            new Rectangle(FolderCropX + cropX, FolderCropY + cropY, width, height),
+            new Rectangle(FolderCropX + cropX, FolderFullCropY + folderFullCropY, width, height),
             null);
     }
 }

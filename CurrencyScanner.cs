@@ -408,7 +408,15 @@ internal static class CurrencySlotMap
         Slot(815, 1010, null),
         Slot(935, 1010, null),
 
-        // Appended to preserve existing user mapping indexes.
+        Slot(215, 1130, null),
+        Slot(335, 1130, null),
+        Slot(455, 1130, null),
+        Slot(575, 1130, null),
+        Slot(695, 1130, null),
+        Slot(815, 1130, null),
+        Slot(935, 1130, null),
+
+        // Appended outside visual order for a top-right special currency slot.
         Slot(1120, 55, "Perfect Jeweller's Orb"),
     ];
 

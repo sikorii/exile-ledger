@@ -114,7 +114,7 @@ internal static class StashSlotLayoutDebugRenderer
         graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
         using var cropPen = new Pen(Color.FromArgb(255, 80, 255, 120), 3);
-        using var slotPen = new Pen(Color.FromArgb(210, 60, 170, 255), 2);
+        using var slotPen = new Pen(Color.FromArgb(230, 255, 80, 80), 2);
         using var occupiedPen = new Pen(Color.FromArgb(235, 255, 205, 60), 3);
         using var finalPen = new Pen(Color.FromArgb(240, 255, 80, 190), 2);
         using var centerPen = new Pen(Color.FromArgb(220, 255, 255, 255), 1);
@@ -158,7 +158,7 @@ internal static class StashSlotLayoutDebugRenderer
             $"Slots: {result.Slots.Count}",
             $"Known occupied: {result.KnownOccupiedSlots}",
             $"Unknown occupied: {result.UnknownOccupiedSlots}",
-            "Legend: green crop border, blue canonical full slots, yellow occupied full slots, magenta final inset overlay, white grid centers.",
+            "Legend: green crop border, red empty canonical slots, yellow occupied full slots, magenta final inset overlay, white grid centers.",
             "Warning: publish/config/latest-stash-scans.json can contain stale crop/overlay bounds after layout/profile changes. Rescan the tab in the UI before judging current overlays.",
             string.Empty,
             "Slots:",
@@ -396,7 +396,7 @@ internal static class StashOverlayProfileReporter
         graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
         using var scanPen = new Pen(Color.FromArgb(160, 70, 155, 255), 2);
-        using var emptyOverlayPen = new Pen(Color.FromArgb(220, 160, 160, 160), 2);
+        using var emptyOverlayPen = new Pen(Color.FromArgb(230, 255, 80, 80), 2);
         using var knownPen = new Pen(Color.FromArgb(235, 80, 210, 130), 3);
         using var unknownPen = new Pen(Color.FromArgb(235, 255, 205, 60), 3);
         using var centerPen = new Pen(Color.FromArgb(200, 255, 255, 255), 1);

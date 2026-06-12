@@ -204,8 +204,7 @@ internal sealed class FixedStashScanner
         if (_profile.IsRuneLike)
         {
             return StashSlotVisuals.HasVisibleQuantityMarker(screenshot, slotBounds) ||
-                (itemName is not null && StashSlotVisuals.HasRuneBodySignal(screenshot, slotBounds)) ||
-                StashSlotVisuals.HasGenericItemSignal(screenshot, slotBounds);
+                (itemName is not null && StashSlotVisuals.HasRuneBodySignal(screenshot, slotBounds));
         }
 
         var definitelyBlank = CurrencyScanner.IsDefinitelyBlank(screenshot, slotBounds);

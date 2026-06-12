@@ -54,6 +54,8 @@ internal sealed record FixedStashScannerProfile(
 internal static class FixedStashScannerProfiles
 {
     public const int DefaultStaticOverlayInset = 3;
+    public const int AugmentRuneOverlayInset = 1;
+    public const int KalguuranRuneOverlayInset = 3;
 
     public static readonly FixedStashScannerProfile Currency = new(
         "CurrencyStash",
@@ -78,7 +80,7 @@ internal static class FixedStashScannerProfiles
         "runes",
         IsRuneLike: true,
         HasUpgradeSummary: true,
-        Slots: RuneSlotMap.Slots.Select(slot => SlotWithOverlay(slot.Bounds, slot.ItemName)).ToArray(),
+        Slots: RuneSlotMap.Slots.Select(slot => SlotWithOverlay(slot.Bounds, slot.ItemName, AugmentRuneOverlayInset)).ToArray(),
         PriceCategories: Set("Runes"),
         IconCategories: Set("Runes"));
 
@@ -91,7 +93,7 @@ internal static class FixedStashScannerProfiles
         "kalguuran-runes",
         IsRuneLike: true,
         HasUpgradeSummary: false,
-        Slots: KalguuranRuneSlotMap.Slots.Select(slot => SlotWithOverlay(slot.Bounds, slot.ItemName)).ToArray(),
+        Slots: KalguuranRuneSlotMap.Slots.Select(slot => SlotWithOverlay(slot.Bounds, slot.ItemName, KalguuranRuneOverlayInset)).ToArray(),
         PriceCategories: Set("Runes"),
         IconCategories: Set("Runes"));
 
@@ -219,9 +221,9 @@ internal static class FixedStashScannerProfiles
             IconCategories: Set(category));
     }
 
-    private static FixedStashSlot SlotWithOverlay(Rectangle bounds, string? itemName = null)
+    private static FixedStashSlot SlotWithOverlay(Rectangle bounds, string? itemName = null, int overlayInset = DefaultStaticOverlayInset)
     {
-        return new FixedStashSlot(bounds, itemName, FixedStashSlot.Inset(bounds, DefaultStaticOverlayInset));
+        return new FixedStashSlot(bounds, itemName, FixedStashSlot.Inset(bounds, overlayInset));
     }
 
     private static IReadOnlyList<FixedStashSlot> NormalizeOverlaySlots(IReadOnlyList<FixedStashSlot> slots)
@@ -245,7 +247,7 @@ internal static class FixedStashSlotMaps
     [
         Slot(603, 430), Slot(603, 635),
         Slot(470, 765), Slot(603, 765), Slot(736, 765),
-        Slot(337, 895), Slot(470, 895), Slot(603, 895), Slot(736, 895), Slot(869, 895),
+        Slot(337, 895), Slot(470, 895), Slot(603, 895), Slot(736, 895),
         Slot(470, 1025), Slot(603, 1025), Slot(736, 1025),
         Slot(603, 1160),
         .. Row(140, 1358, 8, 132)
@@ -270,7 +272,7 @@ internal static class FixedStashSlotMaps
     public static readonly IReadOnlyList<FixedStashSlot> Expedition =
     [
         .. Row(270, 421, 6, 134, 120),
-        Slot(430, 610, 170), Slot(675, 610, 170),
+        Slot(428, 613, 241, 235), Slot(672, 613, 241, 235),
         Slot(540, 868), Slot(675, 868),
         Slot(401, 1000), Slot(535, 1000), Slot(674, 1000), Slot(809, 1000),
         .. Row(210, 1150, 7, 135),
@@ -292,11 +294,12 @@ internal static class FixedStashSlotMaps
 
     public static readonly IReadOnlyList<FixedStashSlot> BreachCatalysts =
     [
-        // Catalyst matrix only; the upper Wombgift area is intentionally omitted.
+        Slot(537, 519, 126, 126), Slot(672, 519, 126, 126),
+        Slot(552, 654, 231, 232),
         .. Row(270, 938, 6),
-        .. Row(270, 1073, 6),
+        .. Row(270, 1073, 7),
         .. Row(270, 1248, 6),
-        .. Row(270, 1383, 6)
+        .. Row(270, 1383, 7)
     ];
 
     public static readonly IReadOnlyList<FixedStashSlot> Fragments =
@@ -305,7 +308,7 @@ internal static class FixedStashSlotMaps
         Slot(490, 535), Slot(610, 535), Slot(730, 535),
         Slot(165, 715), Slot(295, 715), Slot(610, 715), Slot(935, 715),
         Slot(165, 850, 220, 220), Slot(610, 850, 220, 220), Slot(935, 850, 220, 220),
-        Slot(110, 1150), Slot(240, 1150, 220, 120), Slot(485, 1150), Slot(615, 1150), Slot(745, 1150), Slot(875, 1150), Slot(1065, 1150),
+        Slot(110, 1150), Slot(240, 1150, 220, 120), Slot(485, 1150), Slot(665, 1150), Slot(795, 1150), Slot(925, 1150), Slot(1085, 1150),
         Slot(490, 1355), Slot(610, 1355), Slot(730, 1355)
     ];
 
@@ -313,28 +316,26 @@ internal static class FixedStashSlotMaps
     [
         .. Row(140, 700, 8),
         .. Row(205, 835, 7),
-        .. Row(140, 1064, 7),
-        .. Row(205, 1199, 6)
+        .. Row(140, 1064, 8),
+        .. Row(205, 1199, 7)
     ];
 
     public static readonly IReadOnlyList<FixedStashSlot> Idols =
     [
         .. Row(140, 510, 8),
-        .. Row(205, 645, 7),
-        .. Row(140, 880, 7),
-        .. Row(205, 1015, 7),
-        .. Row(140, 1250, 7),
-        .. Row(205, 1385, 7)
+        .. Row(270, 674, 6),
+        .. Row(202, 904, 7),
+        .. Row(200, 1130, 7),
+        .. Row(475, 1385, 3)
     ];
 
     public static readonly IReadOnlyList<FixedStashSlot> AncientAugments =
     [
-        .. Row(405, 500, 4),
-        .. Row(405, 635, 4),
-        Slot(605, 850),
-        .. Row(405, 1065, 4),
+        .. Row(399, 491, 4),
+        .. Row(405, 720, 4),
+        Slot(605, 950),
         .. Row(405, 1199, 4),
-        .. Row(405, 1335, 4)
+        .. Row(405, 1430, 4)
     ];
 
     public static readonly FixedTabLayoutDescriptor EssenceLayout = BuildEssenceLayout();

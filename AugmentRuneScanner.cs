@@ -209,7 +209,7 @@ internal sealed class AugmentRuneScanner
             slot.Bounds.Y - layout.DisplayCropRegion.Y,
             slot.Bounds.Width,
             slot.Bounds.Height);
-        var overlayBounds = FixedStashSlot.Inset(slot.Bounds, FixedStashScannerProfiles.DefaultStaticOverlayInset);
+        var overlayBounds = FixedStashSlot.Inset(slot.Bounds, FixedStashScannerProfiles.AugmentRuneOverlayInset);
         var overlayCropBounds = new Rectangle(
             overlayBounds.X - layout.DisplayCropRegion.X,
             overlayBounds.Y - layout.DisplayCropRegion.Y,
