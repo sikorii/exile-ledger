@@ -41,7 +41,6 @@ internal sealed class MainForm : Form
     private readonly LatestStashScanStore _latestScanStore;
     private readonly OpenAiVisionHelper _openAiVisionHelper;
     private readonly PoeNinjaIconCache _iconCache;
-    private readonly LocalIconTemplateStore _iconTemplateStore;
     private readonly OverlayForm _overlay = new();
     private readonly Button _runeshapingButton = new();
     private readonly ComboBox _modeComboBox = new();
@@ -72,7 +71,6 @@ internal sealed class MainForm : Form
     private RuneScanResult? _lastKalguuranRuneResult;
     private FixedStashScanResult? _lastGenericResult;
     private Image? _stashImage;
-    private PoeNinjaIconMatcher? _iconMatcher;
     private SlotLayoutOverrides _slotLayoutOverrides;
     private int? _selectedLayoutSlotIndex;
 
@@ -112,7 +110,6 @@ internal sealed class MainForm : Form
                 StringComparer.OrdinalIgnoreCase);
         _openAiVisionHelper = new OpenAiVisionHelper(Path.Combine(AppContext.BaseDirectory, "debug", "ai-stash-analysis"));
         _iconCache = PoeNinjaIconCache.CreateDefault();
-        _iconTemplateStore = LocalIconTemplateStore.CreateDefault();
         _overlay.Dismissed += (_, _) => _scanner.ClearMergedRuneshapingRewards();
         BuildUi();
         LoadPersistedLatestScans();
@@ -235,6 +232,8 @@ internal sealed class MainForm : Form
         _refreshIconsButton.Text = "Icons";
         _refreshIconsButton.Location = new Point(958, 62);
         _refreshIconsButton.Size = new Size(72, 34);
+        _refreshIconsButton.Enabled = false;
+        _refreshIconsButton.Visible = false;
         _refreshIconsButton.Click += async (_, _) => await RefreshIconCacheAsync();
 
         _copySummaryButton.Text = "Copy";
@@ -365,7 +364,6 @@ internal sealed class MainForm : Form
         try
         {
             var index = await _iconCache.BuildAsync(forceDownload: false, CancellationToken.None).ConfigureAwait(true);
-            _iconMatcher = null;
             _statusLabel.Text = $"Icon cache refreshed: {index.ItemCount} items, {index.FailedDownloadCount} failed downloads.";
             _detailsBox.Text = string.Join(Environment.NewLine, new[]
             {
@@ -1221,7 +1219,7 @@ internal sealed class MainForm : Form
                 $"Unknown occupied slots: {result.UnknownOccupiedSlots}",
                 string.Empty,
                 "Click a boxed Kalguuran rune slot to name or correct it.",
-                "Use icon suggestions as mapping hints; item names are not auto-applied.",
+                "Icon suggestions are disabled for faster manual correction.",
                 "Use count override only when OCR keeps reading a stack wrong.",
                 "This tab prices runes only. Essence upgrade logic is intentionally separate.",
                 string.Empty,
@@ -1262,7 +1260,7 @@ internal sealed class MainForm : Form
             $"Unknown occupied slots: {result.UnknownOccupiedSlots}",
             string.Empty,
             "Click a boxed slot to name or correct it.",
-            "Use icon suggestions as mapping hints; item names are not auto-applied.",
+            "Icon suggestions are disabled for faster manual correction.",
             "Use count override only when the local reader keeps reading a stack wrong.",
             "Essence upgrade math is intentionally not included yet.",
             string.Empty,
@@ -2227,97 +2225,31 @@ internal sealed class MainForm : Form
         string itemName,
         string? slotSection)
     {
-        if (string.IsNullOrWhiteSpace(itemName))
-        {
-            return string.Empty;
-        }
-
-        try
-        {
-            var templatePath = _iconTemplateStore.SaveTemplate(
-                stashCropPath,
-                cropBounds,
-                tabKey,
-                slotIndex,
-                itemName,
-                slotSection);
-            if (templatePath.Length == 0)
-            {
-                return string.Empty;
-            }
-
-            _iconMatcher = null;
-            return ", icon template saved";
-        }
-        catch
-        {
-            return ", icon template save failed";
-        }
+        return string.Empty;
     }
 
-    private async Task<IReadOnlyList<PoeNinjaIconMatch>> GetIconSuggestionsAsync(
+    private Task<IReadOnlyList<PoeNinjaIconMatch>> GetIconSuggestionsAsync(
         string stashCropPath,
         Rectangle cropBounds,
         string iconType,
         CancellationToken cancellationToken)
     {
-        return await GetIconSuggestionsAsync(
+        return GetIconSuggestionsAsync(
             stashCropPath,
             cropBounds,
             new IconMatchContext(
                 "Unknown",
                 new HashSet<string>([iconType], StringComparer.OrdinalIgnoreCase)),
-            cancellationToken).ConfigureAwait(true);
+            cancellationToken);
     }
 
-    private async Task<IReadOnlyList<PoeNinjaIconMatch>> GetIconSuggestionsAsync(
+    private Task<IReadOnlyList<PoeNinjaIconMatch>> GetIconSuggestionsAsync(
         string stashCropPath,
         Rectangle cropBounds,
         IconMatchContext context,
         CancellationToken cancellationToken)
     {
-        if (!File.Exists(stashCropPath))
-        {
-            return [];
-        }
-
-        var previousStatus = _statusLabel.Text;
-        UseWaitCursor = true;
-        _statusLabel.Text = "Building icon suggestions...";
-
-        try
-        {
-            if (_iconMatcher is null)
-            {
-                var index = await _iconCache.LoadOrBuildAsync(cancellationToken).ConfigureAwait(true);
-                _iconMatcher = PoeNinjaIconMatcher.FromIndex(index, _iconTemplateStore);
-            }
-
-            using var stashCrop = CurrencyScanner.LoadBitmapWithoutFileLock(stashCropPath);
-            var safeBounds = ClampRectangle(cropBounds, stashCrop.Size);
-            var suggestions = _iconMatcher.MatchSlot(stashCrop, safeBounds, maxResults: 5, context)
-                .Where(match => match.Confidence >= 0.42)
-                .ToArray();
-
-            _statusLabel.Text = suggestions.Length == 0
-                ? "No icon suggestions found for this slot."
-                : $"Icon suggestions ready for {suggestions[0].ItemName}.";
-            return suggestions;
-        }
-        catch (Exception ex)
-        {
-            _statusLabel.Text = "Icon suggestions unavailable.";
-            _detailsBox.Text = ex.ToString();
-            return [];
-        }
-        finally
-        {
-            UseWaitCursor = false;
-            if (_statusLabel.Text == "Building icon suggestions...")
-            {
-                _statusLabel.Text = previousStatus;
-            }
-        }
+        return Task.FromResult<IReadOnlyList<PoeNinjaIconMatch>>(Array.Empty<PoeNinjaIconMatch>());
     }
 
     private static Rectangle GetImageDisplayRectangle(PictureBox pictureBox)
