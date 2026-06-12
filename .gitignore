@@ -1,0 +1,39 @@
+# Build output
+bin/
+obj/
+publish/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+TestResults/
+
+# IDE / user machine files
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# Generated debug/report folders
+debug/
+**/debug/
+overlay-profile-report/
+**/overlay-profile-report/
+
+# Local screenshots / scan captures
+Screenshots/
+screenshots/
+
+# Local runtime/generated config and caches
+config/icon-templates/
+config/count-templates/
+config/cache/
+cache/
+
+# Temporary files
+*.tmp
+*.bak
