@@ -76,6 +76,7 @@ internal sealed class FixedStashScanner
         CurrencyScanner.SaveBitmap(stashCrop, stashCropPath);
 
         var tessData = await CurrencyScanner.EnsureTessDataAsync(Path.Combine(AppContext.BaseDirectory, "tessdata"), cancellationToken).ConfigureAwait(false);
+        var scanId = DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmssfff");
         var stacks = new List<FixedStashStack>();
         var detections = new List<FixedStashSlotDetection>();
         var countDebugLines = new List<string>();
@@ -118,7 +119,7 @@ internal sealed class FixedStashScanner
                 continue;
             }
 
-            var quantityRead = ReadQuantity(screenshot, scanSlot.Bounds, tessData, slotIndex);
+            var quantityRead = ReadQuantity(screenshot, scanSlot.Bounds, tessData, slotIndex, scanId);
             var quantity = countOverride ?? quantityRead.Quantity;
             var trainingStatus = CountTrainingHelpers.TrySaveFromOverride(
                 screenshot,
@@ -211,9 +212,9 @@ internal sealed class FixedStashScanner
         return !definitelyBlank && (CurrencyScanner.IsOccupied(screenshot, slotBounds) || itemName is not null);
     }
 
-    private QuantityReadResult ReadQuantity(Bitmap screenshot, Rectangle slotBounds, string tessData, int slotIndex)
+    private QuantityReadResult ReadQuantity(Bitmap screenshot, Rectangle slotBounds, string tessData, int slotIndex, string scanId)
     {
-        var options = new StackCountReadOptions(_debugDirectory, _profile.CountMode, slotIndex);
+        var options = new StackCountReadOptions(_debugDirectory, _profile.CountMode, slotIndex, scanId);
         return _profile.IsRuneLike
             ? StackCountReader.ReadRuneQuantity(screenshot, slotBounds, tessData, options)
             : StackCountReader.ReadQuantity(screenshot, slotBounds, tessData, options);

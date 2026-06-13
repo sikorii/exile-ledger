@@ -59,6 +59,7 @@ internal sealed class CurrencyScanner
         SaveBitmap(stashCrop, stashCropPath);
 
         var tessData = await EnsureTessDataAsync(Path.Combine(AppContext.BaseDirectory, "tessdata"), cancellationToken).ConfigureAwait(false);
+        var scanId = DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmssfff");
         var stacks = new List<CurrencyStack>();
         var detections = new List<CurrencySlotDetection>();
         var countDebugLines = new List<string>();
@@ -100,7 +101,7 @@ internal sealed class CurrencyScanner
                     screenshot,
                     scanSlot.Bounds,
                     tessData,
-                    new StackCountReadOptions(_debugDirectory, "currency", slotIndex));
+                    new StackCountReadOptions(_debugDirectory, "currency", slotIndex, scanId));
                 var unknownQuantity = countOverride ?? unknownQuantityRead.Quantity;
                 var unknownTrainingStatus = CountTrainingHelpers.TrySaveFromOverride(
                     screenshot,
@@ -123,7 +124,7 @@ internal sealed class CurrencyScanner
                 screenshot,
                 scanSlot.Bounds,
                 tessData,
-                new StackCountReadOptions(_debugDirectory, "currency", slotIndex));
+                new StackCountReadOptions(_debugDirectory, "currency", slotIndex, scanId));
             var quantity = countOverride ?? quantityRead.Quantity;
             var knownTrainingStatus = CountTrainingHelpers.TrySaveFromOverride(
                 screenshot,

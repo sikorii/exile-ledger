@@ -57,6 +57,7 @@ internal sealed class AugmentRuneScanner
         CurrencyScanner.SaveBitmap(stashCrop, stashCropPath);
 
         var tessData = await CurrencyScanner.EnsureTessDataAsync(Path.Combine(AppContext.BaseDirectory, "tessdata"), cancellationToken).ConfigureAwait(false);
+        var scanId = DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmssfff");
         var stacks = new List<RuneStack>();
         var detections = new List<RuneSlotDetection>();
         var countDebugLines = new List<string>();
@@ -100,7 +101,7 @@ internal sealed class AugmentRuneScanner
                     screenshot,
                     scanSlot.Bounds,
                     tessData,
-                    new StackCountReadOptions(_debugDirectory, "runes", slotIndex));
+                    new StackCountReadOptions(_debugDirectory, "runes", slotIndex, scanId));
                 var unknownQuantity = countOverride ?? unknownQuantityRead.Quantity;
                 var unknownTrainingStatus = CountTrainingHelpers.TrySaveFromOverride(
                     screenshot,
@@ -123,7 +124,7 @@ internal sealed class AugmentRuneScanner
                 screenshot,
                 scanSlot.Bounds,
                 tessData,
-                new StackCountReadOptions(_debugDirectory, "runes", slotIndex));
+                new StackCountReadOptions(_debugDirectory, "runes", slotIndex, scanId));
             var quantity = countOverride ?? quantityRead.Quantity;
             var knownTrainingStatus = CountTrainingHelpers.TrySaveFromOverride(
                 screenshot,

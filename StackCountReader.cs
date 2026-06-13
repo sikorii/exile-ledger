@@ -100,6 +100,15 @@ internal static class StackCountReader
         var quantity = int.TryParse(chosen.Digits, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed)
             ? Math.Max(1, parsed)
             : 1;
+        CountCropTrainingStore.TrySaveDebugCrop(
+            screenshot,
+            slotBounds,
+            options.Mode ?? "unknown",
+            options.SlotIndex ?? -1,
+            quantity,
+            chosen.Method,
+            options.ScanId,
+            options.DebugDirectory);
 
         var debugText = string.Join(
             "; ",
@@ -199,7 +208,7 @@ internal static class StackCountReader
             : new DigitTrainingSaveResult(0, $"training samples already existed for slot {slotIndex} x{quantity}.");
     }
 
-    private static IEnumerable<Rectangle> BuildCountRegions(Rectangle slotBounds)
+    internal static IEnumerable<Rectangle> BuildCountRegions(Rectangle slotBounds)
     {
         var x = slotBounds.X + 6;
         var y = slotBounds.Y;
@@ -538,7 +547,7 @@ internal static class StackCountReader
         }
     }
 
-    private static Bitmap PrepareCountForOcr(Bitmap input, bool strict = false)
+    internal static Bitmap PrepareCountForOcr(Bitmap input, bool strict = false)
     {
         var output = new Bitmap(input.Width * 4, input.Height * 4, PixelFormat.Format24bppRgb);
         using var graphics = Graphics.FromImage(output);
@@ -1788,7 +1797,7 @@ internal static class StackCountReader
     }
 }
 
-internal sealed record StackCountReadOptions(string? DebugDirectory, string? Mode, int? SlotIndex)
+internal sealed record StackCountReadOptions(string? DebugDirectory, string? Mode, int? SlotIndex, string? ScanId = null)
 {
     public static readonly StackCountReadOptions Default = new(null, null, null);
 
@@ -1798,7 +1807,10 @@ internal sealed record StackCountReadOptions(string? DebugDirectory, string? Mod
 
     public void SaveDebugCrop(Bitmap raw, Bitmap processed, int regionWidth)
     {
-        if (string.IsNullOrWhiteSpace(DebugDirectory) || string.IsNullOrWhiteSpace(Mode) || SlotIndex is null)
+        if (!CountCropDebugSettings.SaveCountDebugCrops ||
+            string.IsNullOrWhiteSpace(DebugDirectory) ||
+            string.IsNullOrWhiteSpace(Mode) ||
+            SlotIndex is null)
         {
             return;
         }

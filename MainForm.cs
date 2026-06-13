@@ -57,6 +57,8 @@ internal sealed class MainForm : Form
     private readonly Button _reloadLayoutButton = new();
     private readonly Button _resetSelectedSlotButton = new();
     private readonly Button _resetCurrentTabButton = new();
+    private readonly CheckBox _saveCountDebugCropsCheckBox = new();
+    private readonly Button _reviewCountCropsButton = new();
     private readonly Label _statusLabel = new();
     private readonly Label _totalStashValueLabel = new();
     private readonly TextBox _detailsBox = new();
@@ -280,6 +282,21 @@ internal sealed class MainForm : Form
         _resetCurrentTabButton.Size = new Size(130, 30);
         _resetCurrentTabButton.Click += (_, _) => ResetCurrentLayoutTab();
 
+        _saveCountDebugCropsCheckBox.Text = "Count Crops";
+        _saveCountDebugCropsCheckBox.Location = new Point(662, 104);
+        _saveCountDebugCropsCheckBox.AutoSize = true;
+        _saveCountDebugCropsCheckBox.Padding = new Padding(0, 5, 0, 5);
+        _saveCountDebugCropsCheckBox.Checked = CountCropDebugSettings.SaveCountDebugCrops;
+        _saveCountDebugCropsCheckBox.CheckedChanged += (_, _) =>
+        {
+            CountCropDebugSettings.SaveCountDebugCrops = _saveCountDebugCropsCheckBox.Checked;
+        };
+
+        _reviewCountCropsButton.Text = "Review Crops";
+        _reviewCountCropsButton.Location = new Point(772, 104);
+        _reviewCountCropsButton.Size = new Size(116, 30);
+        _reviewCountCropsButton.Click += (_, _) => GenerateCountCropReviewReport();
+
         _statusLabel.Text = "Runeshaping is separate. Choose a stash mode, then Scan Stash. Hotkeys: F8 Runeshaping, F7 selected stash.";
         _statusLabel.Location = new Point(22, 140);
         _statusLabel.Size = new Size(1200, 24);
@@ -315,10 +332,45 @@ internal sealed class MainForm : Form
         _detailsBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
         _stashPictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
-        Controls.AddRange([title, _runeshapingButton, _modeComboBox, _insideFolderCheckBox, _scanButton, _refreshButton, _testButton, _captureTabButton, _refreshIconsButton, _copySummaryButton, _editLayoutCheckBox, _saveLayoutButton, _reloadLayoutButton, _resetSelectedSlotButton, _resetCurrentTabButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
+        Controls.AddRange([title, _runeshapingButton, _modeComboBox, _insideFolderCheckBox, _scanButton, _refreshButton, _testButton, _captureTabButton, _refreshIconsButton, _copySummaryButton, _editLayoutCheckBox, _saveLayoutButton, _reloadLayoutButton, _resetSelectedSlotButton, _resetCurrentTabButton, _saveCountDebugCropsCheckBox, _reviewCountCropsButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
         LoadSelectedModeFolderSetting();
         UpdateLayoutEditorControls();
         UpdateAllScannedTabsTotal();
+    }
+
+    private void GenerateCountCropReviewReport()
+    {
+        try
+        {
+            var result = CountCropReviewReport.Generate(AppContext.BaseDirectory);
+            _statusLabel.Text = $"Count crop review generated: {result.CropCount} crops, {result.SuspectCount} suspect.";
+            _detailsBox.Text = string.Join(Environment.NewLine, [
+                "Count crop review report",
+                string.Empty,
+                $"Report: {result.ReportPath}",
+                $"Crops: {result.CropCount}",
+                $"Suspect crops: {result.SuspectCount}",
+                string.Empty,
+                "Scanned folders:",
+                .. result.ScannedFolders
+            ]);
+
+            if (!CountCropReviewReport.TryOpenInDefaultBrowser(result.ReportPath, out var error))
+            {
+                MessageBox.Show(
+                    this,
+                    $"Report generated, but the browser could not be opened.\r\n\r\n{result.ReportPath}\r\n\r\n{error}",
+                    "Count Crop Review",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            _statusLabel.Text = "Count crop review failed.";
+            _detailsBox.Text = ex.ToString();
+            MessageBox.Show(this, ex.Message, "Count Crop Review Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
     }
 
     private async Task RefreshPricesAsync()
@@ -1990,12 +2042,20 @@ internal sealed class MainForm : Form
                 FixedStashScannerProfiles.Currency.Key,
                 FixedStashScannerProfiles.Currency.IconCategories),
             CancellationToken.None);
+        var countPreview = TryCreateCountCropPreview(
+            _lastCurrencyResult.StashCropPath,
+            slot.CropBounds,
+            FixedStashScannerProfiles.Currency.Key,
+            slot.SlotIndex,
+            slot.Quantity,
+            slot.CountMethod);
 
         using var dialog = new SlotMappingDialog(
             slot.ItemName ?? string.Empty,
             slot.Quantity,
             _currencyMappingStore.GetCountOverride(slot.SlotIndex),
-            iconSuggestions);
+            iconSuggestions,
+            countPreview);
         if (dialog.ShowDialog(this) != DialogResult.OK)
         {
             return;
@@ -2016,6 +2076,7 @@ internal sealed class MainForm : Form
             _lastCurrencyResult.StashCropPath,
             slot.CropBounds,
             dialog.CountOverride,
+            slot.Quantity,
             "currency",
             slot.SlotIndex);
         _statusLabel.Text = $"Saved slot {slot.SlotIndex} as {dialog.ItemName} ({countStatus}{trainingStatus}{iconTemplateStatus}). Scan currency again to reprice.";
@@ -2045,12 +2106,20 @@ internal sealed class MainForm : Form
                 FixedStashScannerProfiles.AugmentRunes.Key,
                 FixedStashScannerProfiles.AugmentRunes.IconCategories),
             CancellationToken.None);
+        var countPreview = TryCreateCountCropPreview(
+            _lastRuneResult.StashCropPath,
+            slot.CropBounds,
+            FixedStashScannerProfiles.AugmentRunes.Key,
+            slot.SlotIndex,
+            slot.Quantity,
+            slot.CountMethod);
 
         using var dialog = new SlotMappingDialog(
             slot.ItemName ?? string.Empty,
             slot.Quantity,
             _runeMappingStore.GetCountOverride(slot.SlotIndex),
-            iconSuggestions);
+            iconSuggestions,
+            countPreview);
         if (dialog.ShowDialog(this) != DialogResult.OK)
         {
             return;
@@ -2071,6 +2140,7 @@ internal sealed class MainForm : Form
             _lastRuneResult.StashCropPath,
             slot.CropBounds,
             dialog.CountOverride,
+            slot.Quantity,
             "runes",
             slot.SlotIndex);
         _statusLabel.Text = $"Saved rune slot {slot.SlotIndex} as {dialog.ItemName} ({countStatus}{trainingStatus}{iconTemplateStatus}). Scan Aug Runes again to reprice.";
@@ -2100,12 +2170,20 @@ internal sealed class MainForm : Form
                 FixedStashScannerProfiles.KalguuranRunes.Key,
                 FixedStashScannerProfiles.KalguuranRunes.IconCategories),
             CancellationToken.None);
+        var countPreview = TryCreateCountCropPreview(
+            _lastKalguuranRuneResult.StashCropPath,
+            slot.CropBounds,
+            FixedStashScannerProfiles.KalguuranRunes.Key,
+            slot.SlotIndex,
+            slot.Quantity,
+            slot.CountMethod);
 
         using var dialog = new SlotMappingDialog(
             slot.ItemName ?? string.Empty,
             slot.Quantity,
             _kalguuranRuneMappingStore.GetCountOverride(slot.SlotIndex),
-            iconSuggestions);
+            iconSuggestions,
+            countPreview);
         if (dialog.ShowDialog(this) != DialogResult.OK)
         {
             return;
@@ -2126,6 +2204,7 @@ internal sealed class MainForm : Form
             _lastKalguuranRuneResult.StashCropPath,
             slot.CropBounds,
             dialog.CountOverride,
+            slot.Quantity,
             "kalguuran-runes",
             slot.SlotIndex);
         _statusLabel.Text = $"Saved Kalguuran rune slot {slot.SlotIndex} as {dialog.ItemName} ({countStatus}{trainingStatus}{iconTemplateStatus}). Scan Kalguuran Runes again to reprice.";
@@ -2159,12 +2238,20 @@ internal sealed class MainForm : Form
                     _lastGenericResult.Profile.IconCategories,
                     _lastGenericResult.Profile.Slots[slot.SlotIndex].Section),
                 CancellationToken.None);
+        var countPreview = TryCreateCountCropPreview(
+            _lastGenericResult.StashCropPath,
+            slot.CropBounds,
+            _lastGenericResult.Profile.Key,
+            slot.SlotIndex,
+            slot.Quantity,
+            slot.CountMethod);
 
         using var dialog = new SlotMappingDialog(
             slot.ItemName ?? string.Empty,
             slot.Quantity,
             _genericScanners[_lastGenericResult.Profile.Key].GetCountOverride(slot.SlotIndex),
-            iconSuggestions);
+            iconSuggestions,
+            countPreview);
         if (dialog.ShowDialog(this) != DialogResult.OK)
         {
             return;
@@ -2190,6 +2277,7 @@ internal sealed class MainForm : Form
             _lastGenericResult.StashCropPath,
             slot.CropBounds,
             dialog.CountOverride,
+            slot.Quantity,
             _lastGenericResult.Profile.CountMode,
             slot.SlotIndex);
         _statusLabel.Text = $"Saved {_lastGenericResult.Profile.Label} slot {slot.SlotIndex} as {dialog.ItemName} ({countStatus}{staticIdentityStatus}{trainingStatus}{(isEssence ? string.Empty : iconTemplateStatus)}). Scan this tab again to reprice.";
@@ -2199,6 +2287,7 @@ internal sealed class MainForm : Form
         string stashCropPath,
         Rectangle cropBounds,
         int? countOverride,
+        int? originalGuessedCount,
         string mode,
         int slotIndex)
     {
@@ -2207,14 +2296,40 @@ internal sealed class MainForm : Form
             return string.Empty;
         }
 
-        var result = CountTrainingHelpers.TrySaveFromOverride(
+        var result = CountTrainingHelpers.TrySaveFromManualCorrection(
             stashCropPath,
             cropBounds,
             countOverride,
+            originalGuessedCount,
             mode,
             slotIndex,
             Path.Combine(AppContext.BaseDirectory, "debug"));
         return result.Length == 0 ? string.Empty : ", " + result.TrimStart();
+    }
+
+    private static CountCropSaveResult? TryCreateCountCropPreview(
+        string stashCropPath,
+        Rectangle cropBounds,
+        string mode,
+        int slotIndex,
+        int? guessedCount,
+        string? countMethod)
+    {
+        try
+        {
+            var preview = CountCropTrainingStore.TrySavePreviewCrop(
+                stashCropPath,
+                cropBounds,
+                mode,
+                slotIndex,
+                guessedCount,
+                countMethod);
+            return preview.Saved ? preview : null;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private string TrySaveIconTemplateFromMapping(
@@ -2350,6 +2465,7 @@ internal sealed class MainForm : Form
         _aiAnalyzeButton.Enabled = !busy;
         _refreshIconsButton.Enabled = !busy;
         _copySummaryButton.Enabled = !busy;
+        _reviewCountCropsButton.Enabled = !busy;
         UseWaitCursor = busy;
         if (status is not null)
         {

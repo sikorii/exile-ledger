@@ -23,6 +23,10 @@ debug/
 **/debug/
 overlay-profile-report/
 **/overlay-profile-report/
+training/
+**/training/
+review/
+**/review/
 
 # Local screenshots / scan captures
 Screenshots/

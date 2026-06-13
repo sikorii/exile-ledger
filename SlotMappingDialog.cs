@@ -6,17 +6,22 @@ internal sealed class SlotMappingDialog : Form
     private readonly TextBox _countOverrideBox = new();
     private readonly ListBox _suggestionsList = new();
     private readonly IReadOnlyList<PoeNinjaIconMatch> _iconSuggestions;
+    private readonly CountCropSaveResult? _countCropPreview;
     private readonly Dictionary<string, Image> _suggestionImages = new(StringComparer.OrdinalIgnoreCase);
+    private Image? _rawCountPreviewImage;
+    private Image? _cleanedCountPreviewImage;
 
     public SlotMappingDialog(
         string currentName,
         int? currentQuantity,
         int? countOverride,
-        IReadOnlyList<PoeNinjaIconMatch>? iconSuggestions = null)
+        IReadOnlyList<PoeNinjaIconMatch>? iconSuggestions = null,
+        CountCropSaveResult? countCropPreview = null)
     {
         ItemName = currentName;
         CountOverride = countOverride;
         _iconSuggestions = iconSuggestions ?? [];
+        _countCropPreview = countCropPreview;
         BuildUi(currentName, currentQuantity, countOverride);
     }
 
@@ -31,12 +36,13 @@ internal sealed class SlotMappingDialog : Form
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = true;
         MinimizeBox = false;
+        var hasCountPreview = _countCropPreview?.Saved == true;
         ClientSize = _iconSuggestions.Count > 0
-            ? new Size(640, 440)
-            : new Size(480, 240);
+            ? new Size(640, hasCountPreview ? 520 : 440)
+            : new Size(480, hasCountPreview ? 340 : 240);
         MinimumSize = _iconSuggestions.Count > 0
-            ? new Size(560, 360)
-            : new Size(460, 260);
+            ? new Size(560, hasCountPreview ? 440 : 360)
+            : new Size(460, hasCountPreview ? 340 : 260);
 
         var label = new Label
         {
@@ -84,6 +90,56 @@ internal sealed class SlotMappingDialog : Form
             controls.Add(confirmCountButton);
         }
 
+        var nextTop = 150;
+        if (hasCountPreview)
+        {
+            LoadCountPreviewImages();
+
+            var previewLabel = new Label
+            {
+                Text = "Count crop preview",
+                Location = new Point(16, 152),
+                AutoSize = true
+            };
+
+            var rawLabel = new Label
+            {
+                Text = "Raw",
+                Location = new Point(16, 178),
+                AutoSize = true
+            };
+
+            var rawBox = new PictureBox
+            {
+                Location = new Point(16, 202),
+                Size = new Size(150, 62),
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = Color.White,
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Image = _rawCountPreviewImage
+            };
+
+            var cleanedLabel = new Label
+            {
+                Text = "Cleaned",
+                Location = new Point(184, 178),
+                AutoSize = true
+            };
+
+            var cleanedBox = new PictureBox
+            {
+                Location = new Point(184, 202),
+                Size = new Size(190, 62),
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = Color.White,
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Image = _cleanedCountPreviewImage
+            };
+
+            controls.AddRange([previewLabel, rawLabel, rawBox, cleanedLabel, cleanedBox]);
+            nextTop = 286;
+        }
+
         if (_iconSuggestions.Count > 0)
         {
             LoadSuggestionImages();
@@ -91,12 +147,12 @@ internal sealed class SlotMappingDialog : Form
             var suggestionsLabel = new Label
             {
                 Text = "Icon suggestions",
-                Location = new Point(16, 150),
+                Location = new Point(16, nextTop),
                 AutoSize = true
             };
 
-            _suggestionsList.Location = new Point(16, 176);
-            _suggestionsList.Size = new Size(ClientSize.Width - 164, ClientSize.Height - 236);
+            _suggestionsList.Location = new Point(16, nextTop + 26);
+            _suggestionsList.Size = new Size(ClientSize.Width - 164, ClientSize.Height - nextTop - 86);
             _suggestionsList.DrawMode = DrawMode.OwnerDrawFixed;
             _suggestionsList.ItemHeight = 46;
             _suggestionsList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -114,7 +170,7 @@ internal sealed class SlotMappingDialog : Form
             var useSuggestionButton = new Button
             {
                 Text = "Use",
-                Location = new Point(ClientSize.Width - 132, 176),
+                Location = new Point(ClientSize.Width - 132, nextTop + 26),
                 Size = new Size(116, 32),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
@@ -169,6 +225,8 @@ internal sealed class SlotMappingDialog : Form
         }
 
         _suggestionImages.Clear();
+        _rawCountPreviewImage?.Dispose();
+        _cleanedCountPreviewImage?.Dispose();
         base.OnFormClosed(e);
     }
 
@@ -203,6 +261,29 @@ internal sealed class SlotMappingDialog : Form
             {
                 // Suggestions still work as text if a cached thumbnail cannot be loaded.
             }
+        }
+    }
+
+    private void LoadCountPreviewImages()
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(_countCropPreview?.RawPath) && File.Exists(_countCropPreview.RawPath))
+            {
+                _rawCountPreviewImage = CurrencyScanner.LoadBitmapWithoutFileLock(_countCropPreview.RawPath);
+            }
+
+            if (!string.IsNullOrWhiteSpace(_countCropPreview?.CleanedPath) && File.Exists(_countCropPreview.CleanedPath))
+            {
+                _cleanedCountPreviewImage = CurrencyScanner.LoadBitmapWithoutFileLock(_countCropPreview.CleanedPath);
+            }
+        }
+        catch
+        {
+            _rawCountPreviewImage?.Dispose();
+            _cleanedCountPreviewImage?.Dispose();
+            _rawCountPreviewImage = null;
+            _cleanedCountPreviewImage = null;
         }
     }
 
