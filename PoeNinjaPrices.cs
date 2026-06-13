@@ -416,7 +416,7 @@ internal sealed class PoeNinjaPrices
         return DateTimeOffset.UtcNow - fetchedUtc < CacheLifetime;
     }
 
-    private static string CachePath => Path.Combine(AppContext.BaseDirectory, "config", "poe-ninja-price-cache.json");
+    private static string CachePath => AppPaths.ConfigFile("poe-ninja-price-cache.json");
 
     private static string HumanizeSlug(string value)
     {

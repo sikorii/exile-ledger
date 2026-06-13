@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
 
@@ -65,6 +66,17 @@ internal sealed class MainForm : Form
     private readonly Label _totalStashValueLabel = new();
     private readonly TextBox _detailsBox = new();
     private readonly PictureBox _stashPictureBox = new();
+    private readonly MenuStrip _menuStrip = new();
+    private readonly ToolStripMenuItem _manualLayoutEditorMenuItem = new();
+    private readonly ToolStripMenuItem _saveLayoutMenuItem = new();
+    private readonly ToolStripMenuItem _reloadLayoutMenuItem = new();
+    private readonly ToolStripMenuItem _resetSelectedSlotMenuItem = new();
+    private readonly ToolStripMenuItem _resetCurrentTabMenuItem = new();
+    private readonly ToolStripMenuItem _recalculateValuesMenuItem = new();
+    private readonly ToolStripMenuItem _clearCurrentScanMenuItem = new();
+    private readonly ToolStripMenuItem _scanCurrentStashMenuItem = new();
+    private readonly ToolStripMenuItem _aiReadCountsMenuItem = new();
+    private readonly ToolStripMenuItem _scanRuneshapingMenuItem = new();
 
     private bool _scanInProgress;
     private readonly Dictionary<string, CurrencyScanResult> _savedCurrencyResults = new(StringComparer.OrdinalIgnoreCase);
@@ -80,21 +92,21 @@ internal sealed class MainForm : Form
 
     public MainForm()
     {
-        _scanner = new RuneshapingScanner(Path.Combine(AppContext.BaseDirectory, "debug"));
+        _scanner = new RuneshapingScanner(AppPaths.DebugDirectory);
         _currencyMappingStore = new CurrencyMappingStore(FixedStashScannerProfiles.ConfigPath(FixedStashScannerProfiles.Currency.MappingFileName));
-        _currencyScanner = new CurrencyScanner(Path.Combine(AppContext.BaseDirectory, "debug"), _currencyMappingStore);
+        _currencyScanner = new CurrencyScanner(AppPaths.DebugDirectory, _currencyMappingStore);
         _runeMappingStore = new CurrencyMappingStore(
             FixedStashScannerProfiles.ConfigPath(FixedStashScannerProfiles.AugmentRunes.MappingFileName),
             FixedStashScannerProfiles.ConfigPath(FixedStashScannerProfiles.AugmentRunes.CountOverrideFileName));
-        _layoutSettingsStore = new StashLayoutSettingsStore(Path.Combine(AppContext.BaseDirectory, "config", "stash-layout-settings.json"));
-        _slotLayoutOverrideStore = new SlotLayoutOverrideStore(Path.Combine(AppContext.BaseDirectory, "slot-layout-overrides.json"));
+        _layoutSettingsStore = new StashLayoutSettingsStore(AppPaths.ConfigFile("stash-layout-settings.json"));
+        _slotLayoutOverrideStore = new SlotLayoutOverrideStore(AppPaths.SlotLayoutOverridesPath);
         _slotLayoutOverrides = _slotLayoutOverrideStore.Load();
-        _latestScanStore = new LatestStashScanStore(Path.Combine(AppContext.BaseDirectory, "config", "latest-stash-scans.json"));
-        _runeScanner = new AugmentRuneScanner(Path.Combine(AppContext.BaseDirectory, "debug"), _runeMappingStore);
+        _latestScanStore = new LatestStashScanStore(AppPaths.LatestStashScansPath);
+        _runeScanner = new AugmentRuneScanner(AppPaths.DebugDirectory, _runeMappingStore);
         _kalguuranRuneMappingStore = new CurrencyMappingStore(
             FixedStashScannerProfiles.ConfigPath(FixedStashScannerProfiles.KalguuranRunes.MappingFileName),
             FixedStashScannerProfiles.ConfigPath(FixedStashScannerProfiles.KalguuranRunes.CountOverrideFileName));
-        _kalguuranRuneScanner = new KalguuranRuneScanner(Path.Combine(AppContext.BaseDirectory, "debug"), _kalguuranRuneMappingStore);
+        _kalguuranRuneScanner = new KalguuranRuneScanner(AppPaths.DebugDirectory, _kalguuranRuneMappingStore);
         _genericMappingStores = ScanModes
             .Where(mode => mode.Kind == ScanModeKind.GenericFixedStash && mode.Profile is not null)
             .ToDictionary(
@@ -108,12 +120,12 @@ internal sealed class MainForm : Form
             .ToDictionary(
                 mode => mode.Key,
                 mode => new FixedStashScanner(
-                    Path.Combine(AppContext.BaseDirectory, "debug"),
+                    AppPaths.DebugDirectory,
                     _genericMappingStores[mode.Key],
                     mode.Profile!),
                 StringComparer.OrdinalIgnoreCase);
-        _openAiVisionHelper = new OpenAiVisionHelper(Path.Combine(AppContext.BaseDirectory, "debug", "ai-stash-analysis"));
-        _aiCountReader = new AiCountReader(Path.Combine(AppContext.BaseDirectory, "debug", "ai-counts"));
+        _openAiVisionHelper = new OpenAiVisionHelper(Path.Combine(AppPaths.DebugDirectory, "ai-stash-analysis"));
+        _aiCountReader = new AiCountReader(Path.Combine(AppPaths.DebugDirectory, "ai-counts"));
         _iconCache = PoeNinjaIconCache.CreateDefault();
         _overlay.Dismissed += (_, _) => _scanner.ClearMergedRuneshapingRewards();
         BuildUi();
@@ -175,21 +187,22 @@ internal sealed class MainForm : Form
         ClientSize = new Size(1280, 840);
         MinimumSize = new Size(980, 680);
         TopMost = false;
+        BuildMenuStrip();
 
         var title = new Label
         {
             Text = "POE2 Price Checker",
             Font = new Font("Segoe UI", 18, FontStyle.Bold),
-            Location = new Point(18, 14),
+            Location = new Point(18, 38),
             AutoSize = true
         };
 
         _runeshapingButton.Text = "Runeshaping";
-        _runeshapingButton.Location = new Point(22, 62);
+        _runeshapingButton.Location = new Point(22, 86);
         _runeshapingButton.Size = new Size(120, 34);
         _runeshapingButton.Click += async (_, _) => await ScanLiveAsync();
 
-        _modeComboBox.Location = new Point(154, 63);
+        _modeComboBox.Location = new Point(154, 87);
         _modeComboBox.Size = new Size(205, 28);
         _modeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         _modeComboBox.Items.AddRange(ScanModes.Cast<object>().ToArray());
@@ -203,46 +216,46 @@ internal sealed class MainForm : Form
         };
 
         _insideFolderCheckBox.Text = "Folder";
-        _insideFolderCheckBox.Location = new Point(372, 61);
+        _insideFolderCheckBox.Location = new Point(372, 85);
         _insideFolderCheckBox.AutoSize = true;
         _insideFolderCheckBox.Padding = new Padding(0, 5, 0, 5);
         _insideFolderCheckBox.CheckedChanged += (_, _) => SaveSelectedModeFolderSetting();
 
         _scanButton.Text = "Scan Stash";
-        _scanButton.Location = new Point(466, 62);
+        _scanButton.Location = new Point(466, 86);
         _scanButton.Size = new Size(100, 34);
         _scanButton.Click += async (_, _) => await ScanSelectedStashModeAsync();
 
         _refreshButton.Text = "Refresh Prices";
-        _refreshButton.Location = new Point(578, 62);
+        _refreshButton.Location = new Point(578, 86);
         _refreshButton.Size = new Size(130, 34);
         _refreshButton.Click += async (_, _) => await RefreshPricesAsync();
 
         _testButton.Text = "Test";
-        _testButton.Location = new Point(720, 62);
+        _testButton.Location = new Point(720, 86);
         _testButton.Size = new Size(86, 34);
         _testButton.Click += async (_, _) => await ScanTestScreenshotAsync();
 
         _captureTabButton.Text = "Capture Stash";
-        _captureTabButton.Location = new Point(818, 62);
+        _captureTabButton.Location = new Point(818, 86);
         _captureTabButton.Size = new Size(128, 34);
         _captureTabButton.Click += (_, _) => CaptureStashTabReference();
 
         _aiAnalyzeButton.Text = "AI Layout";
-        _aiAnalyzeButton.Location = new Point(958, 62);
+        _aiAnalyzeButton.Location = new Point(958, 86);
         _aiAnalyzeButton.Size = new Size(112, 34);
         _aiAnalyzeButton.Visible = false;
         _aiAnalyzeButton.Click += async (_, _) => await AnalyzeSelectedStashWithAiAsync();
 
         _refreshIconsButton.Text = "Icons";
-        _refreshIconsButton.Location = new Point(958, 62);
+        _refreshIconsButton.Location = new Point(958, 86);
         _refreshIconsButton.Size = new Size(72, 34);
         _refreshIconsButton.Enabled = false;
         _refreshIconsButton.Visible = false;
         _refreshIconsButton.Click += async (_, _) => await RefreshIconCacheAsync();
 
         _copySummaryButton.Text = "Copy";
-        _copySummaryButton.Location = new Point(1042, 62);
+        _copySummaryButton.Location = new Point(720, 86);
         _copySummaryButton.Size = new Size(74, 34);
         _copySummaryButton.Click += (_, _) => CopyCurrentSummary();
 
@@ -263,6 +276,10 @@ internal sealed class MainForm : Form
 
             UpdateLayoutEditorControls();
             _stashPictureBox.Invalidate();
+            if (_manualLayoutEditorMenuItem.Checked != _editLayoutCheckBox.Checked)
+            {
+                _manualLayoutEditorMenuItem.Checked = _editLayoutCheckBox.Checked;
+            }
         };
 
         _saveLayoutButton.Text = "Save Layout";
@@ -301,7 +318,7 @@ internal sealed class MainForm : Form
         _reviewCountCropsButton.Click += (_, _) => GenerateCountCropReviewReport();
 
         _aiReadCountsButton.Text = "AI Read Counts";
-        _aiReadCountsButton.Location = new Point(900, 104);
+        _aiReadCountsButton.Location = new Point(806, 86);
         _aiReadCountsButton.Size = new Size(128, 30);
         _aiReadCountsButton.Click += async (_, _) => await ReadCountsWithAiAsync();
 
@@ -310,7 +327,7 @@ internal sealed class MainForm : Form
         _statusLabel.Size = new Size(1200, 24);
 
         _totalStashValueLabel.Text = "All scanned: 0 tabs | 0ex / 0div";
-        _totalStashValueLabel.Location = new Point(500, 14);
+        _totalStashValueLabel.Location = new Point(500, 38);
         _totalStashValueLabel.Size = new Size(740, 34);
         _totalStashValueLabel.TextAlign = ContentAlignment.MiddleRight;
         _totalStashValueLabel.Font = new Font("Segoe UI", 12.5f, FontStyle.Bold);
@@ -340,17 +357,198 @@ internal sealed class MainForm : Form
         _detailsBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
         _stashPictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
-        Controls.AddRange([title, _runeshapingButton, _modeComboBox, _insideFolderCheckBox, _scanButton, _refreshButton, _testButton, _captureTabButton, _refreshIconsButton, _copySummaryButton, _editLayoutCheckBox, _saveLayoutButton, _reloadLayoutButton, _resetSelectedSlotButton, _resetCurrentTabButton, _saveCountDebugCropsCheckBox, _reviewCountCropsButton, _aiReadCountsButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
+        Controls.AddRange([_menuStrip, title, _runeshapingButton, _modeComboBox, _insideFolderCheckBox, _scanButton, _refreshButton, _copySummaryButton, _aiReadCountsButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
+        MainMenuStrip = _menuStrip;
         LoadSelectedModeFolderSetting();
         UpdateLayoutEditorControls();
         UpdateAllScannedTabsTotal();
+    }
+
+    private void BuildMenuStrip()
+    {
+        _menuStrip.Items.Clear();
+
+        var fileMenu = new ToolStripMenuItem("&File");
+        fileMenu.DropDownItems.Add(CreateMenuItem("Open App Data Folder", (_, _) => OpenFolder(AppPaths.RootDirectory)));
+        fileMenu.DropDownItems.Add(CreateMenuItem("Open Saved Scan Data Folder", (_, _) => OpenFolder(AppPaths.ConfigDirectory)));
+        fileMenu.DropDownItems.Add(new ToolStripSeparator());
+        fileMenu.DropDownItems.Add(CreateMenuItem("E&xit", (_, _) => Close()));
+
+        var scanMenu = new ToolStripMenuItem("&Scan");
+        _scanRuneshapingMenuItem.Text = "Scan Runeshaping";
+        _scanRuneshapingMenuItem.Click += async (_, _) => await ScanLiveAsync();
+        _scanCurrentStashMenuItem.Text = "Scan Current Stash";
+        _scanCurrentStashMenuItem.Click += async (_, _) => await ScanSelectedStashModeAsync();
+        _aiReadCountsMenuItem.Text = "AI Read Counts";
+        _aiReadCountsMenuItem.Click += async (_, _) => await ReadCountsWithAiAsync();
+        _recalculateValuesMenuItem.Text = "Recalculate Values";
+        _recalculateValuesMenuItem.Click += async (_, _) => await RecalculateCurrentValuesAsync();
+        _clearCurrentScanMenuItem.Text = "Clear Current View";
+        _clearCurrentScanMenuItem.Click += (_, _) => ClearCurrentScanView();
+        scanMenu.DropDownItems.AddRange([
+            _scanRuneshapingMenuItem,
+            _scanCurrentStashMenuItem,
+            _aiReadCountsMenuItem,
+            new ToolStripSeparator(),
+            _recalculateValuesMenuItem,
+            _clearCurrentScanMenuItem
+        ]);
+
+        var toolsMenu = new ToolStripMenuItem("&Tools");
+        _manualLayoutEditorMenuItem.Text = "Manual Visual Layout Editor";
+        _manualLayoutEditorMenuItem.CheckOnClick = true;
+        _manualLayoutEditorMenuItem.CheckedChanged += (_, _) => SetLayoutEditorEnabled(_manualLayoutEditorMenuItem.Checked);
+        _saveLayoutMenuItem.Text = "Save Layout Overrides";
+        _saveLayoutMenuItem.Click += (_, _) => SaveLayoutOverrides();
+        _reloadLayoutMenuItem.Text = "Reload Layout Overrides";
+        _reloadLayoutMenuItem.Click += (_, _) => ReloadLayoutOverrides();
+        _resetSelectedSlotMenuItem.Text = "Reset Selected Slot";
+        _resetSelectedSlotMenuItem.Click += (_, _) => ResetSelectedLayoutSlot();
+        _resetCurrentTabMenuItem.Text = "Reset Current Tab";
+        _resetCurrentTabMenuItem.Click += (_, _) => ResetCurrentLayoutTab();
+        toolsMenu.DropDownItems.AddRange([
+            _manualLayoutEditorMenuItem,
+            _saveLayoutMenuItem,
+            _reloadLayoutMenuItem,
+            _resetSelectedSlotMenuItem,
+            _resetCurrentTabMenuItem,
+            new ToolStripSeparator(),
+            CreateMenuItem("Capture Stash Reference", (_, _) => CaptureStashTabReference()),
+            CreateMenuItem("Scan Test Screenshot", async (_, _) => await ScanTestScreenshotAsync()),
+            CreateMenuItem("AI Layout Helper", async (_, _) => await AnalyzeSelectedStashWithAiAsync()),
+            CreateMenuItem("Refresh Icon Cache", async (_, _) => await RefreshIconCacheAsync()),
+            new ToolStripSeparator(),
+            CreateMenuItem("Review Count Crops Report", (_, _) => GenerateCountCropReviewReport()),
+            CreateMenuItem("Open Count Crop Folder", (_, _) => OpenFolder(Path.Combine(AppPaths.DebugDirectory, "count-crops"))),
+            CreateMenuItem("Open AI Count Debug Folder", (_, _) => OpenFolder(Path.Combine(AppPaths.DebugDirectory, "ai-counts"))),
+            CreateMenuItem("Open Debug Folder", (_, _) => OpenFolder(AppPaths.DebugDirectory))
+        ]);
+
+        var settingsMenu = new ToolStripMenuItem("&Settings");
+        settingsMenu.DropDownItems.Add(CreateMenuItem("Open Settings...", (_, _) => OpenSettingsDialog()));
+
+        var helpMenu = new ToolStripMenuItem("&Help");
+        helpMenu.DropDownItems.Add(CreateMenuItem("About", (_, _) => ShowAboutDialog()));
+
+        _menuStrip.Items.AddRange([fileMenu, scanMenu, toolsMenu, settingsMenu, helpMenu]);
+    }
+
+    private static ToolStripMenuItem CreateMenuItem(string text, EventHandler onClick)
+    {
+        var item = new ToolStripMenuItem(text);
+        item.Click += onClick;
+        return item;
+    }
+
+    private void OpenSettingsDialog()
+    {
+        using var form = new SettingsForm(
+            new SettingsFormState(
+                _editLayoutCheckBox.Checked,
+                CountCropDebugSettings.SaveCountDebugCrops,
+                !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("OPENAI_API_KEY")),
+                ResolveOpenAiCountModelStatus(),
+                AppPaths.RootDirectory,
+                AppPaths.ConfigDirectory,
+                AppPaths.LatestStashScansPath,
+                AppPaths.DebugDirectory,
+                Path.Combine(AppPaths.DebugDirectory, "count-crops"),
+                Path.Combine(AppPaths.DebugDirectory, "ai-counts"),
+                AppPaths.MigrationSourceConfigDirectory),
+            new SettingsFormActions(
+                SetLayoutEditorEnabled,
+                SaveLayoutOverrides,
+                ReloadLayoutOverrides,
+                ResetSelectedLayoutSlot,
+                ResetCurrentLayoutTab,
+                SetSaveCountDebugCrops,
+                GenerateCountCropReviewReport,
+                () => OpenFolder(AppPaths.RootDirectory),
+                () => OpenFolder(AppPaths.ConfigDirectory),
+                () => OpenFolder(AppPaths.DebugDirectory),
+                () => OpenFolder(Path.Combine(AppPaths.DebugDirectory, "count-crops")),
+                () => OpenFolder(Path.Combine(AppPaths.DebugDirectory, "ai-counts"))));
+
+        form.ShowDialog(this);
+    }
+
+    private static string ResolveOpenAiCountModelStatus()
+    {
+        var overrideModel = Environment.GetEnvironmentVariable("OPENAI_COUNT_MODEL");
+        return string.IsNullOrWhiteSpace(overrideModel)
+            ? $"Default: {AiCountReader.DefaultModel}"
+            : $"OPENAI_COUNT_MODEL override: {overrideModel}";
+    }
+
+    private void ShowAboutDialog()
+    {
+        var version = Application.ProductVersion;
+        MessageBox.Show(
+            this,
+            $"POE2 Price Checker\r\nVersion: {version}\r\nBuild path: {AppContext.BaseDirectory}\r\nApp data: {AppPaths.RootDirectory}",
+            "About POE2 Price Checker",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+    }
+
+    private void OpenFolder(string folderPath)
+    {
+        try
+        {
+            Directory.CreateDirectory(folderPath);
+            Process.Start(new ProcessStartInfo(folderPath) { UseShellExecute = true });
+            _statusLabel.Text = $"Opened folder: {folderPath}";
+        }
+        catch (Exception ex)
+        {
+            _statusLabel.Text = "Open folder failed.";
+            _detailsBox.Text = ex.ToString();
+            MessageBox.Show(this, ex.Message, "Open Folder Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private void SetLayoutEditorEnabled(bool enabled)
+    {
+        if (_editLayoutCheckBox.Checked != enabled)
+        {
+            _editLayoutCheckBox.Checked = enabled;
+        }
+        else
+        {
+            if (!enabled)
+            {
+                _selectedLayoutSlotIndex = null;
+            }
+            else
+            {
+                _stashPictureBox.Focus();
+            }
+
+            UpdateLayoutEditorControls();
+            _stashPictureBox.Invalidate();
+        }
+
+        if (_manualLayoutEditorMenuItem.Checked != enabled)
+        {
+            _manualLayoutEditorMenuItem.Checked = enabled;
+        }
+    }
+
+    private void SetSaveCountDebugCrops(bool enabled)
+    {
+        if (_saveCountDebugCropsCheckBox.Checked != enabled)
+        {
+            _saveCountDebugCropsCheckBox.Checked = enabled;
+        }
+
+        CountCropDebugSettings.SaveCountDebugCrops = enabled;
     }
 
     private void GenerateCountCropReviewReport()
     {
         try
         {
-            var result = CountCropReviewReport.Generate(AppContext.BaseDirectory);
+            var result = CountCropReviewReport.Generate(AppPaths.RootDirectory);
             _statusLabel.Text = $"Count crop review generated: {result.CropCount} crops, {result.SuspectCount} suspect.";
             _detailsBox.Text = string.Join(Environment.NewLine, [
                 "Count crop review report",
@@ -948,7 +1146,7 @@ internal sealed class MainForm : Form
     private static string SaveAiCountRecalculationError(AiCountReadResult result, Exception exception)
     {
         var debugDirectory = Path.GetDirectoryName(result.RawResponsePath) ??
-            Path.Combine(AppContext.BaseDirectory, "debug", "ai-counts");
+            Path.Combine(AppPaths.DebugDirectory, "ai-counts");
         Directory.CreateDirectory(debugDirectory);
         var path = Path.Combine(
             debugDirectory,
@@ -968,6 +1166,68 @@ internal sealed class MainForm : Form
                 exception.ToString()
             ]));
         return path;
+    }
+
+    private async Task RecalculateCurrentValuesAsync()
+    {
+        if (_scanInProgress)
+        {
+            return;
+        }
+
+        if (_modeComboBox.SelectedItem is not ScanModeOption mode)
+        {
+            return;
+        }
+
+        if (_lastCurrencyResult is null &&
+            _lastRuneResult is null &&
+            _lastKalguuranRuneResult is null &&
+            _lastGenericResult is null)
+        {
+            _statusLabel.Text = "Scan or load a saved stash tab before recalculating values.";
+            return;
+        }
+
+        SetBusy(true, "Recalculating current scan values...");
+        try
+        {
+            switch (mode.Kind)
+            {
+                case ScanModeKind.CurrencyStash when _lastCurrencyResult is not null:
+                    _lastCurrencyResult = await _currencyScanner.RecalculateValuesAsync(_lastCurrencyResult, CancellationToken.None).ConfigureAwait(true);
+                    SaveLatestScan(mode, _lastCurrencyResult);
+                    ShowCurrencyResult(_lastCurrencyResult);
+                    break;
+                case ScanModeKind.AugmentRunes when _lastRuneResult is not null:
+                    _lastRuneResult = await _runeScanner.RecalculateValuesAsync(_lastRuneResult, CancellationToken.None).ConfigureAwait(true);
+                    SaveLatestScan(mode, _lastRuneResult);
+                    ShowRuneResult(_lastRuneResult);
+                    break;
+                case ScanModeKind.KalguuranRunes when _lastKalguuranRuneResult is not null:
+                    _lastKalguuranRuneResult = await _kalguuranRuneScanner.RecalculateValuesAsync(_lastKalguuranRuneResult, CancellationToken.None).ConfigureAwait(true);
+                    SaveLatestScan(mode, _lastKalguuranRuneResult);
+                    ShowKalguuranRuneResult(_lastKalguuranRuneResult);
+                    break;
+                case ScanModeKind.GenericFixedStash when _lastGenericResult is not null && _genericScanners.TryGetValue(mode.Key, out var scanner):
+                    _lastGenericResult = await scanner.RecalculateValuesAsync(_lastGenericResult, CancellationToken.None).ConfigureAwait(true);
+                    SaveLatestScan(mode, _lastGenericResult);
+                    ShowGenericFixedStashResult(_lastGenericResult);
+                    break;
+                default:
+                    _statusLabel.Text = "The displayed scan does not match the selected stash mode.";
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            _statusLabel.Text = "Value recalculation failed.";
+            _detailsBox.Text = ex.ToString();
+        }
+        finally
+        {
+            SetBusy(false);
+        }
     }
 
     private async Task RefreshPricesAsync()
@@ -1253,6 +1513,13 @@ internal sealed class MainForm : Form
         UpdateLayoutEditorControls();
     }
 
+    private void ClearCurrentScanView()
+    {
+        ClearDisplayedStashScan();
+        _statusLabel.Text = "Current scan view cleared. Saved latest scans were left unchanged.";
+        _detailsBox.Text = "Current scan view cleared.";
+    }
+
     private void SaveLatestScan(ScanModeOption mode, CurrencyScanResult result)
     {
         _savedCurrencyResults[mode.Key] = result;
@@ -1282,9 +1549,9 @@ internal sealed class MainForm : Form
         }
         catch (Exception ex)
         {
-            Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "debug"));
+            Directory.CreateDirectory(AppPaths.DebugDirectory);
             File.WriteAllText(
-                Path.Combine(AppContext.BaseDirectory, "debug", "latest-stash-scans-save-error.txt"),
+                AppPaths.DebugFile("latest-stash-scans-save-error.txt"),
                 ex.ToString());
         }
     }
@@ -1534,7 +1801,7 @@ internal sealed class MainForm : Form
             var cropRegion = ClampRectangle(GetSelectedStashLayout().DisplayCropRegion, screenshot.Size);
             using var stashCrop = screenshot.Clone(cropRegion, screenshot.PixelFormat);
 
-            var captureDirectory = Path.Combine(AppContext.BaseDirectory, "debug", "stash-tab-captures");
+            var captureDirectory = Path.Combine(AppPaths.DebugDirectory, "stash-tab-captures");
             Directory.CreateDirectory(captureDirectory);
 
             var stamp = DateTimeOffset.Now.ToString("yyyyMMdd-HHmmss");
@@ -2540,6 +2807,10 @@ internal sealed class MainForm : Form
         _reloadLayoutButton.Enabled = enabled;
         _resetCurrentTabButton.Enabled = enabled;
         _resetSelectedSlotButton.Enabled = enabled && _selectedLayoutSlotIndex is not null;
+        _saveLayoutMenuItem.Enabled = enabled;
+        _reloadLayoutMenuItem.Enabled = enabled;
+        _resetCurrentTabMenuItem.Enabled = enabled;
+        _resetSelectedSlotMenuItem.Enabled = enabled && _selectedLayoutSlotIndex is not null;
     }
 
     private string? GetCurrentProfileKey()
@@ -3059,7 +3330,7 @@ internal sealed class MainForm : Form
             originalGuessedCount,
             mode,
             slotIndex,
-            Path.Combine(AppContext.BaseDirectory, "debug"));
+            AppPaths.DebugDirectory);
         return result.Length == 0 ? string.Empty : ", " + result.TrimStart();
     }
 
@@ -3223,6 +3494,11 @@ internal sealed class MainForm : Form
         _copySummaryButton.Enabled = !busy;
         _reviewCountCropsButton.Enabled = !busy;
         _aiReadCountsButton.Enabled = !busy;
+        _scanRuneshapingMenuItem.Enabled = !busy;
+        _scanCurrentStashMenuItem.Enabled = !busy;
+        _aiReadCountsMenuItem.Enabled = !busy;
+        _recalculateValuesMenuItem.Enabled = !busy;
+        _clearCurrentScanMenuItem.Enabled = !busy;
         UseWaitCursor = busy;
         if (status is not null)
         {

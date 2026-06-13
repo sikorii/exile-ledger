@@ -69,7 +69,7 @@ internal static class CountCropTrainingStore
 
         using var source = CurrencyScanner.LoadBitmapWithoutFileLock(sourceImagePath);
         var safeMode = SafePathPart(mode);
-        var directory = Path.Combine(AppContext.BaseDirectory, "debug", "count-crops", safeMode, "previews");
+        var directory = Path.Combine(AppPaths.DebugDirectory, "count-crops", safeMode, "previews");
         return TrySaveCropPair(
             source,
             slotBounds,
@@ -103,8 +103,7 @@ internal static class CountCropTrainingStore
         using var source = CurrencyScanner.LoadBitmapWithoutFileLock(sourceImagePath);
         var safeMode = SafePathPart(mode);
         var directory = Path.Combine(
-            AppContext.BaseDirectory,
-            "training",
+            AppPaths.TrainingDirectory,
             "count-crops",
             "labeled",
             correctedCount.ToString(System.Globalization.CultureInfo.InvariantCulture));

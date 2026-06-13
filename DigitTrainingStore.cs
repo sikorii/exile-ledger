@@ -24,7 +24,7 @@ internal sealed class DigitTrainingStore
 
     public static DigitTrainingStore CreateDefault()
     {
-        return new DigitTrainingStore(Path.Combine(AppContext.BaseDirectory, "config", "digit-training"));
+        return new DigitTrainingStore(Path.Combine(AppPaths.ConfigDirectory, "digit-training"));
     }
 
     public IReadOnlyList<DigitTrainingSample> LoadSamples()

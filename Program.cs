@@ -5,6 +5,8 @@ static class Program
     [STAThread]
     static void Main(string[] args)
     {
+        AppPaths.EnsureInitialized();
+
         if (args.Length > 0 && args[0].Equals("--self-test", StringComparison.OrdinalIgnoreCase))
         {
             RunSelfTest(args.Length > 1 ? args[1] : null);
@@ -84,7 +86,7 @@ static class Program
     private static void RunSelfTest(string? screenshotPath)
     {
         screenshotPath ??= @"C:\Users\maran\OneDrive\Desktop\runeshaping\Screenshot 2026-06-09 092011.png";
-        var debugDirectory = Path.Combine(AppContext.BaseDirectory, "debug");
+        var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
         var scanner = new RuneshapingScanner(debugDirectory);
@@ -100,10 +102,10 @@ static class Program
     private static void RunCurrencyTest(string? screenshotPath)
     {
         screenshotPath ??= @"C:\POE2 Price Checker App\Screenshots\recovered-currency\currency-01.png";
-        var debugDirectory = Path.Combine(AppContext.BaseDirectory, "debug");
+        var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
-        var mappings = new CurrencyMappingStore(Path.Combine(AppContext.BaseDirectory, "config", "currency-mappings.json"));
+        var mappings = new CurrencyMappingStore(AppPaths.ConfigFile("currency-mappings.json"));
         var scanner = new CurrencyScanner(debugDirectory, mappings);
         var result = scanner.ScanFileAsync(screenshotPath, CancellationToken.None).GetAwaiter().GetResult();
         var lines = new[]
@@ -123,12 +125,12 @@ static class Program
     private static void RunRunesTest(string? screenshotPath)
     {
         screenshotPath ??= @"C:\POE2 Price Checker App\publish\debug\stash-tab-captures\latest-stash-tab-fullscreen.png";
-        var debugDirectory = Path.Combine(AppContext.BaseDirectory, "debug");
+        var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
         var mappings = new CurrencyMappingStore(
-            Path.Combine(AppContext.BaseDirectory, "config", "rune-mappings.json"),
-            Path.Combine(AppContext.BaseDirectory, "config", "rune-count-overrides.json"));
+            AppPaths.ConfigFile("rune-mappings.json"),
+            AppPaths.ConfigFile("rune-count-overrides.json"));
         var scanner = new AugmentRuneScanner(debugDirectory, mappings);
         var result = scanner.ScanFileAsync(screenshotPath, CancellationToken.None).GetAwaiter().GetResult();
         var lines = new[]
@@ -152,12 +154,12 @@ static class Program
     private static void RunKalguuranRunesTest(string? screenshotPath)
     {
         screenshotPath ??= @"C:\POE2 Price Checker App\publish\debug\stash-tab-captures\latest-stash-tab-fullscreen.png";
-        var debugDirectory = Path.Combine(AppContext.BaseDirectory, "debug");
+        var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
         var mappings = new CurrencyMappingStore(
-            Path.Combine(AppContext.BaseDirectory, "config", "kalguuran-rune-mappings.json"),
-            Path.Combine(AppContext.BaseDirectory, "config", "kalguuran-rune-count-overrides.json"));
+            AppPaths.ConfigFile("kalguuran-rune-mappings.json"),
+            AppPaths.ConfigFile("kalguuran-rune-count-overrides.json"));
         var scanner = new KalguuranRuneScanner(debugDirectory, mappings);
         var result = scanner.ScanFileAsync(screenshotPath, CancellationToken.None, StashLayoutProfile.FolderFull).GetAwaiter().GetResult();
         var lines = new[]
@@ -181,12 +183,12 @@ static class Program
         screenshotPath ??= @"C:\POE2 Price Checker App\Screenshots\Stashes\Abyss.png";
         var profile = FindProfile(profileKey) ?? FixedStashScannerProfiles.Abyss;
         var layout = ParseLayoutProfile(layoutName, StashLayoutProfile.Folder);
-        var debugDirectory = Path.Combine(AppContext.BaseDirectory, "debug");
+        var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
         var mappings = new CurrencyMappingStore(
-            Path.Combine(AppContext.BaseDirectory, "config", profile.MappingFileName),
-            Path.Combine(AppContext.BaseDirectory, "config", profile.CountOverrideFileName));
+            AppPaths.ConfigFile(profile.MappingFileName),
+            AppPaths.ConfigFile(profile.CountOverrideFileName));
         var scanner = new FixedStashScanner(debugDirectory, mappings, profile);
         var result = scanner.ScanFileAsync(screenshotPath, CancellationToken.None, layout).GetAwaiter().GetResult();
         var lines = new[]
@@ -196,7 +198,7 @@ static class Program
                 $"Total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div",
                 $"Known occupied: {result.KnownOccupiedSlots}",
                 $"Unknown occupied: {result.UnknownOccupiedSlots}",
-                "Warning: publish/config/latest-stash-scans.json can contain stale crop/overlay bounds after layout/profile changes. Rescan this tab in the UI before judging current overlays.",
+                "Warning: saved scans can contain stale crop/overlay bounds after layout/profile changes. Rescan this tab in the UI before judging current overlays.",
                 string.Empty,
                 "Top Stacks:"
             }
@@ -213,12 +215,12 @@ static class Program
         screenshotPath ??= @"C:\POE2 Price Checker App\publish\debug\essence-fullscreen.png";
         var profile = FindProfile(profileKey) ?? FixedStashScannerProfiles.Essence;
         var layout = ParseLayoutProfile(layoutName, StashLayoutProfile.FolderFull);
-        var debugDirectory = Path.Combine(AppContext.BaseDirectory, "debug");
+        var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
         var mappings = new CurrencyMappingStore(
-            Path.Combine(AppContext.BaseDirectory, "config", profile.MappingFileName),
-            Path.Combine(AppContext.BaseDirectory, "config", profile.CountOverrideFileName));
+            AppPaths.ConfigFile(profile.MappingFileName),
+            AppPaths.ConfigFile(profile.CountOverrideFileName));
         var scanner = new FixedStashScanner(debugDirectory, mappings, profile);
         var result = scanner.ScanFileAsync(screenshotPath, CancellationToken.None, layout).GetAwaiter().GetResult();
         var outputPath = StashSlotLayoutDebugRenderer.Write(debugDirectory, result, layout, screenshotPath);
@@ -232,7 +234,7 @@ static class Program
                 $"Output: {outputPath}",
                 $"Known occupied: {result.KnownOccupiedSlots}",
                 $"Unknown occupied: {result.UnknownOccupiedSlots}",
-                "Warning: publish/config/latest-stash-scans.json can contain stale crop/overlay bounds after layout/profile changes. Rescan this tab in the UI before judging current overlays."
+                "Warning: saved scans can contain stale crop/overlay bounds after layout/profile changes. Rescan this tab in the UI before judging current overlays."
             ]);
     }
 
@@ -241,7 +243,7 @@ static class Program
     {
         var cache = PoeNinjaIconCache.CreateDefault();
         var index = cache.BuildAsync(forceDownload, CancellationToken.None).GetAwaiter().GetResult();
-        var debugDirectory = Path.Combine(AppContext.BaseDirectory, "debug");
+        var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
         var lines = new[]
@@ -260,8 +262,8 @@ static class Program
                 .Select(group => $"{group.Key}: {group.Count()}"))
             .Concat([
                 string.Empty,
-                $"Index: {Path.Combine(AppContext.BaseDirectory, "config", "poe-ninja-icons.json")}",
-                $"Icons: {Path.Combine(AppContext.BaseDirectory, "cache", "icons")}"
+                $"Index: {AppPaths.ConfigFile("poe-ninja-icons.json")}",
+                $"Icons: {Path.Combine(AppPaths.CacheDirectory, "icons")}"
             ])
             .ToArray();
 
@@ -270,7 +272,7 @@ static class Program
 
     private static void RunEssenceProfileReport()
     {
-        var debugDirectory = Path.Combine(AppContext.BaseDirectory, "debug");
+        var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
         var profile = FixedStashScannerProfiles.Essence;
@@ -285,10 +287,10 @@ static class Program
     private static void RunOverlayProfileReport(string? selector)
     {
         selector = string.IsNullOrWhiteSpace(selector) ? "all" : selector.Trim();
-        var debugDirectory = Path.Combine(AppContext.BaseDirectory, "debug");
+        var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
-        var latestStore = new LatestStashScanStore(FixedStashScannerProfiles.ConfigPath("latest-stash-scans.json"));
+        var latestStore = new LatestStashScanStore(AppPaths.LatestStashScansPath);
         var latestScans = latestStore.Load(FixedStashScannerProfiles.BuiltIn);
         var reportPath = StashOverlayProfileReporter.Write(
             debugDirectory,
@@ -311,7 +313,7 @@ static class Program
         screenshotPath ??= @"C:\POE2 Price Checker App\publish\debug\stash-tab-captures\latest-stash-tab-fullscreen.png";
         mode ??= "currency";
 
-        var debugDirectory = Path.Combine(AppContext.BaseDirectory, "debug");
+        var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
         var cache = PoeNinjaIconCache.CreateDefault();

@@ -119,8 +119,8 @@ internal sealed class PoeNinjaIconCache
     public static PoeNinjaIconCache CreateDefault()
     {
         return new PoeNinjaIconCache(
-            Path.Combine(AppContext.BaseDirectory, "config", "poe-ninja-icons.json"),
-            Path.Combine(AppContext.BaseDirectory, "cache", "icons"));
+            AppPaths.ConfigFile("poe-ninja-icons.json"),
+            Path.Combine(AppPaths.CacheDirectory, "icons"));
     }
 
     private static async Task AddExchangeIconsAsync(

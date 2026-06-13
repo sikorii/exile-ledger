@@ -46,7 +46,7 @@ internal sealed class LocalIconTemplateStore
 
     public static LocalIconTemplateStore CreateDefault()
     {
-        return new LocalIconTemplateStore(Path.Combine(AppContext.BaseDirectory, "config", "icon-templates"));
+        return new LocalIconTemplateStore(Path.Combine(AppPaths.ConfigDirectory, "icon-templates"));
     }
 
     public IReadOnlyList<LocalIconTemplateEntry> Load()

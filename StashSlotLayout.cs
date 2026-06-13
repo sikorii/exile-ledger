@@ -159,7 +159,7 @@ internal static class StashSlotLayoutDebugRenderer
             $"Known occupied: {result.KnownOccupiedSlots}",
             $"Unknown occupied: {result.UnknownOccupiedSlots}",
             "Legend: green crop border, red empty canonical slots, yellow occupied full slots, magenta final inset overlay, white grid centers.",
-            "Warning: publish/config/latest-stash-scans.json can contain stale crop/overlay bounds after layout/profile changes. Rescan the tab in the UI before judging current overlays.",
+            "Warning: saved scans can contain stale crop/overlay bounds after layout/profile changes. Rescan the tab in the UI before judging current overlays.",
             string.Empty,
             "Slots:",
             "index,state,fullCropBounds,overlayCropBounds,quantity,item"
@@ -437,20 +437,20 @@ internal static class StashOverlayProfileReporter
         {
             if (current == FixedStashScannerProfiles.Currency)
             {
-                return Path.Combine(AppContext.BaseDirectory, "debug", "currency-stash-crop.png");
+                return Path.Combine(AppPaths.DebugDirectory, "currency-stash-crop.png");
             }
 
             if (current == FixedStashScannerProfiles.AugmentRunes)
             {
-                return Path.Combine(AppContext.BaseDirectory, "debug", "runes-stash-crop.png");
+                return Path.Combine(AppPaths.DebugDirectory, "runes-stash-crop.png");
             }
 
             if (current == FixedStashScannerProfiles.KalguuranRunes)
             {
-                return Path.Combine(AppContext.BaseDirectory, "debug", "kalguuran-runes-stash-crop.png");
+                return Path.Combine(AppPaths.DebugDirectory, "kalguuran-runes-stash-crop.png");
             }
 
-            return Path.Combine(AppContext.BaseDirectory, "debug", $"{current.CountMode}-stash-crop.png");
+            return Path.Combine(AppPaths.DebugDirectory, $"{current.CountMode}-stash-crop.png");
         }
     }
 

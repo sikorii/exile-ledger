@@ -196,7 +196,7 @@ internal static class FixedStashScannerProfiles
 
     public static string ConfigPath(string fileName)
     {
-        return Path.Combine(AppContext.BaseDirectory, "config", fileName);
+        return AppPaths.ConfigFile(fileName);
     }
 
     private static FixedStashScannerProfile Generic(
