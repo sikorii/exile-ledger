@@ -33,6 +33,12 @@ internal sealed class CurrencyScanner
         _lastPriceRefresh = DateTimeOffset.UtcNow;
     }
 
+    public async Task<CurrencyScanResult> RecalculateValuesAsync(CurrencyScanResult result, CancellationToken cancellationToken)
+    {
+        await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
+        return ScanValueRecalculator.Recalculate(result, _cachedPrices!);
+    }
+
     public async Task<CurrencyScanResult> ScanScreenAsync(CancellationToken cancellationToken, StashLayoutProfile? layout = null)
     {
         var screen = ScreenCaptureService.SelectPoeScreen();
@@ -48,10 +54,7 @@ internal sealed class CurrencyScanner
 
     private async Task<CurrencyScanResult> ScanBitmapAsync(Bitmap screenshot, Rectangle screenBounds, CancellationToken cancellationToken, StashLayoutProfile layout)
     {
-        if (_cachedPrices is null || DateTimeOffset.UtcNow - _lastPriceRefresh > TimeSpan.FromMinutes(30))
-        {
-            await RefreshPricesAsync(cancellationToken).ConfigureAwait(false);
-        }
+        await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
 
         SaveBitmap(screenshot, Path.Combine(_debugDirectory, "currency-fullscreen.png"));
         var stashCropPath = Path.Combine(_debugDirectory, "currency-stash-crop.png");
@@ -220,6 +223,14 @@ internal sealed class CurrencyScanner
             quantityRead?.Confidence ?? (occupied ? 0 : 1),
             quantityRead?.Method ?? "unknown",
             overlayCropBounds);
+    }
+
+    private async Task EnsurePricesAsync(CancellationToken cancellationToken)
+    {
+        if (_cachedPrices is null || DateTimeOffset.UtcNow - _lastPriceRefresh > TimeSpan.FromMinutes(30))
+        {
+            await RefreshPricesAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 
     private static Rectangle OffsetRectangle(Rectangle rectangle, Point offset)

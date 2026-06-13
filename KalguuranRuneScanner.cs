@@ -26,6 +26,15 @@ internal sealed class KalguuranRuneScanner
         _lastPriceRefresh = DateTimeOffset.UtcNow;
     }
 
+    public async Task<RuneScanResult> RecalculateValuesAsync(RuneScanResult result, CancellationToken cancellationToken)
+    {
+        await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
+        return ScanValueRecalculator.Recalculate(
+            result,
+            _cachedPrices!,
+            static (_, _) => Array.Empty<RuneUpgradeSuggestion>());
+    }
+
     public async Task<RuneScanResult> ScanScreenAsync(CancellationToken cancellationToken, StashLayoutProfile? layout = null)
     {
         var screen = ScreenCaptureService.SelectPoeScreen();
@@ -41,10 +50,7 @@ internal sealed class KalguuranRuneScanner
 
     private async Task<RuneScanResult> ScanBitmapAsync(Bitmap screenshot, Rectangle screenBounds, CancellationToken cancellationToken, StashLayoutProfile layout)
     {
-        if (_cachedPrices is null || DateTimeOffset.UtcNow - _lastPriceRefresh > TimeSpan.FromMinutes(30))
-        {
-            await RefreshPricesAsync(cancellationToken).ConfigureAwait(false);
-        }
+        await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
 
         CurrencyScanner.SaveBitmap(screenshot, Path.Combine(_debugDirectory, "kalguuran-runes-fullscreen.png"));
         var stashCropPath = Path.Combine(_debugDirectory, "kalguuran-runes-stash-crop.png");
@@ -217,6 +223,14 @@ internal sealed class KalguuranRuneScanner
             quantityRead?.Confidence ?? (occupied ? 0 : 1),
             quantityRead?.Method ?? "unknown",
             overlayCropBounds);
+    }
+
+    private async Task EnsurePricesAsync(CancellationToken cancellationToken)
+    {
+        if (_cachedPrices is null || DateTimeOffset.UtcNow - _lastPriceRefresh > TimeSpan.FromMinutes(30))
+        {
+            await RefreshPricesAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 
     private static Rectangle OffsetRectangle(Rectangle rectangle, Point offset)

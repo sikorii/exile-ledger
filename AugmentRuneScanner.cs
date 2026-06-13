@@ -31,6 +31,20 @@ internal sealed class AugmentRuneScanner
         _lastPriceRefresh = DateTimeOffset.UtcNow;
     }
 
+    public async Task<RuneScanResult> RecalculateValuesAsync(RuneScanResult result, CancellationToken cancellationToken)
+    {
+        await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
+        return ScanValueRecalculator.Recalculate(
+            result,
+            _cachedPrices!,
+            (stacks, prices) => BuildUpgradeSuggestions(stacks, prices)
+                .Where(suggestion => suggestion.IsProfitable)
+                .OrderByDescending(suggestion => suggestion.IsProfitable)
+                .ThenByDescending(suggestion => suggestion.ProfitExalts)
+                .Take(20)
+                .ToArray());
+    }
+
     public async Task<RuneScanResult> ScanScreenAsync(CancellationToken cancellationToken, StashLayoutProfile? layout = null)
     {
         var screen = ScreenCaptureService.SelectPoeScreen();
@@ -46,10 +60,7 @@ internal sealed class AugmentRuneScanner
 
     private async Task<RuneScanResult> ScanBitmapAsync(Bitmap screenshot, Rectangle screenBounds, CancellationToken cancellationToken, StashLayoutProfile layout)
     {
-        if (_cachedPrices is null || DateTimeOffset.UtcNow - _lastPriceRefresh > TimeSpan.FromMinutes(30))
-        {
-            await RefreshPricesAsync(cancellationToken).ConfigureAwait(false);
-        }
+        await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
 
         CurrencyScanner.SaveBitmap(screenshot, Path.Combine(_debugDirectory, "runes-fullscreen.png"));
         var stashCropPath = Path.Combine(_debugDirectory, "runes-stash-crop.png");
@@ -230,6 +241,14 @@ internal sealed class AugmentRuneScanner
             quantityRead?.Confidence ?? (occupied ? 0 : 1),
             quantityRead?.Method ?? "unknown",
             overlayCropBounds);
+    }
+
+    private async Task EnsurePricesAsync(CancellationToken cancellationToken)
+    {
+        if (_cachedPrices is null || DateTimeOffset.UtcNow - _lastPriceRefresh > TimeSpan.FromMinutes(30))
+        {
+            await RefreshPricesAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 
     private static Rectangle OffsetRectangle(Rectangle rectangle, Point offset)

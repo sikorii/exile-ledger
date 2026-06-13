@@ -427,12 +427,28 @@ internal sealed class MainForm : Form
                 return;
             }
 
-            var apply = ApplyAiCountsToCurrentScan(mode, result);
-            _stashPictureBox.Invalidate();
-            var partial = apply.UnknownTileIds > 0 || apply.MissingTileIds > 0 || apply.InvalidOkCounts > 0 || apply.ExcludedOccupiedSlots > 0;
+            var apply = await ApplyAiCountsToCurrentScanAsync(mode, result).ConfigureAwait(true);
+            if (apply.AppliedCount == 0)
+            {
+                _stashPictureBox.Invalidate();
+            }
+
+            var partial = apply.UnknownTileIds > 0 ||
+                apply.MissingTileIds > 0 ||
+                apply.InvalidOkCounts > 0 ||
+                apply.ExcludedOccupiedSlots > 0 ||
+                apply.RecalculationErrorPath is not null;
+            var repriceStatus = apply.ValuesRecalculated
+                ? " Values recalculated."
+                : apply.RecalculationErrorPath is not null
+                    ? " Value recalculation failed."
+                    : string.Empty;
+            var totalStatus = apply.ValuesRecalculated && apply.RecalculatedTotalExalts is not null && apply.RecalculatedTotalDivines is not null
+                ? $" Total: {apply.RecalculatedTotalExalts.Value:0.##} ex / {apply.RecalculatedTotalDivines.Value:0.####} div."
+                : string.Empty;
             _statusLabel.Text = partial
-                ? $"AI counts partially applied: {apply.AppliedCount} ok, {apply.SkippedManualOverrides} locked skipped, {apply.NoCountVisibleCount} no-count, {apply.UnclearCount} unclear."
-                : $"AI counts applied: {apply.AppliedCount} ok, {apply.SkippedManualOverrides} locked skipped, {apply.NoCountVisibleCount} no-count, {apply.UnclearCount} unclear.";
+                ? $"AI counts partially applied: {apply.AppliedCount} ok, {apply.SkippedManualOverrides} locked skipped, {apply.NoCountVisibleCount} no-count, {apply.UnclearCount} unclear.{repriceStatus}{totalStatus}"
+                : $"AI counts applied: {apply.AppliedCount} ok, {apply.SkippedManualOverrides} locked skipped, {apply.NoCountVisibleCount} no-count, {apply.UnclearCount} unclear.{repriceStatus}{totalStatus}";
 
             _detailsBox.Text = BuildAiCountSummary(result, apply);
         }
@@ -474,9 +490,9 @@ internal sealed class MainForm : Form
                         slot.SlotIndex,
                         slot.CropBounds,
                         slot.Occupied,
-                        slot.Quantity,
-                        slot.IsCountOverridden,
-                        slot.CountMethod,
+                        GetAiCountExistingQuantity(slot.Quantity, _currencyMappingStore.GetCountOverride(slot.SlotIndex)),
+                        slot.IsCountOverridden || _currencyMappingStore.IsCountOverridden(slot.SlotIndex),
+                        GetAiCountMethod(slot.CountMethod, _currencyMappingStore.IsCountOverridden(slot.SlotIndex)),
                         slot.ItemName))
                     .ToArray());
         }
@@ -493,9 +509,9 @@ internal sealed class MainForm : Form
                         slot.SlotIndex,
                         slot.CropBounds,
                         slot.Occupied,
-                        slot.Quantity,
-                        slot.IsCountOverridden,
-                        slot.CountMethod,
+                        GetAiCountExistingQuantity(slot.Quantity, _runeMappingStore.GetCountOverride(slot.SlotIndex)),
+                        slot.IsCountOverridden || _runeMappingStore.IsCountOverridden(slot.SlotIndex),
+                        GetAiCountMethod(slot.CountMethod, _runeMappingStore.IsCountOverridden(slot.SlotIndex)),
                         slot.ItemName))
                     .ToArray());
         }
@@ -512,9 +528,9 @@ internal sealed class MainForm : Form
                         slot.SlotIndex,
                         slot.CropBounds,
                         slot.Occupied,
-                        slot.Quantity,
-                        slot.IsCountOverridden,
-                        slot.CountMethod,
+                        GetAiCountExistingQuantity(slot.Quantity, _kalguuranRuneMappingStore.GetCountOverride(slot.SlotIndex)),
+                        slot.IsCountOverridden || _kalguuranRuneMappingStore.IsCountOverridden(slot.SlotIndex),
+                        GetAiCountMethod(slot.CountMethod, _kalguuranRuneMappingStore.IsCountOverridden(slot.SlotIndex)),
                         slot.ItemName))
                     .ToArray());
         }
@@ -531,9 +547,9 @@ internal sealed class MainForm : Form
                         slot.SlotIndex,
                         slot.CropBounds,
                         slot.Occupied,
-                        slot.Quantity,
-                        slot.IsCountOverridden,
-                        slot.CountMethod,
+                        GetAiCountExistingQuantity(slot.Quantity, _genericScanners[_lastGenericResult.Profile.Key].GetCountOverride(slot.SlotIndex)),
+                        slot.IsCountOverridden || _genericScanners[_lastGenericResult.Profile.Key].GetCountOverride(slot.SlotIndex) is not null,
+                        GetAiCountMethod(slot.CountMethod, _genericScanners[_lastGenericResult.Profile.Key].GetCountOverride(slot.SlotIndex) is not null),
                         slot.ItemName))
                     .ToArray());
         }
@@ -541,7 +557,17 @@ internal sealed class MainForm : Form
         return null;
     }
 
-    private AiCountApplySummary ApplyAiCountsToCurrentScan(ScanModeOption mode, AiCountReadResult result)
+    private static int? GetAiCountExistingQuantity(int? scanQuantity, int? countOverride)
+    {
+        return countOverride ?? scanQuantity;
+    }
+
+    private static string GetAiCountMethod(string scanCountMethod, bool countOverridden)
+    {
+        return countOverridden ? "manual-count-override" : scanCountMethod;
+    }
+
+    private async Task<AiCountApplySummary> ApplyAiCountsToCurrentScanAsync(ScanModeOption mode, AiCountReadResult result)
     {
         var tileMap = result.TileMap.Tiles.ToDictionary(tile => tile.TileId, StringComparer.OrdinalIgnoreCase);
         var returnedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -551,11 +577,21 @@ internal sealed class MainForm : Form
         var unknown = 0;
         var invalid = 0;
         var skippedManual = 0;
+        var valuesRecalculated = false;
+        string? recalculationErrorPath = null;
+        decimal? recalculatedTotalExalts = null;
+        decimal? recalculatedTotalDivines = null;
 
         if (_lastCurrencyResult is not null)
         {
             var slots = _lastCurrencyResult.Slots.ToArray();
-            ApplyToSlots(result.Results, tileMap, returnedIds, slots.Length, entry => slots[entry.ResultIndex].IsCountOverridden, (entry, count) =>
+            ApplyToSlots(
+                result.Results,
+                tileMap,
+                returnedIds,
+                slots.Length,
+                entry => slots[entry.ResultIndex].IsCountOverridden || _currencyMappingStore.IsCountOverridden(entry.SlotIndex),
+                (entry, count) =>
             {
                 var slot = slots[entry.ResultIndex];
                 slots[entry.ResultIndex] = slot with
@@ -566,15 +602,49 @@ internal sealed class MainForm : Form
                     CountConfidence = 0.99,
                     CountMethod = "ai-count"
                 };
-            }, ref applied, ref noCountVisible, ref unclear, ref unknown, ref invalid, ref skippedManual);
+            },
+                ref applied,
+                ref noCountVisible,
+                ref unclear,
+                ref unknown,
+                ref invalid,
+                ref skippedManual);
 
             _lastCurrencyResult = _lastCurrencyResult with { Slots = slots };
-            _savedCurrencyResults[mode.Key] = _lastCurrencyResult;
+            var shouldRecalculateValues = applied > 0 || skippedManual > 0;
+            if (shouldRecalculateValues)
+            {
+                try
+                {
+                    _lastCurrencyResult = await _currencyScanner.RecalculateValuesAsync(_lastCurrencyResult, CancellationToken.None).ConfigureAwait(true);
+                    SaveLatestScan(mode, _lastCurrencyResult);
+                    ShowCurrencyResult(_lastCurrencyResult);
+                    valuesRecalculated = true;
+                    recalculatedTotalExalts = _lastCurrencyResult.TotalExalts;
+                    recalculatedTotalDivines = _lastCurrencyResult.TotalDivines;
+                }
+                catch (Exception ex)
+                {
+                    _savedCurrencyResults[mode.Key] = _lastCurrencyResult;
+                    UpdateAllScannedTabsTotal();
+                    recalculationErrorPath = SaveAiCountRecalculationError(result, ex);
+                }
+            }
+            else
+            {
+                _savedCurrencyResults[mode.Key] = _lastCurrencyResult;
+            }
         }
         else if (_lastRuneResult is not null)
         {
             var slots = _lastRuneResult.Slots.ToArray();
-            ApplyToSlots(result.Results, tileMap, returnedIds, slots.Length, entry => slots[entry.ResultIndex].IsCountOverridden, (entry, count) =>
+            ApplyToSlots(
+                result.Results,
+                tileMap,
+                returnedIds,
+                slots.Length,
+                entry => slots[entry.ResultIndex].IsCountOverridden || _runeMappingStore.IsCountOverridden(entry.SlotIndex),
+                (entry, count) =>
             {
                 var slot = slots[entry.ResultIndex];
                 slots[entry.ResultIndex] = slot with
@@ -585,15 +655,49 @@ internal sealed class MainForm : Form
                     CountConfidence = 0.99,
                     CountMethod = "ai-count"
                 };
-            }, ref applied, ref noCountVisible, ref unclear, ref unknown, ref invalid, ref skippedManual);
+            },
+                ref applied,
+                ref noCountVisible,
+                ref unclear,
+                ref unknown,
+                ref invalid,
+                ref skippedManual);
 
             _lastRuneResult = _lastRuneResult with { Slots = slots };
-            _savedRuneResults[mode.Key] = _lastRuneResult;
+            var shouldRecalculateValues = applied > 0 || skippedManual > 0;
+            if (shouldRecalculateValues)
+            {
+                try
+                {
+                    _lastRuneResult = await _runeScanner.RecalculateValuesAsync(_lastRuneResult, CancellationToken.None).ConfigureAwait(true);
+                    SaveLatestScan(mode, _lastRuneResult);
+                    ShowRuneResult(_lastRuneResult);
+                    valuesRecalculated = true;
+                    recalculatedTotalExalts = _lastRuneResult.TotalExalts;
+                    recalculatedTotalDivines = _lastRuneResult.TotalDivines;
+                }
+                catch (Exception ex)
+                {
+                    _savedRuneResults[mode.Key] = _lastRuneResult;
+                    UpdateAllScannedTabsTotal();
+                    recalculationErrorPath = SaveAiCountRecalculationError(result, ex);
+                }
+            }
+            else
+            {
+                _savedRuneResults[mode.Key] = _lastRuneResult;
+            }
         }
         else if (_lastKalguuranRuneResult is not null)
         {
             var slots = _lastKalguuranRuneResult.Slots.ToArray();
-            ApplyToSlots(result.Results, tileMap, returnedIds, slots.Length, entry => slots[entry.ResultIndex].IsCountOverridden, (entry, count) =>
+            ApplyToSlots(
+                result.Results,
+                tileMap,
+                returnedIds,
+                slots.Length,
+                entry => slots[entry.ResultIndex].IsCountOverridden || _kalguuranRuneMappingStore.IsCountOverridden(entry.SlotIndex),
+                (entry, count) =>
             {
                 var slot = slots[entry.ResultIndex];
                 slots[entry.ResultIndex] = slot with
@@ -604,15 +708,50 @@ internal sealed class MainForm : Form
                     CountConfidence = 0.99,
                     CountMethod = "ai-count"
                 };
-            }, ref applied, ref noCountVisible, ref unclear, ref unknown, ref invalid, ref skippedManual);
+            },
+                ref applied,
+                ref noCountVisible,
+                ref unclear,
+                ref unknown,
+                ref invalid,
+                ref skippedManual);
 
             _lastKalguuranRuneResult = _lastKalguuranRuneResult with { Slots = slots };
-            _savedRuneResults[mode.Key] = _lastKalguuranRuneResult;
+            var shouldRecalculateValues = applied > 0 || skippedManual > 0;
+            if (shouldRecalculateValues)
+            {
+                try
+                {
+                    _lastKalguuranRuneResult = await _kalguuranRuneScanner.RecalculateValuesAsync(_lastKalguuranRuneResult, CancellationToken.None).ConfigureAwait(true);
+                    SaveLatestScan(mode, _lastKalguuranRuneResult);
+                    ShowKalguuranRuneResult(_lastKalguuranRuneResult);
+                    valuesRecalculated = true;
+                    recalculatedTotalExalts = _lastKalguuranRuneResult.TotalExalts;
+                    recalculatedTotalDivines = _lastKalguuranRuneResult.TotalDivines;
+                }
+                catch (Exception ex)
+                {
+                    _savedRuneResults[mode.Key] = _lastKalguuranRuneResult;
+                    UpdateAllScannedTabsTotal();
+                    recalculationErrorPath = SaveAiCountRecalculationError(result, ex);
+                }
+            }
+            else
+            {
+                _savedRuneResults[mode.Key] = _lastKalguuranRuneResult;
+            }
         }
         else if (_lastGenericResult is not null)
         {
             var slots = _lastGenericResult.Slots.ToArray();
-            ApplyToSlots(result.Results, tileMap, returnedIds, slots.Length, entry => slots[entry.ResultIndex].IsCountOverridden, (entry, count) =>
+            ApplyToSlots(
+                result.Results,
+                tileMap,
+                returnedIds,
+                slots.Length,
+                entry => slots[entry.ResultIndex].IsCountOverridden ||
+                    _genericScanners[_lastGenericResult.Profile.Key].GetCountOverride(entry.SlotIndex) is not null,
+                (entry, count) =>
             {
                 var slot = slots[entry.ResultIndex];
                 slots[entry.ResultIndex] = slot with
@@ -623,10 +762,40 @@ internal sealed class MainForm : Form
                     CountConfidence = 0.99,
                     CountMethod = "ai-count"
                 };
-            }, ref applied, ref noCountVisible, ref unclear, ref unknown, ref invalid, ref skippedManual);
+            },
+                ref applied,
+                ref noCountVisible,
+                ref unclear,
+                ref unknown,
+                ref invalid,
+                ref skippedManual);
 
             _lastGenericResult = _lastGenericResult with { Slots = slots };
-            _savedGenericResults[mode.Key] = _lastGenericResult;
+            var shouldRecalculateValues = applied > 0 || skippedManual > 0;
+            if (shouldRecalculateValues)
+            {
+                try
+                {
+                    _lastGenericResult = await _genericScanners[_lastGenericResult.Profile.Key]
+                        .RecalculateValuesAsync(_lastGenericResult, CancellationToken.None)
+                        .ConfigureAwait(true);
+                    SaveLatestScan(mode, _lastGenericResult);
+                    ShowGenericFixedStashResult(_lastGenericResult);
+                    valuesRecalculated = true;
+                    recalculatedTotalExalts = _lastGenericResult.TotalExalts;
+                    recalculatedTotalDivines = _lastGenericResult.TotalDivines;
+                }
+                catch (Exception ex)
+                {
+                    _savedGenericResults[mode.Key] = _lastGenericResult;
+                    UpdateAllScannedTabsTotal();
+                    recalculationErrorPath = SaveAiCountRecalculationError(result, ex);
+                }
+            }
+            else
+            {
+                _savedGenericResults[mode.Key] = _lastGenericResult;
+            }
         }
 
         var missing = tileMap.Keys.Count(tileId => !returnedIds.Contains(tileId));
@@ -639,7 +808,11 @@ internal sealed class MainForm : Form
             invalid,
             skippedManual,
             tileMap.Values.Count(tile => tile.Locked || tile.ManualOverride),
-            result.TileMap.ExcludedOccupiedSlots.Count);
+            result.TileMap.ExcludedOccupiedSlots.Count,
+            valuesRecalculated,
+            recalculationErrorPath,
+            recalculatedTotalExalts,
+            recalculatedTotalDivines);
     }
 
     private static void ApplyToSlots(
@@ -722,6 +895,8 @@ internal sealed class MainForm : Form
             $"Missing tile IDs: {apply.MissingTileIds}",
             $"Invalid ok counts ignored: {apply.InvalidOkCounts}",
             $"Excluded occupied slots: {apply.ExcludedOccupiedSlots}",
+            $"Value recalculation: {FormatAiCountRecalculationStatus(apply)}",
+            $"Recalculated total: {FormatAiCountRecalculatedTotal(apply)}",
             $"Usage tokens: {usage}",
             $"Estimated cost: {estimatedCost}",
             string.Empty,
@@ -738,8 +913,61 @@ internal sealed class MainForm : Form
                 : result.TileMap.ExcludedOccupiedSlots.Select(slot =>
                     $"slot {slot.SlotIndex} result {slot.ResultIndex}: {slot.Reason} manualOverride={slot.ManualOverride} existingCount={slot.ExistingCount?.ToString() ?? "unknown"}")),
             string.Empty,
-            "Counts are applied to the displayed/latest in-memory scan only. Existing price totals are not recalculated by this AI pass; rescan the tab normally to reprice."
+            apply.ValuesRecalculated
+                ? "Applied AI counts were repriced with the current scanner price cache and saved as the latest scan."
+                : apply.AppliedCount == 0
+                    ? "No AI counts were applied, so values were left unchanged."
+                    : $"Recalculation failed after applying counts. Details saved: {apply.RecalculationErrorPath}"
         ]);
+    }
+
+    private static string FormatAiCountRecalculationStatus(AiCountApplySummary apply)
+    {
+        if (apply.ValuesRecalculated)
+        {
+            return "completed after applying AI counts";
+        }
+
+        if (apply.RecalculationErrorPath is not null)
+        {
+            return $"failed, debug saved to {apply.RecalculationErrorPath}";
+        }
+
+        return apply.AppliedCount == 0
+            ? "not run because no counts were applied"
+            : "not run";
+    }
+
+    private static string FormatAiCountRecalculatedTotal(AiCountApplySummary apply)
+    {
+        return apply.ValuesRecalculated && apply.RecalculatedTotalExalts is not null && apply.RecalculatedTotalDivines is not null
+            ? $"{apply.RecalculatedTotalExalts.Value:0.##} ex / {apply.RecalculatedTotalDivines.Value:0.####} div"
+            : "not available";
+    }
+
+    private static string SaveAiCountRecalculationError(AiCountReadResult result, Exception exception)
+    {
+        var debugDirectory = Path.GetDirectoryName(result.RawResponsePath) ??
+            Path.Combine(AppContext.BaseDirectory, "debug", "ai-counts");
+        Directory.CreateDirectory(debugDirectory);
+        var path = Path.Combine(
+            debugDirectory,
+            $"ai-count-recalculation-error-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmssfff}.txt");
+        File.WriteAllText(
+            path,
+            string.Join(Environment.NewLine, [
+                "AI count value recalculation failed",
+                string.Empty,
+                $"Timestamp: {DateTimeOffset.UtcNow:O}",
+                $"Model: {result.Model}",
+                $"Contact sheet: {result.ContactSheetPath}",
+                $"Tile map: {result.TileMapPath}",
+                $"Raw response: {result.RawResponsePath}",
+                $"Parsed JSON: {result.ParsedJsonPath ?? "not saved"}",
+                string.Empty,
+                exception.ToString()
+            ]));
+        return path;
     }
 
     private async Task RefreshPricesAsync()
@@ -2431,6 +2659,7 @@ internal sealed class MainForm : Form
         }
 
         _currencyScanner.SetSlot(slot.SlotIndex, dialog.ItemName, dialog.CountOverride);
+        ApplyManualCorrectionToDisplayedCurrencySlot(slot.SlotIndex, dialog.ItemName, dialog.CountOverride);
         var iconTemplateStatus = TrySaveIconTemplateFromMapping(
             _lastCurrencyResult.StashCropPath,
             slot.CropBounds,
@@ -2495,6 +2724,7 @@ internal sealed class MainForm : Form
         }
 
         _runeScanner.SetSlot(slot.SlotIndex, dialog.ItemName, dialog.CountOverride);
+        ApplyManualCorrectionToDisplayedRuneSlot(slot.SlotIndex, dialog.ItemName, dialog.CountOverride);
         var iconTemplateStatus = TrySaveIconTemplateFromMapping(
             _lastRuneResult.StashCropPath,
             slot.CropBounds,
@@ -2559,6 +2789,7 @@ internal sealed class MainForm : Form
         }
 
         _kalguuranRuneScanner.SetSlot(slot.SlotIndex, dialog.ItemName, dialog.CountOverride);
+        ApplyManualCorrectionToDisplayedKalguuranRuneSlot(slot.SlotIndex, dialog.ItemName, dialog.CountOverride);
         var iconTemplateStatus = TrySaveIconTemplateFromMapping(
             _lastKalguuranRuneResult.StashCropPath,
             slot.CropBounds,
@@ -2627,6 +2858,7 @@ internal sealed class MainForm : Form
         }
 
         var mappedSlotCount = _genericScanners[_lastGenericResult.Profile.Key].SetSlot(slot.SlotIndex, dialog.ItemName, dialog.CountOverride);
+        ApplyManualCorrectionToDisplayedGenericSlot(slot.SlotIndex, dialog.ItemName, dialog.CountOverride);
         var iconTemplateStatus = isEssence
             ? string.Empty
             : TrySaveIconTemplateFromMapping(
@@ -2650,6 +2882,161 @@ internal sealed class MainForm : Form
             _lastGenericResult.Profile.CountMode,
             slot.SlotIndex);
         _statusLabel.Text = $"Saved {_lastGenericResult.Profile.Label} slot {slot.SlotIndex} as {dialog.ItemName} ({countStatus}{staticIdentityStatus}{trainingStatus}{(isEssence ? string.Empty : iconTemplateStatus)}). Scan this tab again to reprice.";
+    }
+
+    private void ApplyManualCorrectionToDisplayedCurrencySlot(int slotIndex, string itemName, int? countOverride)
+    {
+        if (_lastCurrencyResult is null)
+        {
+            return;
+        }
+
+        var slots = _lastCurrencyResult.Slots.ToArray();
+        var index = Array.FindIndex(slots, slot => slot.SlotIndex == slotIndex);
+        if (index < 0)
+        {
+            return;
+        }
+
+        slots[index] = ApplyManualCorrection(slots[index], slotIndex, itemName, countOverride, _currencyMappingStore);
+        _lastCurrencyResult = _lastCurrencyResult with { Slots = slots };
+        _stashPictureBox.Invalidate();
+    }
+
+    private void ApplyManualCorrectionToDisplayedRuneSlot(int slotIndex, string itemName, int? countOverride)
+    {
+        if (_lastRuneResult is null)
+        {
+            return;
+        }
+
+        var slots = _lastRuneResult.Slots.ToArray();
+        var index = Array.FindIndex(slots, slot => slot.SlotIndex == slotIndex);
+        if (index < 0)
+        {
+            return;
+        }
+
+        slots[index] = ApplyManualCorrection(slots[index], slotIndex, itemName, countOverride, _runeMappingStore);
+        _lastRuneResult = _lastRuneResult with { Slots = slots };
+        _stashPictureBox.Invalidate();
+    }
+
+    private void ApplyManualCorrectionToDisplayedKalguuranRuneSlot(int slotIndex, string itemName, int? countOverride)
+    {
+        if (_lastKalguuranRuneResult is null)
+        {
+            return;
+        }
+
+        var slots = _lastKalguuranRuneResult.Slots.ToArray();
+        var index = Array.FindIndex(slots, slot => slot.SlotIndex == slotIndex);
+        if (index < 0)
+        {
+            return;
+        }
+
+        slots[index] = ApplyManualCorrection(slots[index], slotIndex, itemName, countOverride, _kalguuranRuneMappingStore);
+        _lastKalguuranRuneResult = _lastKalguuranRuneResult with { Slots = slots };
+        _stashPictureBox.Invalidate();
+    }
+
+    private void ApplyManualCorrectionToDisplayedGenericSlot(int slotIndex, string itemName, int? countOverride)
+    {
+        if (_lastGenericResult is null || !_genericMappingStores.TryGetValue(_lastGenericResult.Profile.Key, out var mappingStore))
+        {
+            return;
+        }
+
+        var slots = _lastGenericResult.Slots.ToArray();
+        var index = Array.FindIndex(slots, slot => slot.SlotIndex == slotIndex);
+        if (index < 0)
+        {
+            return;
+        }
+
+        slots[index] = ApplyManualCorrection(slots[index], slotIndex, itemName, countOverride, mappingStore);
+        _lastGenericResult = _lastGenericResult with { Slots = slots };
+        _stashPictureBox.Invalidate();
+    }
+
+    private static CurrencySlotDetection ApplyManualCorrection(
+        CurrencySlotDetection slot,
+        int slotIndex,
+        string itemName,
+        int? countOverride,
+        CurrencyMappingStore mappingStore)
+    {
+        return slot with
+        {
+            ItemName = NormalizeManualItemName(itemName),
+            Quantity = countOverride ?? slot.Quantity,
+            Exalts = null,
+            Divines = null,
+            IsCustomMapped = mappingStore.IsCustomMapped(slotIndex),
+            IsCountOverridden = mappingStore.IsCountOverridden(slotIndex),
+            CountConfidence = countOverride is null ? slot.CountConfidence : 1,
+            CountMethod = ResolveManualCorrectionCountMethod(slot.CountMethod, countOverride)
+        };
+    }
+
+    private static RuneSlotDetection ApplyManualCorrection(
+        RuneSlotDetection slot,
+        int slotIndex,
+        string itemName,
+        int? countOverride,
+        CurrencyMappingStore mappingStore)
+    {
+        return slot with
+        {
+            ItemName = NormalizeManualItemName(itemName),
+            Quantity = countOverride ?? slot.Quantity,
+            Exalts = null,
+            Divines = null,
+            IsCustomMapped = mappingStore.IsCustomMapped(slotIndex),
+            IsCountOverridden = mappingStore.IsCountOverridden(slotIndex),
+            CountConfidence = countOverride is null ? slot.CountConfidence : 1,
+            CountMethod = ResolveManualCorrectionCountMethod(slot.CountMethod, countOverride)
+        };
+    }
+
+    private static FixedStashSlotDetection ApplyManualCorrection(
+        FixedStashSlotDetection slot,
+        int slotIndex,
+        string itemName,
+        int? countOverride,
+        CurrencyMappingStore mappingStore)
+    {
+        return slot with
+        {
+            ItemName = NormalizeManualItemName(itemName),
+            Quantity = countOverride ?? slot.Quantity,
+            Exalts = null,
+            Divines = null,
+            IsCustomMapped = mappingStore.IsCustomMapped(slotIndex),
+            IsCountOverridden = mappingStore.IsCountOverridden(slotIndex),
+            CountConfidence = countOverride is null ? slot.CountConfidence : 1,
+            CountMethod = ResolveManualCorrectionCountMethod(slot.CountMethod, countOverride)
+        };
+    }
+
+    private static string? NormalizeManualItemName(string itemName)
+    {
+        return string.IsNullOrWhiteSpace(itemName)
+            ? null
+            : itemName.Trim();
+    }
+
+    private static string ResolveManualCorrectionCountMethod(string existingMethod, int? countOverride)
+    {
+        if (countOverride is not null)
+        {
+            return "manual-count-override";
+        }
+
+        return existingMethod.Equals("manual-count-override", StringComparison.OrdinalIgnoreCase)
+            ? "unknown"
+            : existingMethod;
     }
 
     private static string TrySaveDigitTrainingFromOverride(
@@ -2866,7 +3253,11 @@ internal sealed class MainForm : Form
         int InvalidOkCounts,
         int SkippedManualOverrides,
         int LockedManualTileCount,
-        int ExcludedOccupiedSlots);
+        int ExcludedOccupiedSlots,
+        bool ValuesRecalculated,
+        string? RecalculationErrorPath,
+        decimal? RecalculatedTotalExalts,
+        decimal? RecalculatedTotalDivines);
 
     private sealed record ScanModeOption(string Label, string Key, ScanModeKind Kind, FixedStashScannerProfile? Profile = null)
     {

@@ -45,6 +45,12 @@ internal sealed class FixedStashScanner
         _lastPriceRefresh = DateTimeOffset.UtcNow;
     }
 
+    public async Task<FixedStashScanResult> RecalculateValuesAsync(FixedStashScanResult result, CancellationToken cancellationToken)
+    {
+        await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
+        return ScanValueRecalculator.Recalculate(result, _cachedPrices!);
+    }
+
     public async Task<FixedStashScanResult> ScanScreenAsync(CancellationToken cancellationToken, StashLayoutProfile layout)
     {
         var screen = ScreenCaptureService.SelectPoeScreen();
@@ -64,10 +70,7 @@ internal sealed class FixedStashScanner
         CancellationToken cancellationToken,
         StashLayoutProfile layout)
     {
-        if (_cachedPrices is null || DateTimeOffset.UtcNow - _lastPriceRefresh > TimeSpan.FromMinutes(30))
-        {
-            await RefreshPricesAsync(cancellationToken).ConfigureAwait(false);
-        }
+        await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
 
         var safeKey = _profile.CountMode;
         CurrencyScanner.SaveBitmap(screenshot, Path.Combine(_debugDirectory, $"{safeKey}-fullscreen.png"));
@@ -210,6 +213,14 @@ internal sealed class FixedStashScanner
 
         var definitelyBlank = CurrencyScanner.IsDefinitelyBlank(screenshot, slotBounds);
         return !definitelyBlank && (CurrencyScanner.IsOccupied(screenshot, slotBounds) || itemName is not null);
+    }
+
+    private async Task EnsurePricesAsync(CancellationToken cancellationToken)
+    {
+        if (_cachedPrices is null || DateTimeOffset.UtcNow - _lastPriceRefresh > TimeSpan.FromMinutes(30))
+        {
+            await RefreshPricesAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 
     private QuantityReadResult ReadQuantity(Bitmap screenshot, Rectangle slotBounds, string tessData, int slotIndex, string scanId)

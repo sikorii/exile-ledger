@@ -75,6 +75,12 @@ internal sealed class AiCountReader
 
         Directory.CreateDirectory(_debugDirectory);
         var stamp = DateTimeOffset.Now.ToString("yyyyMMdd-HHmmss");
+        var cleanupErrors = CleanAiCountDebugFolder(_debugDirectory);
+        if (cleanupErrors.Count > 0)
+        {
+            TryWriteCleanupErrors(stamp, cleanupErrors);
+        }
+
         using var stashCrop = CurrencyScanner.LoadBitmapWithoutFileLock(stashCropPath);
         var includedSlots = occupiedSlots
             .Where(slot => IntersectsImage(slot.CropBounds, stashCrop.Size))
@@ -378,6 +384,54 @@ internal sealed class AiCountReader
         using var stream = new MemoryStream();
         bitmap.Save(stream, ImageFormat.Png);
         return "data:image/png;base64," + Convert.ToBase64String(stream.ToArray());
+    }
+
+    private static IReadOnlyList<string> CleanAiCountDebugFolder(string debugDirectory)
+    {
+        var errors = new List<string>();
+        var patterns = new[]
+        {
+            "ai-count-contact-sheet-*.png",
+            "ai-count-output-*.json",
+            "ai-count-parsed-*.json",
+            "ai-count-raw-response-*.json",
+            "ai-count-map-*.json",
+            "ai-count-request-*.json",
+            "ai-count-error-*.txt",
+            "ai-count-*-error-*.txt",
+            "ai-count-recalculation-error-*.txt",
+            "ai-count-cleanup-error-*.txt"
+        };
+
+        foreach (var path in patterns
+            .SelectMany(pattern => Directory.EnumerateFiles(debugDirectory, pattern, SearchOption.TopDirectoryOnly))
+            .Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            try
+            {
+                File.Delete(path);
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"{path}: {ex.Message}");
+            }
+        }
+
+        return errors;
+    }
+
+    private void TryWriteCleanupErrors(string stamp, IReadOnlyList<string> cleanupErrors)
+    {
+        try
+        {
+            File.WriteAllLines(
+                Path.Combine(_debugDirectory, $"ai-count-cleanup-error-{stamp}.txt"),
+                cleanupErrors);
+        }
+        catch
+        {
+            // Cleanup is best-effort. Never block the AI count read because a debug note could not be written.
+        }
     }
 
     private static string ExtractOutputText(string rawResponse)
