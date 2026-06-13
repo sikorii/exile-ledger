@@ -40,6 +40,7 @@ internal sealed class MainForm : Form
     private readonly SlotLayoutOverrideStore _slotLayoutOverrideStore;
     private readonly LatestStashScanStore _latestScanStore;
     private readonly OpenAiVisionHelper _openAiVisionHelper;
+    private readonly AiCountReader _aiCountReader;
     private readonly PoeNinjaIconCache _iconCache;
     private readonly OverlayForm _overlay = new();
     private readonly Button _runeshapingButton = new();
@@ -59,6 +60,7 @@ internal sealed class MainForm : Form
     private readonly Button _resetCurrentTabButton = new();
     private readonly CheckBox _saveCountDebugCropsCheckBox = new();
     private readonly Button _reviewCountCropsButton = new();
+    private readonly Button _aiReadCountsButton = new();
     private readonly Label _statusLabel = new();
     private readonly Label _totalStashValueLabel = new();
     private readonly TextBox _detailsBox = new();
@@ -111,6 +113,7 @@ internal sealed class MainForm : Form
                     mode.Profile!),
                 StringComparer.OrdinalIgnoreCase);
         _openAiVisionHelper = new OpenAiVisionHelper(Path.Combine(AppContext.BaseDirectory, "debug", "ai-stash-analysis"));
+        _aiCountReader = new AiCountReader(Path.Combine(AppContext.BaseDirectory, "debug", "ai-counts"));
         _iconCache = PoeNinjaIconCache.CreateDefault();
         _overlay.Dismissed += (_, _) => _scanner.ClearMergedRuneshapingRewards();
         BuildUi();
@@ -297,6 +300,11 @@ internal sealed class MainForm : Form
         _reviewCountCropsButton.Size = new Size(116, 30);
         _reviewCountCropsButton.Click += (_, _) => GenerateCountCropReviewReport();
 
+        _aiReadCountsButton.Text = "AI Read Counts";
+        _aiReadCountsButton.Location = new Point(900, 104);
+        _aiReadCountsButton.Size = new Size(128, 30);
+        _aiReadCountsButton.Click += async (_, _) => await ReadCountsWithAiAsync();
+
         _statusLabel.Text = "Runeshaping is separate. Choose a stash mode, then Scan Stash. Hotkeys: F8 Runeshaping, F7 selected stash.";
         _statusLabel.Location = new Point(22, 140);
         _statusLabel.Size = new Size(1200, 24);
@@ -332,7 +340,7 @@ internal sealed class MainForm : Form
         _detailsBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
         _stashPictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
-        Controls.AddRange([title, _runeshapingButton, _modeComboBox, _insideFolderCheckBox, _scanButton, _refreshButton, _testButton, _captureTabButton, _refreshIconsButton, _copySummaryButton, _editLayoutCheckBox, _saveLayoutButton, _reloadLayoutButton, _resetSelectedSlotButton, _resetCurrentTabButton, _saveCountDebugCropsCheckBox, _reviewCountCropsButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
+        Controls.AddRange([title, _runeshapingButton, _modeComboBox, _insideFolderCheckBox, _scanButton, _refreshButton, _testButton, _captureTabButton, _refreshIconsButton, _copySummaryButton, _editLayoutCheckBox, _saveLayoutButton, _reloadLayoutButton, _resetSelectedSlotButton, _resetCurrentTabButton, _saveCountDebugCropsCheckBox, _reviewCountCropsButton, _aiReadCountsButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
         LoadSelectedModeFolderSetting();
         UpdateLayoutEditorControls();
         UpdateAllScannedTabsTotal();
@@ -371,6 +379,367 @@ internal sealed class MainForm : Form
             _detailsBox.Text = ex.ToString();
             MessageBox.Show(this, ex.Message, "Count Crop Review Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
+    }
+
+    private async Task ReadCountsWithAiAsync()
+    {
+        if (_scanInProgress)
+        {
+            return;
+        }
+
+        if (_modeComboBox.SelectedItem is not ScanModeOption mode)
+        {
+            _statusLabel.Text = "Choose a stash mode before AI count reading.";
+            return;
+        }
+
+        var context = GetCurrentAiCountContext(mode);
+        if (context is null)
+        {
+            _statusLabel.Text = "Scan or load a stash tab before using AI count reading.";
+            return;
+        }
+
+        SetBusy(true, "Building AI count contact sheet...");
+        try
+        {
+            var result = await _aiCountReader.ReadCountsAsync(
+                context.ProfileKey,
+                context.ProfileLabel,
+                context.StashCropPath,
+                context.Slots,
+                CancellationToken.None).ConfigureAwait(true);
+
+            if (!string.IsNullOrWhiteSpace(result.ParseError))
+            {
+                _statusLabel.Text = "AI count reader returned invalid JSON.";
+                _detailsBox.Text = string.Join(Environment.NewLine, [
+                    "AI count reader invalid JSON",
+                    string.Empty,
+                    $"Model: {result.Model}",
+                    $"Raw response: {result.RawResponsePath}",
+                    $"Output JSON: {result.OutputJsonPath}",
+                    $"Parse error: {result.ParseError}",
+                    string.Empty,
+                    result.OutputJson
+                ]);
+                return;
+            }
+
+            var apply = ApplyAiCountsToCurrentScan(mode, result);
+            _stashPictureBox.Invalidate();
+            var partial = apply.UnknownTileIds > 0 || apply.MissingTileIds > 0 || apply.InvalidOkCounts > 0 || apply.ExcludedOccupiedSlots > 0;
+            _statusLabel.Text = partial
+                ? $"AI counts partially applied: {apply.AppliedCount} ok, {apply.SkippedManualOverrides} locked skipped, {apply.NoCountVisibleCount} no-count, {apply.UnclearCount} unclear."
+                : $"AI counts applied: {apply.AppliedCount} ok, {apply.SkippedManualOverrides} locked skipped, {apply.NoCountVisibleCount} no-count, {apply.UnclearCount} unclear.";
+
+            _detailsBox.Text = BuildAiCountSummary(result, apply);
+        }
+        catch (MissingOpenAiApiKeyException ex)
+        {
+            _statusLabel.Text = "OPENAI_API_KEY is missing.";
+            _detailsBox.Text = ex.Message;
+            MessageBox.Show(this, ex.Message, "Missing OpenAI API Key", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        catch (OpenAiCountReaderException ex)
+        {
+            _statusLabel.Text = "AI count reader API request failed.";
+            _detailsBox.Text = $"{ex.Message}{Environment.NewLine}{Environment.NewLine}Debug response: {ex.DebugPath}";
+            MessageBox.Show(this, $"OpenAI request failed. Raw response saved to:\r\n{ex.DebugPath}", "AI Count Reader", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        catch (Exception ex)
+        {
+            _statusLabel.Text = "AI count reader failed.";
+            _detailsBox.Text = ex.ToString();
+            MessageBox.Show(this, ex.Message, "AI Count Reader Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        finally
+        {
+            SetBusy(false);
+        }
+    }
+
+    private AiCountCurrentScanContext? GetCurrentAiCountContext(ScanModeOption mode)
+    {
+        if (_lastCurrencyResult is not null)
+        {
+            return new AiCountCurrentScanContext(
+                FixedStashScannerProfiles.Currency.Key,
+                FixedStashScannerProfiles.Currency.Label,
+                _lastCurrencyResult.StashCropPath,
+                _lastCurrencyResult.Slots
+                    .Select((slot, index) => new AiCountSlotSource(
+                        index,
+                        slot.SlotIndex,
+                        slot.CropBounds,
+                        slot.Occupied,
+                        slot.Quantity,
+                        slot.IsCountOverridden,
+                        slot.CountMethod,
+                        slot.ItemName))
+                    .ToArray());
+        }
+
+        if (_lastRuneResult is not null)
+        {
+            return new AiCountCurrentScanContext(
+                FixedStashScannerProfiles.AugmentRunes.Key,
+                FixedStashScannerProfiles.AugmentRunes.Label,
+                _lastRuneResult.StashCropPath,
+                _lastRuneResult.Slots
+                    .Select((slot, index) => new AiCountSlotSource(
+                        index,
+                        slot.SlotIndex,
+                        slot.CropBounds,
+                        slot.Occupied,
+                        slot.Quantity,
+                        slot.IsCountOverridden,
+                        slot.CountMethod,
+                        slot.ItemName))
+                    .ToArray());
+        }
+
+        if (_lastKalguuranRuneResult is not null)
+        {
+            return new AiCountCurrentScanContext(
+                FixedStashScannerProfiles.KalguuranRunes.Key,
+                FixedStashScannerProfiles.KalguuranRunes.Label,
+                _lastKalguuranRuneResult.StashCropPath,
+                _lastKalguuranRuneResult.Slots
+                    .Select((slot, index) => new AiCountSlotSource(
+                        index,
+                        slot.SlotIndex,
+                        slot.CropBounds,
+                        slot.Occupied,
+                        slot.Quantity,
+                        slot.IsCountOverridden,
+                        slot.CountMethod,
+                        slot.ItemName))
+                    .ToArray());
+        }
+
+        if (_lastGenericResult is not null)
+        {
+            return new AiCountCurrentScanContext(
+                _lastGenericResult.Profile.Key,
+                _lastGenericResult.Profile.Label,
+                _lastGenericResult.StashCropPath,
+                _lastGenericResult.Slots
+                    .Select((slot, index) => new AiCountSlotSource(
+                        index,
+                        slot.SlotIndex,
+                        slot.CropBounds,
+                        slot.Occupied,
+                        slot.Quantity,
+                        slot.IsCountOverridden,
+                        slot.CountMethod,
+                        slot.ItemName))
+                    .ToArray());
+        }
+
+        return null;
+    }
+
+    private AiCountApplySummary ApplyAiCountsToCurrentScan(ScanModeOption mode, AiCountReadResult result)
+    {
+        var tileMap = result.TileMap.Tiles.ToDictionary(tile => tile.TileId, StringComparer.OrdinalIgnoreCase);
+        var returnedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var applied = 0;
+        var noCountVisible = 0;
+        var unclear = 0;
+        var unknown = 0;
+        var invalid = 0;
+        var skippedManual = 0;
+
+        if (_lastCurrencyResult is not null)
+        {
+            var slots = _lastCurrencyResult.Slots.ToArray();
+            ApplyToSlots(result.Results, tileMap, returnedIds, slots.Length, entry => slots[entry.ResultIndex].IsCountOverridden, (entry, count) =>
+            {
+                var slot = slots[entry.ResultIndex];
+                slots[entry.ResultIndex] = slot with
+                {
+                    Quantity = count,
+                    Exalts = null,
+                    Divines = null,
+                    CountConfidence = 0.99,
+                    CountMethod = "ai-count"
+                };
+            }, ref applied, ref noCountVisible, ref unclear, ref unknown, ref invalid, ref skippedManual);
+
+            _lastCurrencyResult = _lastCurrencyResult with { Slots = slots };
+            _savedCurrencyResults[mode.Key] = _lastCurrencyResult;
+        }
+        else if (_lastRuneResult is not null)
+        {
+            var slots = _lastRuneResult.Slots.ToArray();
+            ApplyToSlots(result.Results, tileMap, returnedIds, slots.Length, entry => slots[entry.ResultIndex].IsCountOverridden, (entry, count) =>
+            {
+                var slot = slots[entry.ResultIndex];
+                slots[entry.ResultIndex] = slot with
+                {
+                    Quantity = count,
+                    Exalts = null,
+                    Divines = null,
+                    CountConfidence = 0.99,
+                    CountMethod = "ai-count"
+                };
+            }, ref applied, ref noCountVisible, ref unclear, ref unknown, ref invalid, ref skippedManual);
+
+            _lastRuneResult = _lastRuneResult with { Slots = slots };
+            _savedRuneResults[mode.Key] = _lastRuneResult;
+        }
+        else if (_lastKalguuranRuneResult is not null)
+        {
+            var slots = _lastKalguuranRuneResult.Slots.ToArray();
+            ApplyToSlots(result.Results, tileMap, returnedIds, slots.Length, entry => slots[entry.ResultIndex].IsCountOverridden, (entry, count) =>
+            {
+                var slot = slots[entry.ResultIndex];
+                slots[entry.ResultIndex] = slot with
+                {
+                    Quantity = count,
+                    Exalts = null,
+                    Divines = null,
+                    CountConfidence = 0.99,
+                    CountMethod = "ai-count"
+                };
+            }, ref applied, ref noCountVisible, ref unclear, ref unknown, ref invalid, ref skippedManual);
+
+            _lastKalguuranRuneResult = _lastKalguuranRuneResult with { Slots = slots };
+            _savedRuneResults[mode.Key] = _lastKalguuranRuneResult;
+        }
+        else if (_lastGenericResult is not null)
+        {
+            var slots = _lastGenericResult.Slots.ToArray();
+            ApplyToSlots(result.Results, tileMap, returnedIds, slots.Length, entry => slots[entry.ResultIndex].IsCountOverridden, (entry, count) =>
+            {
+                var slot = slots[entry.ResultIndex];
+                slots[entry.ResultIndex] = slot with
+                {
+                    Quantity = count,
+                    Exalts = null,
+                    Divines = null,
+                    CountConfidence = 0.99,
+                    CountMethod = "ai-count"
+                };
+            }, ref applied, ref noCountVisible, ref unclear, ref unknown, ref invalid, ref skippedManual);
+
+            _lastGenericResult = _lastGenericResult with { Slots = slots };
+            _savedGenericResults[mode.Key] = _lastGenericResult;
+        }
+
+        var missing = tileMap.Keys.Count(tileId => !returnedIds.Contains(tileId));
+        return new AiCountApplySummary(
+            applied,
+            noCountVisible,
+            unclear,
+            unknown,
+            missing,
+            invalid,
+            skippedManual,
+            tileMap.Values.Count(tile => tile.Locked || tile.ManualOverride),
+            result.TileMap.ExcludedOccupiedSlots.Count);
+    }
+
+    private static void ApplyToSlots(
+        IReadOnlyList<AiCountTileResult> results,
+        IReadOnlyDictionary<string, AiCountTileMapEntry> tileMap,
+        HashSet<string> returnedIds,
+        int slotCount,
+        Func<AiCountTileMapEntry, bool> isManualOverride,
+        Action<AiCountTileMapEntry, int> applyCount,
+        ref int applied,
+        ref int noCountVisible,
+        ref int unclear,
+        ref int unknown,
+        ref int invalid,
+        ref int skippedManual)
+    {
+        foreach (var read in results)
+        {
+            if (!string.IsNullOrWhiteSpace(read.TileId))
+            {
+                returnedIds.Add(read.TileId);
+            }
+
+            if (!tileMap.TryGetValue(read.TileId, out var entry) ||
+                entry.ResultIndex < 0 ||
+                entry.ResultIndex >= slotCount)
+            {
+                unknown++;
+                continue;
+            }
+
+            if (read.Status.Equals("no_count_visible", StringComparison.OrdinalIgnoreCase))
+            {
+                noCountVisible++;
+                continue;
+            }
+
+            if (read.Status.Equals("unclear", StringComparison.OrdinalIgnoreCase))
+            {
+                unclear++;
+                continue;
+            }
+
+            if (!read.Status.Equals("ok", StringComparison.OrdinalIgnoreCase) || read.Count is null or <= 0)
+            {
+                invalid++;
+                continue;
+            }
+
+            if (entry.Locked || entry.ManualOverride || isManualOverride(entry))
+            {
+                skippedManual++;
+                continue;
+            }
+
+            applyCount(entry, read.Count.Value);
+            applied++;
+        }
+    }
+
+    private static string BuildAiCountSummary(AiCountReadResult result, AiCountApplySummary apply)
+    {
+        var usage = result.Usage is null
+            ? "not returned"
+            : $"input {result.Usage.InputTokens?.ToString() ?? "?"}, output {result.Usage.OutputTokens?.ToString() ?? "?"}, total {result.Usage.TotalTokens?.ToString() ?? "?"}";
+        var estimatedCost = result.Usage?.EstimatedCostUsd is null
+            ? "unavailable"
+            : $"${result.Usage.EstimatedCostUsd.Value:0.00000}";
+
+        return string.Join(Environment.NewLine, [
+            "AI count reader",
+            string.Empty,
+            $"Model: {result.Model}",
+            $"Applied ok counts: {apply.AppliedCount}",
+            $"No count visible: {apply.NoCountVisibleCount}",
+            $"Unclear: {apply.UnclearCount}",
+            $"Locked/manual override tiles on sheet: {apply.LockedManualTileCount}",
+            $"Skipped locked/manual override ok counts: {apply.SkippedManualOverrides}",
+            $"Unknown tile IDs ignored: {apply.UnknownTileIds}",
+            $"Missing tile IDs: {apply.MissingTileIds}",
+            $"Invalid ok counts ignored: {apply.InvalidOkCounts}",
+            $"Excluded occupied slots: {apply.ExcludedOccupiedSlots}",
+            $"Usage tokens: {usage}",
+            $"Estimated cost: {estimatedCost}",
+            string.Empty,
+            "Debug output:",
+            $"Contact sheet: {result.ContactSheetPath}",
+            $"Tile map: {result.TileMapPath}",
+            $"Raw response: {result.RawResponsePath}",
+            $"Output JSON: {result.OutputJsonPath}",
+            $"Parsed JSON: {result.ParsedJsonPath ?? "not saved"}",
+            string.Empty,
+            "Excluded occupied slots:",
+            .. (result.TileMap.ExcludedOccupiedSlots.Count == 0
+                ? ["none"]
+                : result.TileMap.ExcludedOccupiedSlots.Select(slot =>
+                    $"slot {slot.SlotIndex} result {slot.ResultIndex}: {slot.Reason} manualOverride={slot.ManualOverride} existingCount={slot.ExistingCount?.ToString() ?? "unknown"}")),
+            string.Empty,
+            "Counts are applied to the displayed/latest in-memory scan only. Existing price totals are not recalculated by this AI pass; rescan the tab normally to reprice."
+        ]);
     }
 
     private async Task RefreshPricesAsync()
@@ -2466,6 +2835,7 @@ internal sealed class MainForm : Form
         _refreshIconsButton.Enabled = !busy;
         _copySummaryButton.Enabled = !busy;
         _reviewCountCropsButton.Enabled = !busy;
+        _aiReadCountsButton.Enabled = !busy;
         UseWaitCursor = busy;
         if (status is not null)
         {
@@ -2480,6 +2850,23 @@ internal sealed class MainForm : Form
     private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
     private sealed record LayoutSlotCandidate(string ProfileKey, int SlotIndex, Rectangle VisualBounds);
+
+    private sealed record AiCountCurrentScanContext(
+        string ProfileKey,
+        string ProfileLabel,
+        string StashCropPath,
+        IReadOnlyList<AiCountSlotSource> Slots);
+
+    private sealed record AiCountApplySummary(
+        int AppliedCount,
+        int NoCountVisibleCount,
+        int UnclearCount,
+        int UnknownTileIds,
+        int MissingTileIds,
+        int InvalidOkCounts,
+        int SkippedManualOverrides,
+        int LockedManualTileCount,
+        int ExcludedOccupiedSlots);
 
     private sealed record ScanModeOption(string Label, string Key, ScanModeKind Kind, FixedStashScannerProfile? Profile = null)
     {

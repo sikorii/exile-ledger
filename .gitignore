@@ -18,6 +18,9 @@ TestResults/
 # Logs
 *.log
 
+# Local API benchmark/test harness outputs
+/API/
+
 # Generated debug/report folders
 debug/
 **/debug/
