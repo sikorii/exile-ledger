@@ -1,0 +1,9005 @@
+[
+  {
+    "canonicalName": "Adaptive Alloy",
+    "normalizedKey": "adaptivealloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Adaptive Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "6.1",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Adept Rune",
+    "normalizedKey": "adeptrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Adept Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.06",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Aldur's Legacy",
+    "normalizedKey": "aldurslegacy",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Aldur's Legacy"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv78+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "214",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Aldur's Saga",
+    "normalizedKey": "aldurssaga",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Aldur's Saga"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "24.1",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Animosity",
+    "normalizedKey": "ancientruneofanimosity",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Animosity"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.54",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Control",
+    "normalizedKey": "ancientruneofcontrol",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Control"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.966",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Decay",
+    "normalizedKey": "ancientruneofdecay",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Decay"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.52",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Detonation",
+    "normalizedKey": "ancientruneofdetonation",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Detonation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.93",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Discovery",
+    "normalizedKey": "ancientruneofdiscovery",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Discovery"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.11",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Dueling",
+    "normalizedKey": "ancientruneofdueling",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Dueling"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.03",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Horde",
+    "normalizedKey": "ancientruneofhorde",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Ancient Rune of Horde"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Prowess",
+    "normalizedKey": "ancientruneofprowess",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Prowess"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.836",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Retaliation",
+    "normalizedKey": "ancientruneofretaliation",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Retaliation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.79",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Shattering",
+    "normalizedKey": "ancientruneofshattering",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Shattering"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.2",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Splinters",
+    "normalizedKey": "ancientruneofsplinters",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Splinters"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.82",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of the Horde",
+    "normalizedKey": "ancientruneofthehorde",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Ancient Rune of the Horde"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.65",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of the Titan",
+    "normalizedKey": "ancientruneofthetitan",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Ancient Rune of the Titan"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.67",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Titan",
+    "normalizedKey": "ancientruneoftitan",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Ancient Rune of Titan"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Ancient Rune of Witchcraft",
+    "normalizedKey": "ancientruneofwitchcraft",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ancient Rune of Witchcraft",
+      "Ancient Rune of Witchcraft"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.23",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Animus Exchange",
+    "normalizedKey": "animusexchange",
+    "aliases": [
+      "Skill: Animus Exchange"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Animus Exchange",
+      "Skill: Animus Exchange"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Animus Exchange (Level 20)",
+    "normalizedKey": "animusexchangelevel20",
+    "aliases": [
+      "Skill: Animus Exchange (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Animus Exchange (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Animus Splinters",
+    "normalizedKey": "animussplinters",
+    "aliases": [
+      "Skill: Animus Splinters"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Animus Splinters",
+      "Skill: Animus Splinters"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Animus Splinters (Level 20)",
+    "normalizedKey": "animussplinterslevel20",
+    "aliases": [
+      "Skill: Animus Splinters (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Animus Splinters (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Arcanist's Etcher",
+    "normalizedKey": "arcanistsetcher",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      2,
+      4,
+      6
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "2x Arcanist's Etcher",
+      "4x Arcanist's Etcher",
+      "6x Arcanist's Etcher"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16",
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.7",
+        "unit": "exalted"
+      },
+      {
+        "value": "5.4",
+        "unit": "exalted"
+      },
+      {
+        "value": "8.1",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Armourer's Scrap",
+    "normalizedKey": "armourersscrap",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      2,
+      4,
+      6
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "2x Armourer's Scrap",
+      "4x Armourer's Scrap",
+      "6x Armourer's Scrap"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16",
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.52",
+        "unit": "exalted"
+      },
+      {
+        "value": "3.04",
+        "unit": "exalted"
+      },
+      {
+        "value": "4.56",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Artificer's Orb",
+    "normalizedKey": "artificersorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      2,
+      3
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "1x Artificer's Orb",
+      "2x Artificer's Orb",
+      "3x Artificer's Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16",
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.221",
+        "unit": "exalted"
+      },
+      {
+        "value": "0.442",
+        "unit": "exalted"
+      },
+      {
+        "value": "0.663",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Astrid's Creativity",
+    "normalizedKey": "astridscreativity",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Astrid's Creativity"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "10.5",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Betrayal of Aldur",
+    "normalizedKey": "betrayalofaldur",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Betrayal of Aldur"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.5",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Bitter Dead",
+    "normalizedKey": "bitterdead",
+    "aliases": [
+      "Skill: Bitter Dead"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Bitter Dead",
+      "Skill: Bitter Dead"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Bitter Dead (Level 20)",
+    "normalizedKey": "bitterdeadlevel20",
+    "aliases": [
+      "Skill: Bitter Dead (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Bitter Dead (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Blacksmith's Whetstone",
+    "normalizedKey": "blacksmithswhetstone",
+    "aliases": [],
+    "types": [
+      "Currency",
+      "Currency/Runes",
+      "Runes"
+    ],
+    "observedQuantities": [
+      2,
+      4,
+      6
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "2x Blacksmith's Whetstone",
+      "4x Blacksmith's Whetstone",
+      "6x Blacksmith's Whetstone"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16",
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.721",
+        "unit": "exalted"
+      },
+      {
+        "value": "1.44",
+        "unit": "exalted"
+      },
+      {
+        "value": "2.16",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Blazing Flux",
+    "normalizedKey": "blazingflux",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Blazing Flux"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.85",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Body Rune",
+    "normalizedKey": "bodyrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Body Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.8",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Breath of Aldur",
+    "normalizedKey": "breathofaldur",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Breath of Aldur"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "8.52",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Cadigan's Epiphany",
+    "normalizedKey": "cadigansepiphany",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Cadigan's Epiphany"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "6.95",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Celestial Alloy",
+    "normalizedKey": "celestialalloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Celestial Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "7.27",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Chaos Orb",
+    "normalizedKey": "chaosorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      2,
+      3
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "1x Chaos Orb",
+      "2x Chaos Orb",
+      "3x Chaos Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv65-74",
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.078",
+        "unit": "divine"
+      },
+      {
+        "value": "0.155",
+        "unit": "divine"
+      },
+      {
+        "value": "0.233",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Charging Rune",
+    "normalizedKey": "chargingrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Charging Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.14",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Chilling Flux",
+    "normalizedKey": "chillingflux",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Chilling Flux"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.53",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Concussive Runes",
+    "normalizedKey": "concussiverunes",
+    "aliases": [
+      "Support: Concussive Runes"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Concussive Runes",
+      "Support: Concussive Runes"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Conductive Runes",
+    "normalizedKey": "conductiverunes",
+    "aliases": [
+      "Skill: Conductive Runes"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Conductive Runes",
+      "Skill: Conductive Runes"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Conductive Runes (Level 20)",
+    "normalizedKey": "conductiveruneslevel20",
+    "aliases": [
+      "Skill: Conductive Runes (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Conductive Runes (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Countess Seske's Rune of Archery",
+    "normalizedKey": "countessseskesruneofarchery",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Countess Seske's Rune of Archery"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "6.9",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Courtesan Mannan's Rune of Cruelty",
+    "normalizedKey": "courtesanmannansruneofcruelty",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Courtesan Mannan's Rune of Cruelty"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.7",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Crackling Flux",
+    "normalizedKey": "cracklingflux",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Crackling Flux"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.59",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Craiceann's Rune of Recovery",
+    "normalizedKey": "craiceannsruneofrecovery",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Craiceann's Rune of Recovery"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.99",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Craiceann's Rune of Warding",
+    "normalizedKey": "craiceannsruneofwarding",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Craiceann's Rune of Warding"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "8.15",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Cyclonic Alloy",
+    "normalizedKey": "cyclonicalloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Cyclonic Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.4",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Desert Rune",
+    "normalizedKey": "desertrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Desert Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.25",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Detonate Living",
+    "normalizedKey": "detonateliving",
+    "aliases": [
+      "Skill: Detonate Living"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Detonate Living",
+      "Skill: Detonate Living"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Detonate Living (Level 20)",
+    "normalizedKey": "detonatelivinglevel20",
+    "aliases": [
+      "Skill: Detonate Living (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Detonate Living (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Divine Orb",
+    "normalizedKey": "divineorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      2,
+      3,
+      10
+    ],
+    "recipeCount": 9,
+    "recipes": [
+      "10x Divine Orb",
+      "1x Divine Orb",
+      "2x Divine Orb",
+      "3x Divine Orb",
+      "Divine Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74",
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1349",
+        "unit": "exalted"
+      },
+      {
+        "value": "135",
+        "unit": "exalted"
+      },
+      {
+        "value": "270",
+        "unit": "exalted"
+      },
+      {
+        "value": "405",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Eternal March",
+    "normalizedKey": "eternalmarch",
+    "aliases": [
+      "Skill: Eternal March"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Eternal March",
+      "Skill: Eternal March"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Eternal March (Level 20)",
+    "normalizedKey": "eternalmarchlevel20",
+    "aliases": [
+      "Skill: Eternal March (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Eternal March (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Exalted Orb",
+    "normalizedKey": "exaltedorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      2,
+      3
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "1x Exalted Orb",
+      "2x Exalted Orb",
+      "3x Exalted Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16",
+      "Lv30-74",
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.007",
+        "unit": "divine"
+      },
+      {
+        "value": "0.015",
+        "unit": "divine"
+      },
+      {
+        "value": "0.022",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Expansive Alloy",
+    "normalizedKey": "expansivealloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Expansive Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.78",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Explosive Transmutation",
+    "normalizedKey": "explosivetransmutation",
+    "aliases": [
+      "Skill: Explosive Transmutation"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Explosive Transmutation",
+      "Skill: Explosive Transmutation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Explosive Transmutation (Level 20)",
+    "normalizedKey": "explosivetransmutationlevel20",
+    "aliases": [
+      "Skill: Explosive Transmutation (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Explosive Transmutation (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Farrul's Rune of Grace",
+    "normalizedKey": "farrulsruneofgrace",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Farrul's Rune of Grace"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.15",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Farrul's Rune of the Chase",
+    "normalizedKey": "farrulsruneofthechase",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Farrul's Rune of the Chase"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "18.3",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Farrul's Rune of the Hunt",
+    "normalizedKey": "farrulsruneofthehunt",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Farrul's Rune of the Hunt"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.82",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Fenumus' Rune of Agony",
+    "normalizedKey": "fenumusruneofagony",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Fenumus' Rune of Agony"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.06",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Fenumus' Rune of Draining",
+    "normalizedKey": "fenumusruneofdraining",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Fenumus' Rune of Draining"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.05",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Fenumus' Rune of Spinning",
+    "normalizedKey": "fenumusruneofspinning",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Fenumus' Rune of Spinning"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.8",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Fist of Kalguur",
+    "normalizedKey": "fistofkalguur",
+    "aliases": [
+      "Support: Fist of Kalguur"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Fist of Kalguur",
+      "Support: Fist of Kalguur"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Fragments of The Past",
+    "normalizedKey": "fragmentsofthepast",
+    "aliases": [
+      "Fragments Of The PAst",
+      "Fragments of The PAst",
+      "Skill: Fragments Of The PAst"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Fragments of The Past",
+      "Skill: Fragments Of The PAst"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Fragments of The Past (Level 20)",
+    "normalizedKey": "fragmentsofthepastlevel20",
+    "aliases": [
+      "Fragments Of The Past (Level 20)",
+      "Skill: Fragments Of The Past (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Fragments Of The Past (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Frostflame Nova",
+    "normalizedKey": "frostflamenova",
+    "aliases": [
+      "Skill: Frostflame Nova"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Frostflame Nova",
+      "Skill: Frostflame Nova"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Frostflame Nova (Level 20)",
+    "normalizedKey": "frostflamenovalevel20",
+    "aliases": [
+      "Skill: Frostflame Nova (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Frostflame Nova (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Gemcutter's Prism",
+    "normalizedKey": "gemcuttersprism",
+    "aliases": [],
+    "types": [
+      "Currency",
+      "Currency/Gems"
+    ],
+    "observedQuantities": [
+      1,
+      2,
+      3
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "1x Gemcutter's Prism",
+      "2x Gemcutter's Prism",
+      "3x Gemcutter's Prism"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16",
+      "Lv30-74",
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.33",
+        "unit": "exalted"
+      },
+      {
+        "value": "2.65",
+        "unit": "exalted"
+      },
+      {
+        "value": "3.98",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Glacial Rune",
+    "normalizedKey": "glacialrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Glacial Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.8",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Glassblower's Bauble",
+    "normalizedKey": "glassblowersbauble",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      2,
+      3
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "1x Glassblower's Bauble",
+      "2x Glassblower's Bauble",
+      "3x Glassblower's Bauble"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16",
+      "Lv30-74",
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.1",
+        "unit": "exalted"
+      },
+      {
+        "value": "2.19",
+        "unit": "exalted"
+      },
+      {
+        "value": "3.29",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Adept Rune",
+    "normalizedKey": "greateradeptrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Adept Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.605",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Body Rune",
+    "normalizedKey": "greaterbodyrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Body Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.572",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Chaos Orb",
+    "normalizedKey": "greaterchaosorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      3
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Greater Chaos Orb",
+      "3x Greater Chaos Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74",
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.229",
+        "unit": "divine"
+      },
+      {
+        "value": "0.686",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Charging Rune",
+    "normalizedKey": "greaterchargingrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Charging Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.12",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Desert Rune",
+    "normalizedKey": "greaterdesertrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Desert Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.258",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Exalted Orb",
+    "normalizedKey": "greaterexaltedorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      3
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Greater Exalted Orb",
+      "3x Greater Exalted Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74",
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "13.7",
+        "unit": "exalted"
+      },
+      {
+        "value": "4.56",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Glacial Rune",
+    "normalizedKey": "greaterglacialrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Glacial Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.224",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Inspiration Rune",
+    "normalizedKey": "greaterinspirationrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Inspiration Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.254",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Iron Rune",
+    "normalizedKey": "greaterironrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Iron Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.04",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Jeweller's Orb",
+    "normalizedKey": "greaterjewellersorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Jeweller's Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.472",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Mind Rune",
+    "normalizedKey": "greatermindrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Mind Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.68",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Orb of Augmentation",
+    "normalizedKey": "greaterorbofaugmentation",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      3
+    ],
+    "recipeCount": 5,
+    "recipes": [
+      "1x Greater Orb of Augmentation",
+      "3x Greater Orb of Augmentation",
+      "Greater Orb of Augmentation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.127",
+        "unit": "exalted"
+      },
+      {
+        "value": "0.38",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Orb of Transmutation",
+    "normalizedKey": "greaterorboftransmutation",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      3
+    ],
+    "recipeCount": 5,
+    "recipes": [
+      "1x Greater Orb of Transmutation",
+      "3x Greater Orb of Transmutation",
+      "Greater Orb of Transmutation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.592",
+        "unit": "exalted"
+      },
+      {
+        "value": "1.78",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Rebirth Rune",
+    "normalizedKey": "greaterrebirthrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Rebirth Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.161",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Regal Orb",
+    "normalizedKey": "greaterregalorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      3
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Greater Regal Orb",
+      "3x Greater Regal Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74",
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.03",
+        "unit": "exalted"
+      },
+      {
+        "value": "3.08",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Resolve Rune",
+    "normalizedKey": "greaterresolverune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Resolve Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.859",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Robust Rune",
+    "normalizedKey": "greaterrobustrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Robust Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.44",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Stone Rune",
+    "normalizedKey": "greaterstonerune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Stone Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.083",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Storm Rune",
+    "normalizedKey": "greaterstormrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Storm Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.272",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Vision Rune",
+    "normalizedKey": "greatervisionrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Vision Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.275",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Greater Ward Rune",
+    "normalizedKey": "greaterwardrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Greater Ward Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.05",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Grim Pillars",
+    "normalizedKey": "grimpillars",
+    "aliases": [
+      "Skill: Grim Pillars"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Grim Pillars",
+      "Skill: Grim Pillars"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Grim Pillars (Level 20)",
+    "normalizedKey": "grimpillarslevel20",
+    "aliases": [
+      "Skill: Grim Pillars (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Grim Pillars (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Healing Runes",
+    "normalizedKey": "healingrunes",
+    "aliases": [
+      "Support: Healing Runes"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Healing Runes",
+      "Support: Healing Runes"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Hedgewitch Assandra's Rune of Wisdom",
+    "normalizedKey": "hedgewitchassandrasruneofwisdom",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Hedgewitch Assandra's Rune of Wisdom"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "14",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Hinekora's Lock",
+    "normalizedKey": "hinekoraslock",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Hinekora's Lock"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "249",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Hollow Shell",
+    "normalizedKey": "hollowshell",
+    "aliases": [
+      "Skill: Hollow Shell"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Hollow Shell",
+      "Skill: Hollow Shell"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Hollow Shell (Level 20)",
+    "normalizedKey": "hollowshelllevel20",
+    "aliases": [
+      "Skill: Hollow Shell (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Hollow Shell (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Inspiration Rune",
+    "normalizedKey": "inspirationrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Inspiration Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "6.61",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ire of Aldur",
+    "normalizedKey": "ireofaldur",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ire of Aldur"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.66",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Iron Rune",
+    "normalizedKey": "ironrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Iron Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.58",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Katla's Gloom",
+    "normalizedKey": "katlasgloom",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Katla's Gloom"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "18.5",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Kolr's Hunt",
+    "normalizedKey": "kolrshunt",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Kolr's Hunt"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "98.3",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Krillson's Bay Key",
+    "normalizedKey": "krillsonsbaykey",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [],
+    "recipeCount": 1,
+    "recipes": [
+      "Krillson's Bay Key"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv78+"
+    ]
+  },
+  {
+    "canonicalName": "Lady Hestra's Rune of Winter",
+    "normalizedKey": "ladyhestrasruneofwinter",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lady Hestra's Rune of Winter"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.01",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Adept Rune",
+    "normalizedKey": "lesseradeptrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Adept Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.661",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Body Rune",
+    "normalizedKey": "lesserbodyrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Body Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.479",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Charging Rune",
+    "normalizedKey": "lesserchargingrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Charging Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ]
+  },
+  {
+    "canonicalName": "Lesser Desert Rune",
+    "normalizedKey": "lesserdesertrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Desert Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.279",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Glacial Rune",
+    "normalizedKey": "lesserglacialrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Glacial Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.259",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Inspiration Rune",
+    "normalizedKey": "lesserinspirationrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Inspiration Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.94",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Iron Rune",
+    "normalizedKey": "lesserironrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Iron Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.715",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Jeweller's Orb",
+    "normalizedKey": "lesserjewellersorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Jeweller's Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.031",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Mind Rune",
+    "normalizedKey": "lessermindrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Lesser Mind Rune",
+      "Lesser Mind Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.224",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Rebirth Rune",
+    "normalizedKey": "lesserrebirthrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Rebirth Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.6",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Resolve Rune",
+    "normalizedKey": "lesserresolverune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Resolve Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.68",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Robust Rune",
+    "normalizedKey": "lesserrobustrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Robust Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "6.76",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Stone Rune",
+    "normalizedKey": "lesserstonerune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Stone Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.436",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Storm Rune",
+    "normalizedKey": "lesserstormrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Storm Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.398",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Vision Rune",
+    "normalizedKey": "lesservisionrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Lesser Vision Rune",
+      "Lesser Vision Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.514",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Lesser Ward Rune",
+    "normalizedKey": "lesserwardrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Lesser Ward Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.32",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Leylines",
+    "normalizedKey": "leylines",
+    "aliases": [
+      "Skill: Leylines"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Leylines",
+      "Skill: Leylines"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Leylines (Level 20)",
+    "normalizedKey": "leylineslevel20",
+    "aliases": [
+      "Skill: Leylines (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Leylines (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Masterwork Rune",
+    "normalizedKey": "masterworkrune",
+    "aliases": [],
+    "types": [
+      "Currency",
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Masterwork Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "51",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Medved's Boon",
+    "normalizedKey": "medvedsboon",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Medved's Boon"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv78+"
+    ]
+  },
+  {
+    "canonicalName": "Medved's Saga",
+    "normalizedKey": "medvedssaga",
+    "aliases": [],
+    "types": [
+      "Currency",
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Medved's Saga"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "6.84",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Medved's Tending",
+    "normalizedKey": "medvedstending",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Medved's Tending"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "21.8",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Mind Rune",
+    "normalizedKey": "mindrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Mind Rune",
+      "Mind Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.58",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Mirror of Kalandra",
+    "normalizedKey": "mirrorofkalandra",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Mirror of Kalandra"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2559",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Mystic Alloy",
+    "normalizedKey": "mysticalloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Mystic Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.64",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Olroth's Boon",
+    "normalizedKey": "olrothsboon",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Olroth's Boon"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv78+"
+    ]
+  },
+  {
+    "canonicalName": "Olroth's Saga",
+    "normalizedKey": "olrothssaga",
+    "aliases": [],
+    "types": [
+      "Currency",
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Olroth's Saga"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "27.8",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Orb of Alchemy",
+    "normalizedKey": "orbofalchemy",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      3
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Orb of Alchemy",
+      "3x Orb of Alchemy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.48",
+        "unit": "exalted"
+      },
+      {
+        "value": "1.44",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Orb of Annulment",
+    "normalizedKey": "orbofannulment",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      2,
+      3
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "1x Orb of Annulment",
+      "2x Orb of Annulment",
+      "3x Orb of Annulment"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.428",
+        "unit": "divine"
+      },
+      {
+        "value": "0.856",
+        "unit": "divine"
+      },
+      {
+        "value": "1.28",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Orb of Augmentation",
+    "normalizedKey": "orbofaugmentation",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      2
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Orb of Augmentation",
+      "2x Orb of Augmentation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.077",
+        "unit": "exalted"
+      },
+      {
+        "value": "0.155",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Orb of Chance",
+    "normalizedKey": "orbofchance",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      2,
+      3
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "1x Orb of Chance",
+      "2x Orb of Chance",
+      "3x Orb of Chance"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.088",
+        "unit": "divine"
+      },
+      {
+        "value": "0.175",
+        "unit": "divine"
+      },
+      {
+        "value": "0.263",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Orb of Transmutation",
+    "normalizedKey": "orboftransmutation",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      2
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Orb of Transmutation",
+      "2x Orb of Transmutation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.282",
+        "unit": "exalted"
+      },
+      {
+        "value": "0.565",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Passion of Aldur",
+    "normalizedKey": "passionofaldur",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Passion of Aldur"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.62",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Perfect Chaos Orb",
+    "normalizedKey": "perfectchaosorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      3
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Perfect Chaos Orb",
+      "3x Perfect Chaos Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.42",
+        "unit": "divine"
+      },
+      {
+        "value": "7.27",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Perfect Exalted Orb",
+    "normalizedKey": "perfectexaltedorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      3
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Perfect Exalted Orb",
+      "3x Perfect Exalted Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.27",
+        "unit": "divine"
+      },
+      {
+        "value": "6.81",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Perfect Flux",
+    "normalizedKey": "perfectflux",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Perfect Flux"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "23.4",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Perfect Jeweller's Orb",
+    "normalizedKey": "perfectjewellersorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Perfect Jeweller's Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "74.2",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Perfect Orb of Augmentation",
+    "normalizedKey": "perfectorbofaugmentation",
+    "aliases": [],
+    "types": [
+      "Currency",
+      "Currency/Runes"
+    ],
+    "observedQuantities": [
+      1,
+      3
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Perfect Orb of Augmentation",
+      "3x Perfect Orb of Augmentation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "25.6",
+        "unit": "exalted"
+      },
+      {
+        "value": "8.54",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Perfect Orb of Transmutation",
+    "normalizedKey": "perfectorboftransmutation",
+    "aliases": [],
+    "types": [
+      "Currency",
+      "Currency/Runes"
+    ],
+    "observedQuantities": [
+      1,
+      3
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Perfect Orb of Transmutation",
+      "3x Perfect Orb of Transmutation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "13.5",
+        "unit": "exalted"
+      },
+      {
+        "value": "40.6",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Perfect Regal Orb",
+    "normalizedKey": "perfectregalorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      3
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "3x Perfect Regal Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "45.5",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Powered by Verisium",
+    "normalizedKey": "poweredbyverisium",
+    "aliases": [
+      "Skill: Powered by Verisium"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Powered by Verisium",
+      "Skill: Powered by Verisium"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Powered by Verisium (Level 20)",
+    "normalizedKey": "poweredbyverisiumlevel20",
+    "aliases": [
+      "Skill: Powered by Verisium (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Powered by Verisium (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Prismatic Alloy",
+    "normalizedKey": "prismaticalloy",
+    "aliases": [],
+    "types": [
+      "Alloys",
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Prismatic Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.5",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Protective Alloy",
+    "normalizedKey": "protectivealloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Protective Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "12",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rain of Blades",
+    "normalizedKey": "rainofblades",
+    "aliases": [
+      "Skill: Rain of Blades"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Rain of Blades",
+      "Skill: Rain of Blades"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Rain of Blades (Level 20)",
+    "normalizedKey": "rainofbladeslevel20",
+    "aliases": [
+      "Skill: Rain of Blades (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Rain of Blades (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Random Currency",
+    "normalizedKey": "randomcurrency",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      5
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "5x Random Currency"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Rare Unique Item",
+    "normalizedKey": "rareuniqueitem",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rare Unique Item",
+      "Rare Unique Item"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Rebirth Rune",
+    "normalizedKey": "rebirthrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rebirth Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.21",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Refutation",
+    "normalizedKey": "refutation",
+    "aliases": [
+      "Skill: Refutation"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Refutation",
+      "Skill: Refutation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Refutation (Level 20)",
+    "normalizedKey": "refutationlevel20",
+    "aliases": [
+      "Skill: Refutation (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Refutation (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Regal Orb",
+    "normalizedKey": "regalorb",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1,
+      2,
+      3
+    ],
+    "recipeCount": 6,
+    "recipes": [
+      "1x Regal Orb",
+      "2x Regal Orb",
+      "3x Regal Orb"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16",
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.265",
+        "unit": "exalted"
+      },
+      {
+        "value": "0.53",
+        "unit": "exalted"
+      },
+      {
+        "value": "0.796",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Remnants of Kalguur",
+    "normalizedKey": "remnantsofkalguur",
+    "aliases": [
+      "Skill: Remnants of Kalguur"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Remnants of Kalguur",
+      "Skill: Remnants of Kalguur"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Remnants of Kalguur (Level 20)",
+    "normalizedKey": "remnantsofkalguurlevel20",
+    "aliases": [
+      "Skill: Remnants of Kalguur (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Remnants of Kalguur (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Repulsion",
+    "normalizedKey": "repulsion",
+    "aliases": [
+      "Skill: Repulsion"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Repulsion",
+      "Skill: Repulsion"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Repulsion (Level 20)",
+    "normalizedKey": "repulsionlevel20",
+    "aliases": [
+      "Skill: Repulsion (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Repulsion (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Resolve Rune",
+    "normalizedKey": "resolverune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Resolve Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.7",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Robust Rune",
+    "normalizedKey": "robustrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Robust Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "12.7",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of Accumulation",
+    "normalizedKey": "runeofaccumulation",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of Accumulation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.97",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of Acrobatics",
+    "normalizedKey": "runeofacrobatics",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of Acrobatics"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "6.27",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of Blossom",
+    "normalizedKey": "runeofblossom",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Rune of Blossom"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Rune of Confrontation",
+    "normalizedKey": "runeofconfrontation",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of Confrontation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.677",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of Consistency",
+    "normalizedKey": "runeofconsistency",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of Consistency"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.78",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of Culmination",
+    "normalizedKey": "runeofculmination",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of Culmination"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.34",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of Foundations",
+    "normalizedKey": "runeoffoundations",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of Foundations",
+      "Rune of Foundations"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "6.57",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of Prism",
+    "normalizedKey": "runeofprism",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Rune of Prism"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Rune of Reach",
+    "normalizedKey": "runeofreach",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of Reach",
+      "Rune of Reach"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.54",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of Renown",
+    "normalizedKey": "runeofrenown",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of Renown",
+      "Rune of Renown"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.74",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of the Blossom",
+    "normalizedKey": "runeoftheblossom",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Rune of the Blossom"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.55",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of the Hunt",
+    "normalizedKey": "runeofthehunt",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of the Hunt"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.1",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of the Prism",
+    "normalizedKey": "runeoftheprism",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of the Prism"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.18",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of Vital Flame",
+    "normalizedKey": "runeofvitalflame",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of Vital Flame"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.507",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Rune of Vitality",
+    "normalizedKey": "runeofvitality",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Rune of Vitality"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.85",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Runeforged Blades",
+    "normalizedKey": "runeforgedblades",
+    "aliases": [
+      "Skill: Runeforged Blades"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Runeforged Blades",
+      "Skill: Runeforged Blades"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Runic Alloy",
+    "normalizedKey": "runicalloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1,
+      2
+    ],
+    "recipeCount": 4,
+    "recipes": [
+      "1x Runic Alloy",
+      "2x Runic Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16",
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.762",
+        "unit": "exalted"
+      },
+      {
+        "value": "1.52",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Runic Extraction",
+    "normalizedKey": "runicextraction",
+    "aliases": [
+      "Support: Runic Extraction"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Runic Extraction",
+      "Support: Runic Extraction"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Runic Infusion",
+    "normalizedKey": "runicinfusion",
+    "aliases": [
+      "Support: Runic Infusion"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Runic Infusion",
+      "Support: Runic Infusion"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Runic Reprieve",
+    "normalizedKey": "runicreprieve",
+    "aliases": [
+      "Skill: Runic Reprieve"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Runic Reprieve",
+      "Skill: Runic Reprieve"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Runic Reprieve (Level 20)",
+    "normalizedKey": "runicreprievelevel20",
+    "aliases": [
+      "Skill: Runic Reprieve (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Runic Reprieve (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Saqawal's Rune of Erosion",
+    "normalizedKey": "saqawalsruneoferosion",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Saqawal's Rune of Erosion"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.05",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Saqawal's Rune of Memory",
+    "normalizedKey": "saqawalsruneofmemory",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Saqawal's Rune of Memory"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.14",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Saqawal's Rune of Sky",
+    "normalizedKey": "saqawalsruneofsky",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Saqawal's Rune of Sky"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Saqawal's Rune of the Sky",
+    "normalizedKey": "saqawalsruneofthesky",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Saqawal's Rune of the Sky"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "10.9",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Scouring Flame",
+    "normalizedKey": "scouringflame",
+    "aliases": [
+      "Skill: Scouring Flame"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Scouring Flame",
+      "Skill: Scouring Flame"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Serle's Triumph",
+    "normalizedKey": "serlestriumph",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Serle's Triumph"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "168",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Skyfall",
+    "normalizedKey": "skyfall",
+    "aliases": [
+      "Skill: Skyfall"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Skyfall",
+      "Skill: Skyfall"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Skyfall (Level 20)",
+    "normalizedKey": "skyfalllevel20",
+    "aliases": [
+      "Skill: Skyfall (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Skyfall (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Sovereign Alloy",
+    "normalizedKey": "sovereignalloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Sovereign Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "25.5",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Stone Rune",
+    "normalizedKey": "stonerune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Stone Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Storm Rune",
+    "normalizedKey": "stormrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Storm Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.97",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Swift Alloy",
+    "normalizedKey": "swiftalloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Swift Alloy"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.65",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thane Girt's Rune of Wildness",
+    "normalizedKey": "thanegirtsruneofwildness",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thane Girt's Rune of Wildness"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.26",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thane Grannel's Rune of Mastery",
+    "normalizedKey": "thanegrannelsruneofmastery",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Thane Grannel's Rune of Mastery"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Thane Grannell's Rune of Mastery",
+    "normalizedKey": "thanegrannellsruneofmastery",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Thane Grannell's Rune of Mastery"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.78",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thane Leld's Rune of Spring",
+    "normalizedKey": "thaneleldsruneofspring",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thane Leld's Rune of Spring"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.57",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thane Myrk's Rune of Summer",
+    "normalizedKey": "thanemyrksruneofsummer",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thane Myrk's Rune of Summer"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.943",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 10)",
+    "normalizedKey": "thaumaturgicfluxlevel10",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 10)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "10.5",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 11)",
+    "normalizedKey": "thaumaturgicfluxlevel11",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 11)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "7.16",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 12)",
+    "normalizedKey": "thaumaturgicfluxlevel12",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 12)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.68",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 13)",
+    "normalizedKey": "thaumaturgicfluxlevel13",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 13)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.79",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 14)",
+    "normalizedKey": "thaumaturgicfluxlevel14",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 14)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "12.7",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 15)",
+    "normalizedKey": "thaumaturgicfluxlevel15",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 15)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.15",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 16)",
+    "normalizedKey": "thaumaturgicfluxlevel16",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 16)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.67",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 17)",
+    "normalizedKey": "thaumaturgicfluxlevel17",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 17)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.12",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 18)",
+    "normalizedKey": "thaumaturgicfluxlevel18",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 18)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.85",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 19)",
+    "normalizedKey": "thaumaturgicfluxlevel19",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 19)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.54",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 20)",
+    "normalizedKey": "thaumaturgicfluxlevel20",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "70.9",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 5)",
+    "normalizedKey": "thaumaturgicfluxlevel5",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 5)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 6)",
+    "normalizedKey": "thaumaturgicfluxlevel6",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 6)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 7)",
+    "normalizedKey": "thaumaturgicfluxlevel7",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 7)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 8)",
+    "normalizedKey": "thaumaturgicfluxlevel8",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 8)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "12.6",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thaumaturgic Flux (Level 9)",
+    "normalizedKey": "thaumaturgicfluxlevel9",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thaumaturgic Flux (Level 9)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "11.2",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "The Greatwolf's Rune of Claws",
+    "normalizedKey": "thegreatwolfsruneofclaws",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x The Greatwolf's Rune of Claws"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.71",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "The Greatwolf's Rune of Willpower",
+    "normalizedKey": "thegreatwolfsruneofwillpower",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x The Greatwolf's Rune of Willpower"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.41",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "The Runebinder's Alloy",
+    "normalizedKey": "therunebindersalloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x The Runebinder's Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "28.1",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "The Runefather's Alloy",
+    "normalizedKey": "therunefathersalloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x The Runefather's Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.12",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Thrud's Might",
+    "normalizedKey": "thrudsmight",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Thrud's Might"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.88",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Transcendant Alloy",
+    "normalizedKey": "transcendantalloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Transcendant Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Transcendent Alloy",
+    "normalizedKey": "transcendentalloy",
+    "aliases": [],
+    "types": [
+      "Alloys"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Transcendent Alloy"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "26.7",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Triskelion Cascade",
+    "normalizedKey": "triskelioncascade",
+    "aliases": [
+      "Skill: Triskelion Cascade"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Triskelion Cascade",
+      "Skill: Triskelion Cascade"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Triskelion Cascade (Level 20)",
+    "normalizedKey": "triskelioncascadelevel20",
+    "aliases": [
+      "Skill: Triskelion Cascade (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Triskelion Cascade (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Uhtred's Boon",
+    "normalizedKey": "uhtredsboon",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Uhtred's Boon"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv78+"
+    ]
+  },
+  {
+    "canonicalName": "Uhtred's Saga",
+    "normalizedKey": "uhtredssaga",
+    "aliases": [],
+    "types": [
+      "Currency",
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Uhtred's Saga"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "67.8",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Uhtred's Sidereus",
+    "normalizedKey": "uhtredssidereus",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Uhtred's Sidereus"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "43.8",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Uncut Skill Gem",
+    "normalizedKey": "uncutskillgem",
+    "aliases": [],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Uncut Skill Gem"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ]
+  },
+  {
+    "canonicalName": "Uncut Skill Gem (Level 19)",
+    "normalizedKey": "uncutskillgemlevel19",
+    "aliases": [],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Uncut Skill Gem (Level 19)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "5.32",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Uncut Skill Gem (Level 20)",
+    "normalizedKey": "uncutskillgemlevel20",
+    "aliases": [],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Uncut Skill Gem (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.64",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Uncut Spirit Gem",
+    "normalizedKey": "uncutspiritgem",
+    "aliases": [],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Uncut Spirit Gem"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ]
+  },
+  {
+    "canonicalName": "Uncut Spirit Gem (Level 19)",
+    "normalizedKey": "uncutspiritgemlevel19",
+    "aliases": [],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Uncut Spirit Gem (Level 19)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "18.1",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Uncut Spirit Gem (Level 20)",
+    "normalizedKey": "uncutspiritgemlevel20",
+    "aliases": [],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Uncut Spirit Gem (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.61",
+        "unit": "divine"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Uncut Support Gem",
+    "normalizedKey": "uncutsupportgem",
+    "aliases": [],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Uncut Support Gem"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ]
+  },
+  {
+    "canonicalName": "Unique Amulet",
+    "normalizedKey": "uniqueamulet",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Amulet"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Armour",
+    "normalizedKey": "uniquearmour",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Unique Armour"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Unique Belt",
+    "normalizedKey": "uniquebelt",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Belt"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Body Armour",
+    "normalizedKey": "uniquebodyarmour",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [],
+    "recipeCount": 1,
+    "recipes": [
+      "Unique Body Armour"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Boots",
+    "normalizedKey": "uniqueboots",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Boots"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Bow",
+    "normalizedKey": "uniquebow",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Bow"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Crossbow",
+    "normalizedKey": "uniquecrossbow",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Crossbow"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Focus",
+    "normalizedKey": "uniquefocus",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Focus"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Gloves",
+    "normalizedKey": "uniquegloves",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Gloves"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Helmet",
+    "normalizedKey": "uniquehelmet",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Helmet"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Jewellery",
+    "normalizedKey": "uniquejewellery",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Jewellery"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique One Hand Mace",
+    "normalizedKey": "uniqueonehandmace",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique One Hand Mace"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Quarterstaff",
+    "normalizedKey": "uniquequarterstaff",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Quarterstaff"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Quiver",
+    "normalizedKey": "uniquequiver",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Quiver"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Ring",
+    "normalizedKey": "uniquering",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Ring"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Sceptre",
+    "normalizedKey": "uniquesceptre",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Sceptre"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Shield",
+    "normalizedKey": "uniqueshield",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Shield"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Spear",
+    "normalizedKey": "uniquespear",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Spear"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Staff",
+    "normalizedKey": "uniquestaff",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Staff"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Talisman",
+    "normalizedKey": "uniquetalisman",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Talisman"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Two Hand Mace",
+    "normalizedKey": "uniquetwohandmace",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Two Hand Mace"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Unique Wand",
+    "normalizedKey": "uniquewand",
+    "aliases": [],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Unique Wand"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ]
+  },
+  {
+    "canonicalName": "Verisium Manifestation",
+    "normalizedKey": "verisiummanifestation",
+    "aliases": [
+      "Skill: Verisium Manifestation"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Verisium Manifestation"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Verisium Manifestation (Level 20)",
+    "normalizedKey": "verisiummanifestationlevel20",
+    "aliases": [
+      "Skill: Verisium Manifestation (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Verisium Manifestation (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Verisium Manifestations",
+    "normalizedKey": "verisiummanifestations",
+    "aliases": [],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Verisium Manifestations"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Verisium Pile",
+    "normalizedKey": "verisiumpile",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Verisium Pile"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ]
+  },
+  {
+    "canonicalName": "Very Rare Unique item",
+    "normalizedKey": "veryrareuniqueitem",
+    "aliases": [
+      "Very Rare Unique Item"
+    ],
+    "types": [
+      "Uniques"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "Very Rare Unique Item",
+      "Very Rare Unique item"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Vision Rune",
+    "normalizedKey": "visionrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Vision Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.614",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Void Flux",
+    "normalizedKey": "voidflux",
+    "aliases": [],
+    "types": [
+      "Currency"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Void Flux"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "14.4",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Voltaic Barrier",
+    "normalizedKey": "voltaicbarrier",
+    "aliases": [
+      "Skill: Voltaic Barrier"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Voltaic Barrier",
+      "Skill: Voltaic Barrier"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Voltaic Barrier (Level 20)",
+    "normalizedKey": "voltaicbarrierlevel20",
+    "aliases": [
+      "Skill: Voltaic Barrier (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Voltaic Barrier (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Vorana's Boon",
+    "normalizedKey": "voranasboon",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Vorana's Boon"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv78+"
+    ]
+  },
+  {
+    "canonicalName": "Vorana's Carnage",
+    "normalizedKey": "voranascarnage",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Vorana's Carnage"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "21.6",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Vorana's Saga",
+    "normalizedKey": "voranassaga",
+    "aliases": [],
+    "types": [
+      "Currency",
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Vorana's Saga"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.65",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Ward Rune",
+    "normalizedKey": "wardrune",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Ward Rune",
+      "Ward Rune"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv15-16"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.51",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Wardbound Minions",
+    "normalizedKey": "wardboundminions",
+    "aliases": [
+      "Skill: Wardbound Minions"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 3,
+    "recipes": [
+      "1x Wardbound Minions",
+      "Skill: Wardbound Minions"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74",
+      "Lv70+"
+    ]
+  },
+  {
+    "canonicalName": "Wardbound Minions (Level 20)",
+    "normalizedKey": "wardboundminionslevel20",
+    "aliases": [
+      "Skill: Wardbound Minions (Level 20)"
+    ],
+    "types": [
+      "Gems"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "Skill: Wardbound Minions (Level 20)"
+    ],
+    "sources": [
+      "Game8 saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197"
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Annihilation",
+    "normalizedKey": "wardingruneofannihilation",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Annihilation",
+      "Warding Rune of Annihilation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "3.02",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Armature",
+    "normalizedKey": "wardingruneofarmature",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Armature",
+      "Warding Rune of Armature"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.14",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Bodyguards",
+    "normalizedKey": "wardingruneofbodyguards",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Bodyguards",
+      "Warding Rune of Bodyguards"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.51",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Courage",
+    "normalizedKey": "wardingruneofcourage",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Courage"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.695",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Desperation",
+    "normalizedKey": "wardingruneofdesperation",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Desperation"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.85",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Disintegration",
+    "normalizedKey": "wardingruneofdisintegration",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Disintegration"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.87",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Equinox",
+    "normalizedKey": "wardingruneofequinox",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Equinox",
+      "Warding Rune of Equinox"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.24",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Glancing",
+    "normalizedKey": "wardingruneofglancing",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Glancing",
+      "Warding Rune of Glancing"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.49",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Heart",
+    "normalizedKey": "wardingruneofheart",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Heart",
+      "Warding Rune of Heart"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.53",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Hollowing",
+    "normalizedKey": "wardingruneofhollowing",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Hollowing",
+      "Warding Rune of Hollowing"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.85",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Nourishment",
+    "normalizedKey": "wardingruneofnourishment",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 1,
+    "recipes": [
+      "1x Warding Rune of Nourishment"
+    ],
+    "sources": [
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.58",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Obsession",
+    "normalizedKey": "wardingruneofobsession",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Obsession",
+      "Warding Rune of Obsession"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv70+"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2.41",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Protection",
+    "normalizedKey": "wardingruneofprotection",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Protection"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "0.822",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Reinforcement",
+    "normalizedKey": "wardingruneofreinforcement",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Reinforcement"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv30-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "4.85",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Salvaging",
+    "normalizedKey": "wardingruneofsalvaging",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Salvaging",
+      "Warding Rune of Salvaging"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.25",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Stability",
+    "normalizedKey": "wardingruneofstability",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Stability",
+      "Warding Rune of Stability"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "2",
+        "unit": "exalted"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Warding Rune of Symbiosis",
+    "normalizedKey": "wardingruneofsymbiosis",
+    "aliases": [],
+    "types": [
+      "Runes"
+    ],
+    "observedQuantities": [
+      1
+    ],
+    "recipeCount": 2,
+    "recipes": [
+      "1x Warding Rune of Symbiosis",
+      "Warding Rune of Symbiosis"
+    ],
+    "sources": [
+      "Game8 saved HTML",
+      "PoE2DB saved HTML"
+    ],
+    "sourceUrls": [
+      "https://game8.co/games/Path-of-Exile-2/archives/603197",
+      "https://poe2db.tw/us/Runeshape_Combinations"
+    ],
+    "observedLevels": [
+      "Lv65-74"
+    ],
+    "poe2dbValues": [
+      {
+        "value": "1.75",
+        "unit": "exalted"
+      }
+    ]
+  }
+]
