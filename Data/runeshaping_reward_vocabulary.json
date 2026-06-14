@@ -6299,30 +6299,11 @@
     ]
   },
   {
-    "canonicalName": "Thane Grannel's Rune of Mastery",
-    "normalizedKey": "thanegrannelsruneofmastery",
-    "aliases": [],
-    "types": [
-      "Runes"
-    ],
-    "observedQuantities": [
-      1
-    ],
-    "recipeCount": 1,
-    "recipes": [
-      "1x Thane Grannel's Rune of Mastery"
-    ],
-    "sources": [
-      "Game8 saved HTML"
-    ],
-    "sourceUrls": [
-      "https://game8.co/games/Path-of-Exile-2/archives/603197"
-    ]
-  },
-  {
     "canonicalName": "Thane Grannell's Rune of Mastery",
     "normalizedKey": "thanegrannellsruneofmastery",
-    "aliases": [],
+    "aliases": [
+      "Thane Grannel's Rune of Mastery"
+    ],
     "types": [
       "Runes"
     ],
@@ -7068,30 +7049,11 @@
     ]
   },
   {
-    "canonicalName": "Transcendant Alloy",
-    "normalizedKey": "transcendantalloy",
-    "aliases": [],
-    "types": [
-      "Alloys"
-    ],
-    "observedQuantities": [
-      1
-    ],
-    "recipeCount": 1,
-    "recipes": [
-      "1x Transcendant Alloy"
-    ],
-    "sources": [
-      "Game8 saved HTML"
-    ],
-    "sourceUrls": [
-      "https://game8.co/games/Path-of-Exile-2/archives/603197"
-    ]
-  },
-  {
     "canonicalName": "Transcendent Alloy",
     "normalizedKey": "transcendentalloy",
-    "aliases": [],
+    "aliases": [
+      "Transcendant Alloy"
+    ],
     "types": [
       "Alloys"
     ],
