@@ -45,7 +45,9 @@ internal sealed record ScreenshotResolutionProfile(
         }
 
         throw new NotSupportedException(
-            $"Unsupported screenshot resolution {screenshotSize.Width}x{screenshotSize.Height}. Supported resolutions are {string.Join(", ", Supported.Select(profile => profile.Label))}.");
+            $"Unsupported screenshot resolution detected: {screenshotSize.Width}x{screenshotSize.Height}. " +
+            $"Supported full screenshot sizes are {string.Join(", ", Supported.Select(profile => profile.Label))}. " +
+            "Use a full 16:9 uncropped static stash screenshot.");
     }
 
     public static bool TryDetect(Size screenshotSize, out ScreenshotResolutionProfile profile)
@@ -149,6 +151,26 @@ internal sealed class StashCoordinateMapper
             actualScreenBounds.Height);
     }
 
+    public string[] BuildDebugLines(
+        Size screenshotSize,
+        Rectangle sourceBounds,
+        StashLayoutProfile requestedBaseLayout,
+        StashLayoutProfile actualLayout)
+    {
+        return
+        [
+            "Resolution mapper:",
+            $"  Screenshot: {screenshotSize.Width}x{screenshotSize.Height}",
+            $"  Canonical/base: {ScreenshotResolutionProfile.BaseScreenshotSize.Width}x{ScreenshotResolutionProfile.BaseScreenshotSize.Height}",
+            $"  Profile: {Profile.Label} ({Profile.Key})",
+            $"  Scale: X={Profile.ScaleX:0.####}, Y={Profile.ScaleY:0.####}",
+            $"  Source bounds: {FormatRectangle(sourceBounds)}",
+            $"  Requested base crop: {FormatRectangle(requestedBaseLayout.DisplayCropRegion)}",
+            $"  Actual scaled crop: {FormatRectangle(actualLayout.DisplayCropRegion)}",
+            string.Empty
+        ];
+    }
+
     private static Rectangle ScaleRectangle(Rectangle rectangle, double scaleX, double scaleY)
     {
         var left = (int)Math.Round(rectangle.Left * scaleX, MidpointRounding.AwayFromZero);
@@ -156,5 +178,10 @@ internal sealed class StashCoordinateMapper
         var right = (int)Math.Round(rectangle.Right * scaleX, MidpointRounding.AwayFromZero);
         var bottom = (int)Math.Round(rectangle.Bottom * scaleY, MidpointRounding.AwayFromZero);
         return Rectangle.FromLTRB(left, top, Math.Max(left + 1, right), Math.Max(top + 1, bottom));
+    }
+
+    private static string FormatRectangle(Rectangle rectangle)
+    {
+        return $"{rectangle.X},{rectangle.Y},{rectangle.Width},{rectangle.Height}";
     }
 }

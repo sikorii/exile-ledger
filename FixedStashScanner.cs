@@ -73,6 +73,7 @@ internal sealed class FixedStashScanner
         await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
         var mapper = StashCoordinateMapper.FromScreenshotSize(screenshot.Size);
         var actualLayout = mapper.ScaleLayoutFromBase(layout);
+        var resolutionDebugLines = mapper.BuildDebugLines(screenshot.Size, screenBounds, layout, actualLayout);
 
         var safeKey = _profile.CountMode;
         CurrencyScanner.SaveBitmap(screenshot, Path.Combine(_debugDirectory, $"{safeKey}-fullscreen.png"));
@@ -176,7 +177,8 @@ internal sealed class FixedStashScanner
 
         File.WriteAllLines(
             Path.Combine(_debugDirectory, $"{safeKey}-debug.txt"),
-            stacks.OrderByDescending(stack => stack.Exalts)
+            resolutionDebugLines
+                .Concat(stacks.OrderByDescending(stack => stack.Exalts)
                 .Select(stack => $"{stack.ItemName} x{stack.Quantity} = {stack.Exalts:0.##} ex / {stack.Divines:0.####} div")
                 .Concat([
                     $"Price cache: {priceSummary.ItemCount} items fetched {priceSummary.FetchedUtc:O}",
@@ -186,7 +188,7 @@ internal sealed class FixedStashScanner
                     string.Empty,
                     "Count reads:"
                 ])
-                .Concat(countDebugLines));
+                .Concat(countDebugLines)));
 
         return new FixedStashScanResult(
             _profile,

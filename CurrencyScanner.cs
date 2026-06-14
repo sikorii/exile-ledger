@@ -57,6 +57,7 @@ internal sealed class CurrencyScanner
         await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
         var mapper = StashCoordinateMapper.FromScreenshotSize(screenshot.Size);
         var actualLayout = mapper.ScaleLayoutFromBase(layout);
+        var resolutionDebugLines = mapper.BuildDebugLines(screenshot.Size, screenBounds, layout, actualLayout);
 
         SaveBitmap(screenshot, Path.Combine(_debugDirectory, "currency-fullscreen.png"));
         var stashCropPath = Path.Combine(_debugDirectory, "currency-stash-crop.png");
@@ -166,7 +167,8 @@ internal sealed class CurrencyScanner
 
         File.WriteAllLines(
             Path.Combine(_debugDirectory, "currency-debug.txt"),
-            stacks.OrderByDescending(stack => stack.Exalts)
+            resolutionDebugLines
+                .Concat(stacks.OrderByDescending(stack => stack.Exalts)
                 .Select(stack => $"{stack.ItemName} x{stack.Quantity} = {stack.Exalts:0.##} ex / {stack.Divines:0.####} div")
                 .Concat([
                     $"Price cache: {priceSummary.ItemCount} items fetched {priceSummary.FetchedUtc:O}",
@@ -176,7 +178,7 @@ internal sealed class CurrencyScanner
                     string.Empty,
                     "Count reads:"
                 ])
-                .Concat(countDebugLines));
+                .Concat(countDebugLines)));
 
         return new CurrencyScanResult(
             topStacks,

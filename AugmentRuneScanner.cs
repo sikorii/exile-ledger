@@ -63,6 +63,7 @@ internal sealed class AugmentRuneScanner
         await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
         var mapper = StashCoordinateMapper.FromScreenshotSize(screenshot.Size);
         var actualLayout = mapper.ScaleLayoutFromBase(layout);
+        var resolutionDebugLines = mapper.BuildDebugLines(screenshot.Size, screenBounds, layout, actualLayout);
 
         CurrencyScanner.SaveBitmap(screenshot, Path.Combine(_debugDirectory, "runes-fullscreen.png"));
         var stashCropPath = Path.Combine(_debugDirectory, "runes-stash-crop.png");
@@ -181,7 +182,8 @@ internal sealed class AugmentRuneScanner
 
         File.WriteAllLines(
             Path.Combine(_debugDirectory, "runes-debug.txt"),
-            stacks.OrderByDescending(stack => stack.Exalts)
+            resolutionDebugLines
+                .Concat(stacks.OrderByDescending(stack => stack.Exalts)
                 .Select(stack => $"{stack.ItemName} x{stack.Quantity} = {stack.Exalts:0.##} ex / {stack.Divines:0.####} div")
                 .Concat([
                     $"Price cache: {priceSummary.ItemCount} items fetched {priceSummary.FetchedUtc:O}",
@@ -193,7 +195,7 @@ internal sealed class AugmentRuneScanner
                 ])
                 .Concat(upgradeSuggestions.Select(FormatSuggestion))
                 .Concat([string.Empty, "Count reads:"])
-                .Concat(countDebugLines));
+                .Concat(countDebugLines)));
 
         return new RuneScanResult(
             topStacks,

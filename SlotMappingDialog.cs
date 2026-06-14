@@ -31,7 +31,7 @@ internal sealed class SlotMappingDialog : Form
     private void BuildUi(string currentName, int? currentQuantity, int? countOverride)
     {
         AutoScaleMode = AutoScaleMode.Dpi;
-        Text = "Map Currency Slot";
+        Text = "Map Stash Slot";
         StartPosition = FormStartPosition.CenterParent;
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = true;
