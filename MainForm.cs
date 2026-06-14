@@ -40,6 +40,7 @@ internal sealed class MainForm : Form
     private readonly StashLayoutSettingsStore _layoutSettingsStore;
     private readonly SlotLayoutOverrideStore _slotLayoutOverrideStore;
     private readonly LatestStashScanStore _latestScanStore;
+    private readonly OpenAiApiKeyStore _openAiApiKeyStore;
     private readonly OpenAiVisionHelper _openAiVisionHelper;
     private readonly AiCountReader _aiCountReader;
     private readonly PoeNinjaIconCache _iconCache;
@@ -104,6 +105,7 @@ internal sealed class MainForm : Form
         _slotLayoutOverrideStore = new SlotLayoutOverrideStore(AppPaths.SlotLayoutOverridesPath);
         _slotLayoutOverrides = _slotLayoutOverrideStore.Load();
         _latestScanStore = new LatestStashScanStore(AppPaths.LatestStashScansPath);
+        _openAiApiKeyStore = new OpenAiApiKeyStore(AppPaths.ConfigFile("secrets.json"));
         _runeScanner = new AugmentRuneScanner(AppPaths.DebugDirectory, _runeMappingStore);
         _kalguuranRuneMappingStore = new CurrencyMappingStore(
             FixedStashScannerProfiles.ConfigPath(FixedStashScannerProfiles.KalguuranRunes.MappingFileName),
@@ -126,8 +128,8 @@ internal sealed class MainForm : Form
                     _genericMappingStores[mode.Key],
                     mode.Profile!),
                 StringComparer.OrdinalIgnoreCase);
-        _openAiVisionHelper = new OpenAiVisionHelper(Path.Combine(AppPaths.DebugDirectory, "ai-stash-analysis"));
-        _aiCountReader = new AiCountReader(Path.Combine(AppPaths.DebugDirectory, "ai-counts"));
+        _openAiVisionHelper = new OpenAiVisionHelper(Path.Combine(AppPaths.DebugDirectory, "ai-stash-analysis"), _openAiApiKeyStore);
+        _aiCountReader = new AiCountReader(Path.Combine(AppPaths.DebugDirectory, "ai-counts"), _openAiApiKeyStore);
         _iconCache = PoeNinjaIconCache.CreateDefault();
         _overlay.Dismissed += (_, _) => _scanner.ClearMergedRuneshapingRewards();
         BuildUi();
@@ -452,7 +454,7 @@ internal sealed class MainForm : Form
             new SettingsFormState(
                 _editLayoutCheckBox.Checked,
                 CountCropDebugSettings.SaveCountDebugCrops,
-                !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("OPENAI_API_KEY")),
+                ResolveOpenAiApiKeyStatus(),
                 ResolveOpenAiCountModelStatus(),
                 AppPaths.RootDirectory,
                 AppPaths.ConfigDirectory,
@@ -469,6 +471,8 @@ internal sealed class MainForm : Form
                 ResetCurrentLayoutTab,
                 SetSaveCountDebugCrops,
                 GenerateCountCropReviewReport,
+                SaveOpenAiApiKeyFromSettingsAsync,
+                ClearOpenAiApiKeyFromSettingsAsync,
                 () => OpenFolder(AppPaths.RootDirectory),
                 () => OpenFolder(AppPaths.ConfigDirectory),
                 () => OpenFolder(AppPaths.DebugDirectory),
@@ -476,6 +480,57 @@ internal sealed class MainForm : Form
                 () => OpenFolder(Path.Combine(AppPaths.DebugDirectory, "ai-counts"))));
 
         form.ShowDialog(this);
+    }
+
+    private async Task<string> SaveOpenAiApiKeyFromSettingsAsync(string apiKey)
+    {
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            return "No OpenAI API key configured";
+        }
+
+        try
+        {
+            await _openAiApiKeyStore.SaveOpenAiApiKeyAsync(apiKey).ConfigureAwait(true);
+            _statusLabel.Text = "OpenAI API key configured.";
+            return ResolveOpenAiApiKeyStatus();
+        }
+        catch
+        {
+            _statusLabel.Text = "OpenAI API key save failed.";
+            return "OpenAI API key save failed";
+        }
+    }
+
+    private async Task<string> ClearOpenAiApiKeyFromSettingsAsync()
+    {
+        try
+        {
+            await _openAiApiKeyStore.ClearOpenAiApiKeyAsync().ConfigureAwait(true);
+            var status = ResolveOpenAiApiKeyStatus();
+            _statusLabel.Text = status;
+            return status;
+        }
+        catch
+        {
+            _statusLabel.Text = "OpenAI API key clear failed.";
+            return "OpenAI API key clear failed";
+        }
+    }
+
+    private string ResolveOpenAiApiKeyStatus()
+    {
+        if (_openAiApiKeyStore.StoredOpenAiApiKeyCouldNotBeRead())
+        {
+            return "Saved key could not be read, please re-enter it";
+        }
+
+        return _openAiApiKeyStore.GetConfiguredSource() switch
+        {
+            OpenAiApiKeyConfigurationSource.Stored => "OpenAI API key configured",
+            OpenAiApiKeyConfigurationSource.Environment => "Using OPENAI_API_KEY environment variable",
+            _ => "No OpenAI API key configured"
+        };
     }
 
     private static string ResolveOpenAiCountModelStatus()
@@ -658,7 +713,7 @@ internal sealed class MainForm : Form
         }
         catch (MissingOpenAiApiKeyException ex)
         {
-            _statusLabel.Text = "OPENAI_API_KEY is missing.";
+            _statusLabel.Text = "No OpenAI API key configured.";
             _detailsBox.Text = ex.Message;
             MessageBox.Show(this, ex.Message, "Missing OpenAI API Key", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
@@ -2028,6 +2083,12 @@ internal sealed class MainForm : Form
                 CancellationToken.None).ConfigureAwait(true);
 
             ShowAiAnalysisResult(result);
+        }
+        catch (MissingOpenAiApiKeyException ex)
+        {
+            _statusLabel.Text = "No OpenAI API key configured.";
+            _detailsBox.Text = ex.Message;
+            MessageBox.Show(this, ex.Message, "Missing OpenAI API Key", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         catch (Exception ex)
         {
