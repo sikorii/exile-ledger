@@ -61,10 +61,12 @@ internal sealed class AugmentRuneScanner
     private async Task<RuneScanResult> ScanBitmapAsync(Bitmap screenshot, Rectangle screenBounds, CancellationToken cancellationToken, StashLayoutProfile layout)
     {
         await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
+        var mapper = StashCoordinateMapper.FromScreenshotSize(screenshot.Size);
+        var actualLayout = mapper.ScaleLayoutFromBase(layout);
 
         CurrencyScanner.SaveBitmap(screenshot, Path.Combine(_debugDirectory, "runes-fullscreen.png"));
         var stashCropPath = Path.Combine(_debugDirectory, "runes-stash-crop.png");
-        using var stashCrop = screenshot.Clone(layout.DisplayCropRegion, screenshot.PixelFormat);
+        using var stashCrop = screenshot.Clone(actualLayout.DisplayCropRegion, screenshot.PixelFormat);
         CurrencyScanner.SaveBitmap(stashCrop, stashCropPath);
 
         var tessData = await CurrencyScanner.EnsureTessDataAsync(Path.Combine(AppContext.BaseDirectory, "tessdata"), cancellationToken).ConfigureAwait(false);
@@ -78,13 +80,13 @@ internal sealed class AugmentRuneScanner
         for (var slotIndex = 0; slotIndex < RuneSlotMap.Slots.Length; slotIndex++)
         {
             var slot = RuneSlotMap.Slots[slotIndex];
-            var scanSlot = slot with { Bounds = OffsetRectangle(slot.Bounds, layout.SlotOffset) };
+            var scanSlot = slot with { Bounds = mapper.OffsetAndScaleRectFromBase(slot.Bounds, layout.SlotOffset) };
             var itemName = _mappingStore.GetName(slotIndex, slot.ItemName);
             var countOverride = _mappingStore.GetCountOverride(slotIndex);
             if (countOverride == 0)
             {
                 countDebugLines.Add($"Slot {slotIndex,2} {itemName ?? "(mapped slot)"}: forced empty override x0");
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, false, itemName, 0, null, null));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, false, itemName, 0, null, null));
                 continue;
             }
 
@@ -101,7 +103,7 @@ internal sealed class AugmentRuneScanner
                         (countOverride is null ? string.Empty : $" override x{countOverride} ignored"));
                 }
 
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, false, itemName, 0, null, null));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, false, itemName, 0, null, null));
                 continue;
             }
 
@@ -112,7 +114,7 @@ internal sealed class AugmentRuneScanner
                     screenshot,
                     scanSlot.Bounds,
                     tessData,
-                    new StackCountReadOptions(_debugDirectory, "runes", slotIndex, scanId));
+                    new StackCountReadOptions(_debugDirectory, "runes", slotIndex, scanId, mapper.Profile.ScaleX));
                 var unknownQuantity = countOverride ?? unknownQuantityRead.Quantity;
                 var unknownTrainingStatus = CountTrainingHelpers.TrySaveFromOverride(
                     screenshot,
@@ -126,7 +128,7 @@ internal sealed class AugmentRuneScanner
                     (countOverride is null ? string.Empty : $" override x{countOverride}") +
                     (unknownTrainingStatus.Length == 0 ? string.Empty : $" ({unknownTrainingStatus})") +
                     $" ({unknownQuantityRead.DebugText})");
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, true, null, unknownQuantity, null, null, unknownQuantityRead));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, null, unknownQuantity, null, null, unknownQuantityRead));
                 continue;
             }
 
@@ -135,7 +137,7 @@ internal sealed class AugmentRuneScanner
                 screenshot,
                 scanSlot.Bounds,
                 tessData,
-                new StackCountReadOptions(_debugDirectory, "runes", slotIndex, scanId));
+                new StackCountReadOptions(_debugDirectory, "runes", slotIndex, scanId, mapper.Profile.ScaleX));
             var quantity = countOverride ?? quantityRead.Quantity;
             var knownTrainingStatus = CountTrainingHelpers.TrySaveFromOverride(
                 screenshot,
@@ -155,12 +157,12 @@ internal sealed class AugmentRuneScanner
             {
                 unknownOccupied++;
                 countDebugLines.Add("  " + _cachedPrices.DiagnoseMissing(itemName, FixedStashScannerProfiles.AugmentRunes.PriceCategories).ToDebugString());
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, true, itemName, quantity, null, null, quantityRead));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, itemName, quantity, null, null, quantityRead));
                 continue;
             }
 
             stacks.Add(new RuneStack(itemName, quantity, value.Exalts, value.Divines));
-            detections.Add(BuildDetection(slotIndex, scanSlot, layout, true, itemName, quantity, value.Exalts, value.Divines, quantityRead));
+            detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, itemName, quantity, value.Exalts, value.Divines, quantityRead));
         }
 
         var totalExalts = stacks.Sum(stack => stack.Exalts);
@@ -249,15 +251,6 @@ internal sealed class AugmentRuneScanner
         {
             await RefreshPricesAsync(cancellationToken).ConfigureAwait(false);
         }
-    }
-
-    private static Rectangle OffsetRectangle(Rectangle rectangle, Point offset)
-    {
-        return new Rectangle(
-            rectangle.X + offset.X,
-            rectangle.Y + offset.Y,
-            rectangle.Width,
-            rectangle.Height);
     }
 
     private static IEnumerable<RuneUpgradeSuggestion> BuildUpgradeSuggestions(

@@ -223,13 +223,17 @@ static class Program
             AppPaths.ConfigFile(profile.CountOverrideFileName));
         var scanner = new FixedStashScanner(debugDirectory, mappings, profile);
         var result = scanner.ScanFileAsync(screenshotPath, CancellationToken.None, layout).GetAwaiter().GetResult();
-        var outputPath = StashSlotLayoutDebugRenderer.Write(debugDirectory, result, layout, screenshotPath);
+        using var screenshot = CurrencyScanner.LoadBitmapWithoutFileLock(screenshotPath);
+        var mapper = StashCoordinateMapper.FromScreenshotSize(screenshot.Size);
+        var actualLayout = mapper.ScaleLayoutFromBase(layout);
+        var outputPath = StashSlotLayoutDebugRenderer.Write(debugDirectory, result, actualLayout, screenshotPath);
 
         File.WriteAllLines(
             Path.Combine(debugDirectory, $"slot-layout-debug-{profile.Key}.txt"),
             [
                 $"Profile: {profile.Label}",
                 $"Layout: {LayoutName(layout)}",
+                $"Resolution profile: {mapper.Profile.Label}",
                 $"Source: {screenshotPath}",
                 $"Output: {outputPath}",
                 $"Known occupied: {result.KnownOccupiedSlots}",
@@ -320,16 +324,17 @@ static class Program
         var index = cache.LoadOrBuildAsync(CancellationToken.None).GetAwaiter().GetResult();
         var matcher = PoeNinjaIconMatcher.FromIndex(index, LocalIconTemplateStore.CreateDefault());
         using var screenshot = CurrencyScanner.LoadBitmapWithoutFileLock(screenshotPath);
+        var mapper = StashCoordinateMapper.FromScreenshotSize(screenshot.Size);
         var allowedTypes = GetIconTypesForMode(mode);
 
         var profile = FindProfile(mode);
         var slots = profile is not null && profile != FixedStashScannerProfiles.Currency && profile != FixedStashScannerProfiles.AugmentRunes && profile != FixedStashScannerProfiles.KalguuranRunes
-            ? profile.Slots.Select((slot, index) => (Index: index, Bounds: slot.Bounds, Section: slot.Section))
+            ? profile.Slots.Select((slot, index) => (Index: index, Bounds: mapper.ScaleRectFromBase(slot.Bounds), Section: slot.Section))
             : mode.Equals("runes", StringComparison.OrdinalIgnoreCase)
-            ? RuneSlotMap.Slots.Select((slot, index) => (Index: index, Bounds: slot.Bounds, Section: (string?)null))
+            ? RuneSlotMap.Slots.Select((slot, index) => (Index: index, Bounds: mapper.ScaleRectFromBase(slot.Bounds), Section: (string?)null))
             : mode.Equals("kalguuran", StringComparison.OrdinalIgnoreCase)
-                ? KalguuranRuneSlotMap.Slots.Select((slot, index) => (Index: index, Bounds: slot.Bounds, Section: (string?)null))
-                : CurrencySlotMap.Slots.Select((slot, index) => (Index: index, Bounds: slot.Bounds, Section: (string?)null));
+                ? KalguuranRuneSlotMap.Slots.Select((slot, index) => (Index: index, Bounds: mapper.ScaleRectFromBase(slot.Bounds), Section: (string?)null))
+                : CurrencySlotMap.Slots.Select((slot, index) => (Index: index, Bounds: mapper.ScaleRectFromBase(slot.Bounds), Section: (string?)null));
 
         var hasRequestedSlot = int.TryParse(slotText, out var requestedSlot);
         if (hasRequestedSlot)
@@ -340,6 +345,7 @@ static class Program
         var lines = new List<string>
         {
             $"Screenshot: {screenshotPath}",
+            $"Resolution profile: {mapper.Profile.Label}",
             $"Mode: {mode}",
             $"Cache items: {index.ItemCount}",
             $"Allowed types: {(allowedTypes is null ? "(all)" : string.Join(", ", allowedTypes))}",

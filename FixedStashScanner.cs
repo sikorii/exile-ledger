@@ -71,11 +71,13 @@ internal sealed class FixedStashScanner
         StashLayoutProfile layout)
     {
         await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
+        var mapper = StashCoordinateMapper.FromScreenshotSize(screenshot.Size);
+        var actualLayout = mapper.ScaleLayoutFromBase(layout);
 
         var safeKey = _profile.CountMode;
         CurrencyScanner.SaveBitmap(screenshot, Path.Combine(_debugDirectory, $"{safeKey}-fullscreen.png"));
         var stashCropPath = Path.Combine(_debugDirectory, $"{safeKey}-stash-crop.png");
-        using var stashCrop = screenshot.Clone(layout.DisplayCropRegion, screenshot.PixelFormat);
+        using var stashCrop = screenshot.Clone(actualLayout.DisplayCropRegion, screenshot.PixelFormat);
         CurrencyScanner.SaveBitmap(stashCrop, stashCropPath);
 
         var tessData = await CurrencyScanner.EnsureTessDataAsync(Path.Combine(AppContext.BaseDirectory, "tessdata"), cancellationToken).ConfigureAwait(false);
@@ -92,7 +94,7 @@ internal sealed class FixedStashScanner
         for (var slotIndex = 0; slotIndex < _profile.Slots.Count; slotIndex++)
         {
             var slot = _profile.Slots[slotIndex];
-            var scanSlot = OffsetSlot(slot, layout.SlotOffset);
+            var scanSlot = ScaleSlot(slot, mapper, layout.SlotOffset);
             if (!ContainsRectangle(screenshot.Size, scanSlot.Bounds))
             {
                 countDebugLines.Add($"Slot {slotIndex,2}: outside screenshot; skipped");
@@ -104,7 +106,7 @@ internal sealed class FixedStashScanner
             if (countOverride == 0)
             {
                 countDebugLines.Add($"Slot {slotIndex,2} {itemName ?? "(mapped slot)"}: forced empty override x0");
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, false, itemName, 0, null, null));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, false, itemName, 0, null, null));
                 continue;
             }
 
@@ -118,7 +120,7 @@ internal sealed class FixedStashScanner
                         (countOverride is null ? string.Empty : $" override x{countOverride} ignored"));
                 }
 
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, false, itemName, 0, null, null));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, false, itemName, 0, null, null));
                 continue;
             }
 
@@ -146,7 +148,7 @@ internal sealed class FixedStashScanner
                     countDebugLines.Add($"  Slot {slotIndex,2}: incomplete Essence static identity; no family inferred for this group.");
                 }
 
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, true, null, quantity, null, null, quantityRead));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, null, quantity, null, null, quantityRead));
                 continue;
             }
 
@@ -156,12 +158,12 @@ internal sealed class FixedStashScanner
             {
                 unknownOccupied++;
                 countDebugLines.Add("  " + _cachedPrices.DiagnoseMissing(itemName, _profile.PriceCategories).ToDebugString());
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, true, itemName, quantity, null, null, quantityRead));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, itemName, quantity, null, null, quantityRead));
                 continue;
             }
 
             stacks.Add(new FixedStashStack(itemName, quantity, value.Exalts, value.Divines));
-            detections.Add(BuildDetection(slotIndex, scanSlot, layout, true, itemName, quantity, value.Exalts, value.Divines, quantityRead));
+            detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, itemName, quantity, value.Exalts, value.Divines, quantityRead));
         }
 
         var totalExalts = stacks.Sum(stack => stack.Exalts);
@@ -225,7 +227,8 @@ internal sealed class FixedStashScanner
 
     private QuantityReadResult ReadQuantity(Bitmap screenshot, Rectangle slotBounds, string tessData, int slotIndex, string scanId)
     {
-        var options = new StackCountReadOptions(_debugDirectory, _profile.CountMode, slotIndex, scanId);
+        var scale = ScreenshotResolutionProfile.Detect(screenshot.Size).ScaleX;
+        var options = new StackCountReadOptions(_debugDirectory, _profile.CountMode, slotIndex, scanId, scale);
         return _profile.IsRuneLike
             ? StackCountReader.ReadRuneQuantity(screenshot, slotBounds, tessData, options)
             : StackCountReader.ReadQuantity(screenshot, slotBounds, tessData, options);
@@ -269,24 +272,15 @@ internal sealed class FixedStashScanner
             overlayCropBounds);
     }
 
-    private static FixedStashSlot OffsetSlot(FixedStashSlot slot, Point offset)
+    private static FixedStashSlot ScaleSlot(FixedStashSlot slot, StashCoordinateMapper mapper, Point baseOffset)
     {
         return slot with
         {
-            Bounds = OffsetRectangle(slot.Bounds, offset),
+            Bounds = mapper.OffsetAndScaleRectFromBase(slot.Bounds, baseOffset),
             OverlayBounds = slot.OverlayBounds is null
                 ? null
-                : OffsetRectangle(slot.OverlayBounds.Value, offset)
+                : mapper.OffsetAndScaleRectFromBase(slot.OverlayBounds.Value, baseOffset)
         };
-    }
-
-    private static Rectangle OffsetRectangle(Rectangle rectangle, Point offset)
-    {
-        return new Rectangle(
-            rectangle.X + offset.X,
-            rectangle.Y + offset.Y,
-            rectangle.Width,
-            rectangle.Height);
     }
 
     private static bool ContainsRectangle(Size size, Rectangle rectangle)

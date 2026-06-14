@@ -12,7 +12,7 @@ internal static class StackCountReader
         options ??= StackCountReadOptions.Default;
 
         var attempts = new List<QuantityOcrAttempt>();
-        foreach (var region in BuildCountRegions(slotBounds))
+        foreach (var region in BuildCountRegions(slotBounds, options.CoordinateScale))
         {
             using var crop = screenshot.Clone(region, screenshot.PixelFormat);
             using var processed = PrepareCountForOcr(crop);
@@ -44,7 +44,7 @@ internal static class StackCountReader
         var recoveryText = string.Empty;
         if (!options.IsRuneMode && chosen.Digits?.Length == 1)
         {
-            var imageRecovery = TryRecoverCurrencyMultiDigitFromImage(screenshot, slotBounds, chosen.Digits);
+            var imageRecovery = TryRecoverCurrencyMultiDigitFromImage(screenshot, slotBounds, chosen.Digits, options.CoordinateScale);
             recoveryText += imageRecovery.DebugText;
             if (imageRecovery.Choice is not null)
             {
@@ -52,7 +52,7 @@ internal static class StackCountReader
             }
             else
             {
-                var rawRecovery = TryRecoverCurrencyMultiDigitFromRaw(screenshot, slotBounds, tessData, chosen.Digits);
+                var rawRecovery = TryRecoverCurrencyMultiDigitFromRaw(screenshot, slotBounds, tessData, chosen.Digits, options.CoordinateScale);
                 recoveryText += rawRecovery.DebugText;
                 if (rawRecovery.Choice is not null)
                 {
@@ -71,7 +71,7 @@ internal static class StackCountReader
 
         if (ShouldTryCompactCountRecovery(chosen, attempts, options))
         {
-            var compactRecovery = TryReadCompactQuantityFromRaw(screenshot, slotBounds, tessData);
+            var compactRecovery = TryReadCompactQuantityFromRaw(screenshot, slotBounds, tessData, options.CoordinateScale);
             if (compactRecovery.Choice is not null)
             {
                 chosen = compactRecovery.Choice;
@@ -84,7 +84,7 @@ internal static class StackCountReader
 
             if (compactRecovery.Choice is null)
             {
-                var visualCompactRecovery = TryReadCompactQuantityFromImage(screenshot, slotBounds, chosen.Digits);
+                var visualCompactRecovery = TryReadCompactQuantityFromImage(screenshot, slotBounds, chosen.Digits, options.CoordinateScale);
                 if (visualCompactRecovery.Choice is not null)
                 {
                     chosen = visualCompactRecovery.Choice;
@@ -139,7 +139,8 @@ internal static class StackCountReader
         int quantity,
         string mode,
         int slotIndex,
-        string? debugDirectory)
+        string? debugDirectory,
+        double coordinateScale = 1.0)
     {
         var digits = quantity.ToString(CultureInfo.InvariantCulture);
         if (digits.Length is < 1 or > 3 || !digits.All(char.IsDigit))
@@ -148,7 +149,7 @@ internal static class StackCountReader
         }
 
         var candidates = new List<DigitTrainingRegionCandidate>();
-        foreach (var region in BuildCountRegions(slotBounds))
+        foreach (var region in BuildCountRegions(slotBounds, coordinateScale))
         {
             if (!ContainsRectangle(stashCrop.Size, region))
             {
@@ -167,9 +168,9 @@ internal static class StackCountReader
 
         var expectedWidth = digits.Length switch
         {
-            1 => 44,
-            2 => 70,
-            _ => 102
+            1 => ScaleLength(44, coordinateScale),
+            2 => ScaleLength(70, coordinateScale),
+            _ => ScaleLength(102, coordinateScale)
         };
 
         var selected = candidates
@@ -208,16 +209,22 @@ internal static class StackCountReader
             : new DigitTrainingSaveResult(0, $"training samples already existed for slot {slotIndex} x{quantity}.");
     }
 
-    internal static IEnumerable<Rectangle> BuildCountRegions(Rectangle slotBounds)
+    internal static IEnumerable<Rectangle> BuildCountRegions(Rectangle slotBounds, double coordinateScale = 1.0)
     {
-        var x = slotBounds.X + 6;
+        var scale = coordinateScale <= 0 ? 1.0 : coordinateScale;
+        var x = slotBounds.X + ScaleLength(6, scale);
         var y = slotBounds.Y;
-        var right = slotBounds.Right - 4;
+        var right = slotBounds.Right - ScaleLength(4, scale);
         foreach (var desiredWidth in new[] { 44, 70, 102 })
         {
-            var width = Math.Max(1, Math.Min(desiredWidth, right - x));
-            yield return new Rectangle(x, y, width, 40);
+            var width = Math.Max(1, Math.Min(ScaleLength(desiredWidth, scale), right - x));
+            yield return new Rectangle(x, y, width, ScaleLength(40, scale));
         }
+    }
+
+    private static int ScaleLength(int baseValue, double scale)
+    {
+        return Math.Max(1, (int)Math.Round(baseValue * scale, MidpointRounding.AwayFromZero));
     }
 
     private static bool ContainsRectangle(Size size, Rectangle rectangle)
@@ -576,10 +583,11 @@ internal static class StackCountReader
         Bitmap screenshot,
         Rectangle slotBounds,
         string tessData,
-        string chosenSingleDigit)
+        string chosenSingleDigit,
+        double coordinateScale)
     {
         var rawDigits = new List<string>();
-        foreach (var region in BuildCountRegions(slotBounds))
+        foreach (var region in BuildCountRegions(slotBounds, coordinateScale))
         {
             using var crop = screenshot.Clone(region, screenshot.PixelFormat);
             rawDigits.Add(DigitsOnly(ReadRawWholeDigits(crop, tessData)));
@@ -641,10 +649,11 @@ internal static class StackCountReader
     private static RawRecoveryResult TryReadCompactQuantityFromRaw(
         Bitmap screenshot,
         Rectangle slotBounds,
-        string tessData)
+        string tessData,
+        double coordinateScale)
     {
         var rawTexts = new List<string>();
-        foreach (var region in BuildCountRegions(slotBounds))
+        foreach (var region in BuildCountRegions(slotBounds, coordinateScale))
         {
             if (!ContainsRectangle(screenshot.Size, region))
             {
@@ -695,7 +704,8 @@ internal static class StackCountReader
     private static RawRecoveryResult TryReadCompactQuantityFromImage(
         Bitmap screenshot,
         Rectangle slotBounds,
-        string? chosenDigits)
+        string? chosenDigits,
+        double coordinateScale)
     {
         if (string.IsNullOrWhiteSpace(chosenDigits) ||
             !int.TryParse(chosenDigits, NumberStyles.Integer, CultureInfo.InvariantCulture, out var baseQuantity) ||
@@ -705,7 +715,7 @@ internal static class StackCountReader
         }
 
         var debug = new List<string>();
-        foreach (var region in BuildCountRegions(slotBounds))
+        foreach (var region in BuildCountRegions(slotBounds, coordinateScale))
         {
             if (!ContainsRectangle(screenshot.Size, region))
             {
@@ -855,7 +865,8 @@ internal static class StackCountReader
     private static RawRecoveryResult TryRecoverCurrencyMultiDigitFromImage(
         Bitmap screenshot,
         Rectangle slotBounds,
-        string chosenSingleDigit)
+        string chosenSingleDigit,
+        double coordinateScale)
     {
         if (chosenSingleDigit != "1")
         {
@@ -863,7 +874,7 @@ internal static class StackCountReader
         }
 
         var candidates = new List<TemplateDigitReadResult>();
-        foreach (var region in BuildCountRegions(slotBounds))
+        foreach (var region in BuildCountRegions(slotBounds, coordinateScale))
         {
             if (!ContainsRectangle(screenshot.Size, region))
             {
@@ -1797,7 +1808,7 @@ internal static class StackCountReader
     }
 }
 
-internal sealed record StackCountReadOptions(string? DebugDirectory, string? Mode, int? SlotIndex, string? ScanId = null)
+internal sealed record StackCountReadOptions(string? DebugDirectory, string? Mode, int? SlotIndex, string? ScanId = null, double CoordinateScale = 1.0)
 {
     public static readonly StackCountReadOptions Default = new(null, null, null);
 

@@ -74,6 +74,7 @@ internal sealed class MainForm : Form
     private readonly ToolStripMenuItem _resetCurrentTabMenuItem = new();
     private readonly ToolStripMenuItem _recalculateValuesMenuItem = new();
     private readonly ToolStripMenuItem _clearCurrentScanMenuItem = new();
+    private readonly ToolStripMenuItem _openScreenshotMenuItem = new();
     private readonly ToolStripMenuItem _scanCurrentStashMenuItem = new();
     private readonly ToolStripMenuItem _aiReadCountsMenuItem = new();
     private readonly ToolStripMenuItem _scanRuneshapingMenuItem = new();
@@ -89,6 +90,7 @@ internal sealed class MainForm : Form
     private Image? _stashImage;
     private SlotLayoutOverrides _slotLayoutOverrides;
     private int? _selectedLayoutSlotIndex;
+    private string? _lastScreenshotDirectory;
 
     public MainForm()
     {
@@ -369,6 +371,10 @@ internal sealed class MainForm : Form
         _menuStrip.Items.Clear();
 
         var fileMenu = new ToolStripMenuItem("&File");
+        _openScreenshotMenuItem.Text = "Open Screenshot...";
+        _openScreenshotMenuItem.Click += async (_, _) => await OpenScreenshotAsync();
+        fileMenu.DropDownItems.Add(_openScreenshotMenuItem);
+        fileMenu.DropDownItems.Add(new ToolStripSeparator());
         fileMenu.DropDownItems.Add(CreateMenuItem("Open App Data Folder", (_, _) => OpenFolder(AppPaths.RootDirectory)));
         fileMenu.DropDownItems.Add(CreateMenuItem("Open Saved Scan Data Folder", (_, _) => OpenFolder(AppPaths.ConfigDirectory)));
         fileMenu.DropDownItems.Add(new ToolStripSeparator());
@@ -1393,6 +1399,66 @@ internal sealed class MainForm : Form
         return string.Join(Environment.NewLine, lines);
     }
 
+    private async Task OpenScreenshotAsync()
+    {
+        if (_scanInProgress)
+        {
+            return;
+        }
+
+        if (_modeComboBox.SelectedItem is not ScanModeOption mode)
+        {
+            _statusLabel.Text = "Choose a stash mode before opening a screenshot.";
+            return;
+        }
+
+        using var dialog = new OpenFileDialog
+        {
+            Title = $"Open {mode.Label} screenshot",
+            Filter = "Screenshot images (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg",
+            CheckFileExists = true,
+            Multiselect = false
+        };
+
+        var initialDirectory = GetInitialScreenshotDirectory();
+        if (!string.IsNullOrWhiteSpace(initialDirectory))
+        {
+            dialog.InitialDirectory = initialDirectory;
+        }
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+        {
+            return;
+        }
+
+        var screenshotPath = dialog.FileName;
+        var directory = Path.GetDirectoryName(screenshotPath);
+        if (!string.IsNullOrWhiteSpace(directory) && Directory.Exists(directory))
+        {
+            _lastScreenshotDirectory = directory;
+        }
+
+        await ScanSelectedStashModeFileAsync(mode, screenshotPath);
+    }
+
+    private string? GetInitialScreenshotDirectory()
+    {
+        if (!string.IsNullOrWhiteSpace(_lastScreenshotDirectory) && Directory.Exists(_lastScreenshotDirectory))
+        {
+            return _lastScreenshotDirectory;
+        }
+
+        var pictures = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+        if (!string.IsNullOrWhiteSpace(pictures) && Directory.Exists(pictures))
+        {
+            return pictures;
+        }
+
+        return Directory.Exists(Environment.CurrentDirectory)
+            ? Environment.CurrentDirectory
+            : null;
+    }
+
     private async Task ScanSelectedStashModeAsync()
     {
         if (_modeComboBox.SelectedItem is not ScanModeOption mode)
@@ -1417,6 +1483,67 @@ internal sealed class MainForm : Form
             default:
                 _statusLabel.Text = $"{mode.Label} is not implemented yet. Use Capture Stash when you want to build it next.";
                 break;
+        }
+    }
+
+    private async Task ScanSelectedStashModeFileAsync(ScanModeOption mode, string screenshotPath)
+    {
+        if (_scanInProgress)
+        {
+            return;
+        }
+
+        SetBusy(true, $"Loading {Path.GetFileName(screenshotPath)}...");
+        try
+        {
+            switch (mode.Kind)
+            {
+                case ScanModeKind.CurrencyStash:
+                {
+                    var result = await _currencyScanner.ScanFileAsync(screenshotPath, CancellationToken.None, GetSelectedStashLayout());
+                    SaveLatestScan(mode, result);
+                    ShowCurrencyResult(result);
+                    _statusLabel.Text = $"Loaded {Path.GetFileName(screenshotPath)} ({FormatResolutionProfile(result.ScreenBounds.Size)}). Currency total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div.";
+                    break;
+                }
+                case ScanModeKind.AugmentRunes:
+                {
+                    var result = await _runeScanner.ScanFileAsync(screenshotPath, CancellationToken.None, GetSelectedStashLayout());
+                    SaveLatestScan(mode, result);
+                    ShowRuneResult(result);
+                    var profitable = result.UpgradeSuggestions.Count(suggestion => suggestion.IsProfitable);
+                    _statusLabel.Text = $"Loaded {Path.GetFileName(screenshotPath)} ({FormatResolutionProfile(result.ScreenBounds.Size)}). Runes total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div. Profitable upgrades: {profitable}.";
+                    break;
+                }
+                case ScanModeKind.KalguuranRunes:
+                {
+                    var result = await _kalguuranRuneScanner.ScanFileAsync(screenshotPath, CancellationToken.None, GetSelectedStashLayout());
+                    SaveLatestScan(mode, result);
+                    ShowKalguuranRuneResult(result);
+                    _statusLabel.Text = $"Loaded {Path.GetFileName(screenshotPath)} ({FormatResolutionProfile(result.ScreenBounds.Size)}). Kalguuran Runes total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div.";
+                    break;
+                }
+                case ScanModeKind.GenericFixedStash when mode.Profile is not null && _genericScanners.TryGetValue(mode.Key, out var scanner):
+                {
+                    var result = await scanner.ScanFileAsync(screenshotPath, CancellationToken.None, GetSelectedStashLayout());
+                    SaveLatestScan(mode, result);
+                    ShowGenericFixedStashResult(result);
+                    _statusLabel.Text = $"Loaded {Path.GetFileName(screenshotPath)} ({FormatResolutionProfile(result.ScreenBounds.Size)}). {result.Profile.Label} total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div.";
+                    break;
+                }
+                default:
+                    _statusLabel.Text = $"{mode.Label} is not implemented for screenshot loading.";
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            _statusLabel.Text = $"Open screenshot failed: {Path.GetFileName(screenshotPath)}.";
+            _detailsBox.Text = ex.ToString();
+        }
+        finally
+        {
+            SetBusy(false);
         }
     }
 
@@ -1621,7 +1748,7 @@ internal sealed class MainForm : Form
             return;
         }
 
-        SetBusy(true, "Scanning active 4K screen...");
+        SetBusy(true, "Scanning active screen...");
         try
         {
             var result = await _scanner.ScanScreenAsync(CancellationToken.None);
@@ -1798,7 +1925,8 @@ internal sealed class MainForm : Form
         {
             var screen = ScreenCaptureService.SelectPoeScreen();
             using var screenshot = ScreenCaptureService.CaptureScreen(screen.Bounds);
-            var cropRegion = ClampRectangle(GetSelectedStashLayout().DisplayCropRegion, screenshot.Size);
+            var mapper = StashCoordinateMapper.FromScreenshotSize(screenshot.Size);
+            var cropRegion = ClampRectangle(mapper.ScaleLayoutFromBase(GetSelectedStashLayout()).DisplayCropRegion, screenshot.Size);
             using var stashCrop = screenshot.Clone(cropRegion, screenshot.PixelFormat);
 
             var captureDirectory = Path.Combine(AppPaths.DebugDirectory, "stash-tab-captures");
@@ -1834,6 +1962,7 @@ internal sealed class MainForm : Form
                 "Open the tab in PoE, click Capture Stash Tab, then tell me which tab it is.",
                 string.Empty,
                 $"Screen: {screen.Bounds.Width}x{screen.Bounds.Height} at {screen.Bounds.Left},{screen.Bounds.Top}",
+                $"Resolution profile: {mapper.Profile.Label}",
                 $"Crop region: {cropRegion.X},{cropRegion.Y},{cropRegion.Width},{cropRegion.Height}",
                 string.Empty,
                 "Timestamped files:",
@@ -1875,7 +2004,9 @@ internal sealed class MainForm : Form
             var layout = GetSelectedStashLayout();
             var screen = ScreenCaptureService.SelectPoeScreen();
             using var screenshot = ScreenCaptureService.CaptureScreen(screen.Bounds);
-            var cropRegion = ClampRectangle(layout.DisplayCropRegion, screenshot.Size);
+            var mapper = StashCoordinateMapper.FromScreenshotSize(screenshot.Size);
+            var actualLayout = mapper.ScaleLayoutFromBase(layout);
+            var cropRegion = ClampRectangle(actualLayout.DisplayCropRegion, screenshot.Size);
             using var stashCrop = screenshot.Clone(cropRegion, screenshot.PixelFormat);
 
             _lastCurrencyResult = null;
@@ -1893,7 +2024,7 @@ internal sealed class MainForm : Form
             var result = await _openAiVisionHelper.AnalyzeStashAsync(
                 stashCrop,
                 mode.Label,
-                layout,
+                actualLayout,
                 CancellationToken.None).ConfigureAwait(true);
 
             ShowAiAnalysisResult(result);
@@ -2024,7 +2155,7 @@ internal sealed class MainForm : Form
         _stashPictureBox.Invalidate();
         UpdateLayoutEditorControls();
 
-        _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}Currency total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div";
+        _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}Currency total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div ({FormatResolutionProfile(result.ScreenBounds.Size)})";
 
         var lines = new[]
         {
@@ -2067,7 +2198,7 @@ internal sealed class MainForm : Form
         UpdateLayoutEditorControls();
 
         var profitable = result.UpgradeSuggestions.Count(suggestion => suggestion.IsProfitable);
-        _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}Runes total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div. Profitable upgrades: {profitable}.";
+        _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}Runes total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div ({FormatResolutionProfile(result.ScreenBounds.Size)}). Profitable upgrades: {profitable}.";
 
         var lines = new List<string>
             {
@@ -2124,7 +2255,7 @@ internal sealed class MainForm : Form
         _stashPictureBox.Invalidate();
         UpdateLayoutEditorControls();
 
-        _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}Kalguuran Runes total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div.";
+        _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}Kalguuran Runes total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div ({FormatResolutionProfile(result.ScreenBounds.Size)}).";
 
         var lines = new List<string>
             {
@@ -2165,7 +2296,7 @@ internal sealed class MainForm : Form
         _stashPictureBox.Invalidate();
         UpdateLayoutEditorControls();
 
-        _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}{result.Profile.Label} total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div.";
+        _statusLabel.Text = $"{(savedView ? "Saved " : string.Empty)}{result.Profile.Label} total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div ({FormatResolutionProfile(result.ScreenBounds.Size)}).";
 
         var lines = new List<string>
         {
@@ -2278,7 +2409,7 @@ internal sealed class MainForm : Form
     {
         if (_slotLayoutOverrides.TryGet(profileKey, slotIndex, out var overrideBounds))
         {
-            return overrideBounds;
+            return GetCurrentCoordinateMapper().ScaleRectFromBase(overrideBounds);
         }
 
         return defaultOverlayCropBounds ?? FixedStashSlot.Inset(cropBounds, fallbackInset);
@@ -2740,8 +2871,9 @@ internal sealed class MainForm : Form
             };
         }
 
-        _slotLayoutOverrides.Set(slot.ProfileKey, slot.SlotIndex, bounds);
-        _statusLabel.Text = $"Layout editor: {slot.ProfileKey} slot {slot.SlotIndex} = {bounds.X},{bounds.Y},{bounds.Width},{bounds.Height} (unsaved).";
+        var canonicalBounds = GetCurrentCoordinateMapper().UnscaleRectToBase(bounds);
+        _slotLayoutOverrides.Set(slot.ProfileKey, slot.SlotIndex, canonicalBounds);
+        _statusLabel.Text = $"Layout editor: {slot.ProfileKey} slot {slot.SlotIndex} = {bounds.X},{bounds.Y},{bounds.Width},{bounds.Height} displayed; saved as {canonicalBounds.X},{canonicalBounds.Y},{canonicalBounds.Width},{canonicalBounds.Height} base (unsaved).";
         _stashPictureBox.Invalidate();
         return true;
     }
@@ -2831,6 +2963,26 @@ internal sealed class MainForm : Form
         }
 
         return _lastGenericResult?.Profile.Key;
+    }
+
+    private StashCoordinateMapper GetCurrentCoordinateMapper()
+    {
+        var size = _lastCurrencyResult?.ScreenBounds.Size ??
+            _lastRuneResult?.ScreenBounds.Size ??
+            _lastKalguuranRuneResult?.ScreenBounds.Size ??
+            _lastGenericResult?.ScreenBounds.Size;
+
+        return size is { Width: > 0, Height: > 0 } &&
+            ScreenshotResolutionProfile.TryDetect(size.Value, out var profile)
+            ? new StashCoordinateMapper(profile)
+            : StashCoordinateMapper.Base;
+    }
+
+    private static string FormatResolutionProfile(Size size)
+    {
+        return ScreenshotResolutionProfile.TryDetect(size, out var profile)
+            ? profile.Label
+            : $"{size.Width}x{size.Height} unsupported";
     }
 
     private IEnumerable<LayoutSlotCandidate> GetCurrentLayoutSlots()
@@ -3494,6 +3646,7 @@ internal sealed class MainForm : Form
         _copySummaryButton.Enabled = !busy;
         _reviewCountCropsButton.Enabled = !busy;
         _aiReadCountsButton.Enabled = !busy;
+        _openScreenshotMenuItem.Enabled = !busy;
         _scanRuneshapingMenuItem.Enabled = !busy;
         _scanCurrentStashMenuItem.Enabled = !busy;
         _aiReadCountsMenuItem.Enabled = !busy;

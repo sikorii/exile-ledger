@@ -132,7 +132,8 @@ internal static class CountCropTrainingStore
         string filePrefix,
         CountCropMetadata metadata)
     {
-        var region = SelectCountRegion(slotBounds, metadata.CorrectedCount ?? metadata.GuessedCount);
+        var coordinateScale = ScreenshotResolutionProfile.DetectScaleOrDefault(source.Size);
+        var region = SelectCountRegion(slotBounds, metadata.CorrectedCount ?? metadata.GuessedCount, coordinateScale);
         if (!ContainsRectangle(source.Size, region))
         {
             return CountCropSaveResult.Empty;
@@ -155,18 +156,28 @@ internal static class CountCropTrainingStore
 
     private static Rectangle SelectCountRegion(Rectangle slotBounds, int? count)
     {
+        return SelectCountRegion(slotBounds, count, 1.0);
+    }
+
+    private static Rectangle SelectCountRegion(Rectangle slotBounds, int? count, double coordinateScale)
+    {
         var targetWidth = count?.ToString(System.Globalization.CultureInfo.InvariantCulture).Length switch
         {
-            1 => 44,
-            2 => 70,
-            3 => 102,
-            _ => 70
+            1 => ScaleLength(44, coordinateScale),
+            2 => ScaleLength(70, coordinateScale),
+            3 => ScaleLength(102, coordinateScale),
+            _ => ScaleLength(70, coordinateScale)
         };
 
-        return StackCountReader.BuildCountRegions(slotBounds)
+        return StackCountReader.BuildCountRegions(slotBounds, coordinateScale)
             .OrderBy(region => Math.Abs(region.Width - targetWidth))
             .ThenByDescending(region => region.Width)
             .First();
+    }
+
+    private static int ScaleLength(int baseValue, double scale)
+    {
+        return Math.Max(1, (int)Math.Round(baseValue * scale, MidpointRounding.AwayFromZero));
     }
 
     private static bool ContainsRectangle(Size size, Rectangle rectangle)

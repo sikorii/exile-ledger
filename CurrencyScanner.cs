@@ -55,10 +55,12 @@ internal sealed class CurrencyScanner
     private async Task<CurrencyScanResult> ScanBitmapAsync(Bitmap screenshot, Rectangle screenBounds, CancellationToken cancellationToken, StashLayoutProfile layout)
     {
         await EnsurePricesAsync(cancellationToken).ConfigureAwait(false);
+        var mapper = StashCoordinateMapper.FromScreenshotSize(screenshot.Size);
+        var actualLayout = mapper.ScaleLayoutFromBase(layout);
 
         SaveBitmap(screenshot, Path.Combine(_debugDirectory, "currency-fullscreen.png"));
         var stashCropPath = Path.Combine(_debugDirectory, "currency-stash-crop.png");
-        using var stashCrop = screenshot.Clone(layout.DisplayCropRegion, screenshot.PixelFormat);
+        using var stashCrop = screenshot.Clone(actualLayout.DisplayCropRegion, screenshot.PixelFormat);
         SaveBitmap(stashCrop, stashCropPath);
 
         var tessData = await EnsureTessDataAsync(Path.Combine(AppContext.BaseDirectory, "tessdata"), cancellationToken).ConfigureAwait(false);
@@ -72,13 +74,13 @@ internal sealed class CurrencyScanner
         for (var slotIndex = 0; slotIndex < CurrencySlotMap.Slots.Length; slotIndex++)
         {
             var slot = CurrencySlotMap.Slots[slotIndex];
-            var scanSlot = slot with { Bounds = OffsetRectangle(slot.Bounds, layout.SlotOffset) };
+            var scanSlot = slot with { Bounds = mapper.OffsetAndScaleRectFromBase(slot.Bounds, layout.SlotOffset) };
             var itemName = _mappingStore.GetName(slotIndex, slot.ItemName);
             var countOverride = _mappingStore.GetCountOverride(slotIndex);
             if (countOverride == 0)
             {
                 countDebugLines.Add($"Slot {slotIndex,2} {itemName ?? "(mapped slot)"}: forced empty override x0");
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, false, itemName, 0, null, null));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, false, itemName, 0, null, null));
                 continue;
             }
 
@@ -93,7 +95,7 @@ internal sealed class CurrencyScanner
                         (countOverride is null ? string.Empty : $" override x{countOverride} ignored"));
                 }
 
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, false, itemName, 0, null, null));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, false, itemName, 0, null, null));
                 continue;
             }
 
@@ -104,7 +106,7 @@ internal sealed class CurrencyScanner
                     screenshot,
                     scanSlot.Bounds,
                     tessData,
-                    new StackCountReadOptions(_debugDirectory, "currency", slotIndex, scanId));
+                    new StackCountReadOptions(_debugDirectory, "currency", slotIndex, scanId, mapper.Profile.ScaleX));
                 var unknownQuantity = countOverride ?? unknownQuantityRead.Quantity;
                 var unknownTrainingStatus = CountTrainingHelpers.TrySaveFromOverride(
                     screenshot,
@@ -118,7 +120,7 @@ internal sealed class CurrencyScanner
                     (countOverride is null ? string.Empty : $" override x{countOverride}") +
                     (unknownTrainingStatus.Length == 0 ? string.Empty : $" ({unknownTrainingStatus})") +
                     $" ({unknownQuantityRead.DebugText})");
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, true, null, unknownQuantity, null, null, unknownQuantityRead));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, null, unknownQuantity, null, null, unknownQuantityRead));
                 continue;
             }
 
@@ -127,7 +129,7 @@ internal sealed class CurrencyScanner
                 screenshot,
                 scanSlot.Bounds,
                 tessData,
-                new StackCountReadOptions(_debugDirectory, "currency", slotIndex, scanId));
+                new StackCountReadOptions(_debugDirectory, "currency", slotIndex, scanId, mapper.Profile.ScaleX));
             var quantity = countOverride ?? quantityRead.Quantity;
             var knownTrainingStatus = CountTrainingHelpers.TrySaveFromOverride(
                 screenshot,
@@ -146,12 +148,12 @@ internal sealed class CurrencyScanner
             {
                 unknownOccupied++;
                 countDebugLines.Add("  " + _cachedPrices.DiagnoseMissing(itemName, FixedStashScannerProfiles.Currency.PriceCategories).ToDebugString());
-                detections.Add(BuildDetection(slotIndex, scanSlot, layout, true, itemName, quantity, null, null, quantityRead));
+                detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, itemName, quantity, null, null, quantityRead));
                 continue;
             }
 
             stacks.Add(new CurrencyStack(itemName, quantity, value.Exalts, value.Divines));
-            detections.Add(BuildDetection(slotIndex, scanSlot, layout, true, itemName, quantity, value.Exalts, value.Divines, quantityRead));
+            detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, itemName, quantity, value.Exalts, value.Divines, quantityRead));
         }
 
         var totalExalts = stacks.Sum(stack => stack.Exalts);
@@ -233,23 +235,21 @@ internal sealed class CurrencyScanner
         }
     }
 
-    private static Rectangle OffsetRectangle(Rectangle rectangle, Point offset)
-    {
-        return new Rectangle(
-            rectangle.X + offset.X,
-            rectangle.Y + offset.Y,
-            rectangle.Width,
-            rectangle.Height);
-    }
-
     internal static QuantityReadResult ReadQuantity(Bitmap screenshot, Rectangle slotBounds, string tessData)
     {
-        return StackCountReader.ReadQuantity(screenshot, slotBounds, tessData);
+        var coordinateScale = ScreenshotResolutionProfile.DetectScaleOrDefault(screenshot.Size);
+        return StackCountReader.ReadQuantity(
+            screenshot,
+            slotBounds,
+            tessData,
+            StackCountReadOptions.Default with { CoordinateScale = coordinateScale });
     }
 
     internal static bool IsOccupied(Bitmap screenshot, Rectangle slotBounds)
     {
-        using var crop = screenshot.Clone(new Rectangle(slotBounds.X + 12, slotBounds.Y + 12, slotBounds.Width - 24, slotBounds.Height - 24), screenshot.PixelFormat);
+        var coordinateScale = ScreenshotResolutionProfile.DetectScaleOrDefault(screenshot.Size);
+        var inset = ScaleLength(12, coordinateScale);
+        using var crop = screenshot.Clone(new Rectangle(slotBounds.X + inset, slotBounds.Y + inset, slotBounds.Width - inset * 2, slotBounds.Height - inset * 2), screenshot.PixelFormat);
         var colorfulPixels = 0;
         var sampled = 0;
         for (var y = 0; y < crop.Height; y += 4)
@@ -273,7 +273,9 @@ internal sealed class CurrencyScanner
 
     internal static bool IsDefinitelyBlank(Bitmap screenshot, Rectangle slotBounds)
     {
-        using var crop = screenshot.Clone(new Rectangle(slotBounds.X + 12, slotBounds.Y + 12, slotBounds.Width - 24, slotBounds.Height - 24), screenshot.PixelFormat);
+        var coordinateScale = ScreenshotResolutionProfile.DetectScaleOrDefault(screenshot.Size);
+        var inset = ScaleLength(12, coordinateScale);
+        using var crop = screenshot.Clone(new Rectangle(slotBounds.X + inset, slotBounds.Y + inset, slotBounds.Width - inset * 2, slotBounds.Height - inset * 2), screenshot.PixelFormat);
         var brightPixels = 0;
         var midBrightPixels = 0;
         var sampled = 0;
@@ -338,6 +340,11 @@ internal sealed class CurrencyScanner
         using var stream = new MemoryStream(File.ReadAllBytes(path));
         using var loaded = Image.FromStream(stream);
         return new Bitmap(loaded);
+    }
+
+    private static int ScaleLength(int baseValue, double scale)
+    {
+        return Math.Max(1, (int)Math.Round(baseValue * scale, MidpointRounding.AwayFromZero));
     }
 
     internal static async Task<string> EnsureTessDataAsync(string tessDataDirectory, CancellationToken cancellationToken)

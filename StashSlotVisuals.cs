@@ -4,8 +4,12 @@ internal static class StashSlotVisuals
 {
     public static bool HasVisibleQuantityMarker(Bitmap screenshot, Rectangle slotBounds)
     {
+        var coordinateScale = ScreenshotResolutionProfile.DetectScaleOrDefault(screenshot.Size);
+        var inset = ScaleLength(4, coordinateScale);
+        var width = ScaleLength(42, coordinateScale);
+        var height = ScaleLength(38, coordinateScale);
         var region = ClampRectangle(
-            new Rectangle(slotBounds.X + 4, slotBounds.Y + 4, Math.Min(42, slotBounds.Width - 8), Math.Min(38, slotBounds.Height - 8)),
+            new Rectangle(slotBounds.X + inset, slotBounds.Y + inset, Math.Min(width, slotBounds.Width - inset * 2), Math.Min(height, slotBounds.Height - inset * 2)),
             screenshot.Size);
         if (region.Width <= 0 || region.Height <= 0)
         {
@@ -42,8 +46,10 @@ internal static class StashSlotVisuals
             return false;
         }
 
+        var coordinateScale = ScreenshotResolutionProfile.DetectScaleOrDefault(screenshot.Size);
+        var inset = ScaleLength(18, coordinateScale);
         var region = ClampRectangle(
-            new Rectangle(slotBounds.X + 18, slotBounds.Y + 18, Math.Max(1, slotBounds.Width - 36), Math.Max(1, slotBounds.Height - 36)),
+            new Rectangle(slotBounds.X + inset, slotBounds.Y + inset, Math.Max(1, slotBounds.Width - inset * 2), Math.Max(1, slotBounds.Height - inset * 2)),
             screenshot.Size);
         if (region.Width <= 0 || region.Height <= 0)
         {
@@ -170,5 +176,10 @@ internal static class StashSlotVisuals
         var right = Math.Clamp(rectangle.Right, left, size.Width);
         var bottom = Math.Clamp(rectangle.Bottom, top, size.Height);
         return Rectangle.FromLTRB(left, top, right, bottom);
+    }
+
+    private static int ScaleLength(int baseValue, double scale)
+    {
+        return Math.Max(1, (int)Math.Round(baseValue * scale, MidpointRounding.AwayFromZero));
     }
 }

@@ -17,13 +17,15 @@ internal static class CountTrainingHelpers
 
         try
         {
+            var coordinateScale = ScreenshotResolutionProfile.DetectScaleOrDefault(image.Size);
             var result = StackCountReader.SaveTrainingSamplesFromOverride(
                 image,
                 slotBounds,
                 countOverride.Value,
                 mode,
                 slotIndex,
-                debugDirectory);
+                debugDirectory,
+                coordinateScale);
             return result.SamplesSaved > 0
                 ? $" trained {result.SamplesSaved} digit sample{(result.SamplesSaved == 1 ? string.Empty : "s")}"
                 : $" training skipped: {result.Message}";
