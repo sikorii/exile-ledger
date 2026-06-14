@@ -29,6 +29,14 @@ internal sealed class RuneshapingScanner
         PropertyNameCaseInsensitive = true
     };
     private static readonly Lazy<RuneshapingRewardVocabulary> RewardVocabulary = new(LoadRuneshapingRewardVocabulary);
+    private static readonly IReadOnlyDictionary<string, string> RuneshapingPriceLookupAliases =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Ancient Rune of Horde"] = "Ancient Rune of the Horde",
+            ["Rune of Blossom"] = "Rune of the Blossom",
+            ["Rune of Prism"] = "Rune of the Prism",
+            ["Saqawal's Rune of Sky"] = "Saqawals Rune Of The Sky"
+        };
 
     private readonly string _debugDirectory;
     private PoeNinjaPrices? _cachedPrices;
@@ -112,7 +120,8 @@ internal sealed class RuneshapingScanner
         var unpriced = new List<string>();
         foreach (var reward in rewardsForPricing)
         {
-            var value = prices.TryGetValue(reward.ItemName, reward.Quantity);
+            var priceLookupName = ResolveRuneshapingPriceLookupName(reward.ItemName);
+            var value = prices.TryGetValue(priceLookupName, reward.Quantity);
             if (value is null)
             {
                 unpriced.Add($"{reward.Quantity}x {reward.ItemName}");
@@ -154,7 +163,7 @@ internal sealed class RuneshapingScanner
                     {
                         var match = Regex.Match(rewardText, @"^\d+x\s+(?<name>.+)$");
                         var name = match.Success ? match.Groups["name"].Value : rewardText;
-                        return prices.DiagnoseMissing(name).ToDebugString();
+                        return prices.DiagnoseMissing(ResolveRuneshapingPriceLookupName(name)).ToDebugString();
                     })));
         return new ScanResult(colored, unpriced, notes, rawText, cropRegion, screenBounds);
     }
@@ -732,7 +741,8 @@ internal sealed class RuneshapingScanner
 
     private static string FormatMatchDebugLine(RuneshapingRewardMatch match, PoeNinjaPrices prices)
     {
-        var price = prices.TryGetValue(match.Reward.ItemName, match.Reward.Quantity);
+        var priceLookupName = ResolveRuneshapingPriceLookupName(match.Reward.ItemName);
+        var price = prices.TryGetValue(priceLookupName, match.Reward.Quantity);
         var canonical = match.Matched
             ? match.Reward.ItemName
             : "(unmatched)";
@@ -755,8 +765,18 @@ internal sealed class RuneshapingScanner
         var nearRejection = string.IsNullOrWhiteSpace(match.NearMatchRejection)
             ? string.Empty
             : $" nearRejected='{match.NearMatchRejection}'";
+        var priceLookup = priceLookupName.Equals(match.Reward.ItemName, StringComparison.OrdinalIgnoreCase)
+            ? " priceLookup=(canonical)"
+            : $" priceLookup='{priceLookupName}'";
         var priceStatus = price is null ? "missing" : "ok";
-        return $"{match.ParsedReward.Quantity}x parsed='{match.ParsedReward.ItemName}' normalized='{match.NormalizedParsedName}' canonical='{canonical}' method={match.Method}{exact}{anchor}{score}{secondBest}{nearCandidates}{nearRejection} mergeKey='{match.MergeKey}' price={priceStatus}";
+        return $"{match.ParsedReward.Quantity}x parsed='{match.ParsedReward.ItemName}' normalized='{match.NormalizedParsedName}' canonical='{canonical}' method={match.Method}{exact}{anchor}{score}{secondBest}{nearCandidates}{nearRejection} mergeKey='{match.MergeKey}'{priceLookup} price={priceStatus}";
+    }
+
+    private static string ResolveRuneshapingPriceLookupName(string canonicalName)
+    {
+        return RuneshapingPriceLookupAliases.TryGetValue(canonicalName, out var alias)
+            ? alias
+            : canonicalName;
     }
 
     private static int EditDistance(string left, string right)
