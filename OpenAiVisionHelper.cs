@@ -23,10 +23,12 @@ internal sealed class OpenAiVisionHelper
     };
 
     private readonly string _debugDirectory;
+    private readonly OpenAiApiKeyStore _apiKeyStore;
 
-    public OpenAiVisionHelper(string debugDirectory)
+    public OpenAiVisionHelper(string debugDirectory, OpenAiApiKeyStore apiKeyStore)
     {
         _debugDirectory = debugDirectory;
+        _apiKeyStore = apiKeyStore;
         Directory.CreateDirectory(_debugDirectory);
     }
 
@@ -36,10 +38,9 @@ internal sealed class OpenAiVisionHelper
         StashLayoutProfile layout,
         CancellationToken cancellationToken)
     {
-        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-        if (string.IsNullOrWhiteSpace(apiKey))
+        if (!_apiKeyStore.TryGetOpenAiApiKey(out var apiKey))
         {
-            throw new InvalidOperationException("OPENAI_API_KEY is not set. Create an OpenAI API key, run setx OPENAI_API_KEY \"your_key\", then reopen the app.");
+            throw new MissingOpenAiApiKeyException("No OpenAI API key configured. Open Settings and paste your API key in the OpenAI API key section.");
         }
 
         var model = Environment.GetEnvironmentVariable("OPENAI_STASH_MODEL");
@@ -83,7 +84,9 @@ internal sealed class OpenAiVisionHelper
             "application/json");
 
         using var response = await client.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-        var rawResponse = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        var rawResponse = SecretRedactor.Redact(
+            await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false),
+            apiKey);
         var responsePath = Path.Combine(_debugDirectory, $"stash-ai-response-{stamp}.json");
         var latestResponsePath = Path.Combine(_debugDirectory, "latest-response.json");
         await File.WriteAllTextAsync(responsePath, rawResponse, cancellationToken).ConfigureAwait(false);

@@ -71,13 +71,110 @@ internal sealed class SettingsForm : Form
         var panel = CreateStackPanel();
 
         panel.Controls.Add(CreateHeader("OpenAI status"));
-        panel.Controls.Add(CreateStatusRow("OPENAI_API_KEY", state.OpenAiApiKeyDetected ? "Detected" : "Not detected"));
+        panel.Controls.Add(CreateOpenAiApiKeySection(state));
         panel.Controls.Add(CreateStatusRow("Count model", state.OpenAiCountModelStatus));
         panel.Controls.Add(CreateWrappedLabel("The API key value is never displayed here. AI count reads still use the existing prompt, strict JSON response expectations, apply rules, and debug cleanup behavior."));
         panel.Controls.Add(CreateButtonRow(("Open AI Count Debug Folder", _actions.OpenAiCountDebugFolder)));
 
         page.Controls.Add(panel);
         return page;
+    }
+
+    private Control CreateOpenAiApiKeySection(SettingsFormState state)
+    {
+        var panel = new FlowLayoutPanel
+        {
+            FlowDirection = FlowDirection.TopDown,
+            WrapContents = false,
+            AutoSize = true,
+            Width = 570,
+            Margin = new Padding(0, 0, 0, 12)
+        };
+
+        var statusLabel = new Label
+        {
+            Text = state.OpenAiApiKeyStatus,
+            AutoSize = true,
+            MaximumSize = new Size(570, 0),
+            Margin = new Padding(0, 0, 0, 8)
+        };
+
+        var keyRow = new TableLayoutPanel
+        {
+            ColumnCount = 2,
+            RowCount = 1,
+            Width = 570,
+            Height = 34,
+            Margin = new Padding(0, 0, 0, 4)
+        };
+        keyRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        keyRow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));
+
+        var keyBox = new TextBox
+        {
+            Dock = DockStyle.Fill,
+            UseSystemPasswordChar = true,
+            PlaceholderText = "Paste OpenAI API key"
+        };
+
+        var showKeyCheckBox = new CheckBox
+        {
+            Text = "Show",
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+        showKeyCheckBox.CheckedChanged += (_, _) => keyBox.UseSystemPasswordChar = !showKeyCheckBox.Checked;
+
+        keyRow.Controls.Add(keyBox, 0, 0);
+        keyRow.Controls.Add(showKeyCheckBox, 1, 0);
+
+        var buttonRow = new FlowLayoutPanel
+        {
+            FlowDirection = FlowDirection.LeftToRight,
+            WrapContents = false,
+            AutoSize = true,
+            Margin = new Padding(0, 0, 0, 0)
+        };
+
+        var saveButton = new Button
+        {
+            Text = "Save",
+            AutoSize = true,
+            MinimumSize = new Size(88, 30),
+            Margin = new Padding(0, 0, 8, 0)
+        };
+        saveButton.Click += async (_, _) =>
+        {
+            var status = await _actions.SaveOpenAiApiKeyAsync(keyBox.Text).ConfigureAwait(true);
+            keyBox.Clear();
+            keyBox.PlaceholderText = status == "OpenAI API key configured"
+                ? "Stored key configured"
+                : "Paste OpenAI API key";
+            statusLabel.Text = status;
+        };
+
+        var clearButton = new Button
+        {
+            Text = "Clear",
+            AutoSize = true,
+            MinimumSize = new Size(88, 30),
+            Margin = new Padding(0, 0, 8, 0)
+        };
+        clearButton.Click += async (_, _) =>
+        {
+            var status = await _actions.ClearOpenAiApiKeyAsync().ConfigureAwait(true);
+            keyBox.Clear();
+            keyBox.PlaceholderText = "Paste OpenAI API key";
+            statusLabel.Text = status;
+        };
+
+        buttonRow.Controls.Add(saveButton);
+        buttonRow.Controls.Add(clearButton);
+
+        panel.Controls.Add(statusLabel);
+        panel.Controls.Add(keyRow);
+        panel.Controls.Add(buttonRow);
+        return panel;
     }
 
     private TabPage BuildDisplayOverlayTab(SettingsFormState state)
@@ -260,7 +357,7 @@ internal sealed class SettingsForm : Form
 internal sealed record SettingsFormState(
     bool ManualLayoutEditorEnabled,
     bool SaveCountDebugCrops,
-    bool OpenAiApiKeyDetected,
+    string OpenAiApiKeyStatus,
     string OpenAiCountModelStatus,
     string AppDataPath,
     string ConfigPath,
@@ -278,6 +375,8 @@ internal sealed record SettingsFormActions(
     Action ResetCurrentTab,
     Action<bool> SetSaveCountDebugCrops,
     Action ReviewCountCrops,
+    Func<string, Task<string>> SaveOpenAiApiKeyAsync,
+    Func<Task<string>> ClearOpenAiApiKeyAsync,
     Action OpenAppDataFolder,
     Action OpenConfigFolder,
     Action OpenDebugFolder,

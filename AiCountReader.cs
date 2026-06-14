@@ -34,10 +34,12 @@ internal sealed class AiCountReader
     };
 
     private readonly string _debugDirectory;
+    private readonly OpenAiApiKeyStore _apiKeyStore;
 
-    public AiCountReader(string debugDirectory)
+    public AiCountReader(string debugDirectory, OpenAiApiKeyStore apiKeyStore)
     {
         _debugDirectory = debugDirectory;
+        _apiKeyStore = apiKeyStore;
         Directory.CreateDirectory(_debugDirectory);
     }
 
@@ -48,10 +50,9 @@ internal sealed class AiCountReader
         IReadOnlyList<AiCountSlotSource> slots,
         CancellationToken cancellationToken)
     {
-        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-        if (string.IsNullOrWhiteSpace(apiKey))
+        if (!_apiKeyStore.TryGetOpenAiApiKey(out var apiKey))
         {
-            throw new MissingOpenAiApiKeyException("OPENAI_API_KEY is not set. In PowerShell, run: setx OPENAI_API_KEY \"your_key\" then reopen the app.");
+            throw new MissingOpenAiApiKeyException("No OpenAI API key configured. Open Settings and paste your API key in the OpenAI API key section.");
         }
 
         var model = Environment.GetEnvironmentVariable("OPENAI_COUNT_MODEL");
@@ -140,7 +141,9 @@ internal sealed class AiCountReader
             "application/json");
 
         using var response = await client.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-        var rawResponse = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        var rawResponse = SecretRedactor.Redact(
+            await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false),
+            apiKey);
         await File.WriteAllTextAsync(rawResponsePath, rawResponse, cancellationToken).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)

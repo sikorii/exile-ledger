@@ -9,7 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
     <PackageReference Include="Tesseract" Version="5.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="config\secrets.json" />
+    <None Remove="debug\**" />
+    <None Remove="cache\**" />
+    <None Remove="logs\**" />
+    <Content Remove="config\secrets.json" />
+    <Content Remove="debug\**" />
+    <Content Remove="cache\**" />
+    <Content Remove="logs\**" />
   </ItemGroup>
 
   <ItemGroup>
