@@ -259,20 +259,19 @@ internal sealed class MainForm : Form
         _leftNavPanel.BackColor = RailBackground;
         _leftNavPanel.Paint += PaintCardBorder;
 
-        var railMark = new Label
+        var railMark = new PictureBox
         {
-            Text = "EL",
-            Location = new Point(18, 22),
-            Size = new Size(44, 44),
-            TextAlign = ContentAlignment.MiddleCenter,
-            Font = new Font("Segoe UI", 12f, FontStyle.Bold),
-            BackColor = Color.FromArgb(17, 82, 82),
-            ForeColor = AccentCyan
+            Image = LoadRailBrandIcon(),
+            Location = new Point(64, 18),
+            Size = new Size(132, 132),
+            SizeMode = PictureBoxSizeMode.Zoom,
+            BackColor = RailBackground,
+            TabStop = false
         };
         var stashModesHeader = new Label
         {
             Text = "STASH MODES",
-            Location = new Point(18, 82),
+            Location = new Point(18, 176),
             Size = new Size(220, 18),
             Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
             ForeColor = AccentGold
@@ -352,7 +351,7 @@ internal sealed class MainForm : Form
             "Enable when these tabs are inside a Path of Exile stash folder. This changes the stash crop/layout, not a Windows folder.");
         _leftNavPanel.Controls.Add(_insideFolderCheckBox);
 
-        var railTop = 152;
+        var railTop = 244;
         for (var i = 0; i < RailStashModes.Length; i++)
         {
             if (i == 1)
@@ -578,7 +577,7 @@ internal sealed class MainForm : Form
         _totalStashValueLabel.Size = new Size(Math.Max(120, _totalStatusPanel.ClientSize.Width - 32), 30);
 
         _modeComboBox.Location = new Point(-500, -500);
-        _insideFolderCheckBox.Location = new Point(18, 108);
+        _insideFolderCheckBox.Location = new Point(18, 202);
 
         var actionX = 20;
         var actionY = 20;
@@ -620,6 +619,18 @@ internal sealed class MainForm : Form
         return index >= 0
             ? index
             : throw new InvalidOperationException($"Missing scan mode for left rail label: {internalLabel}");
+    }
+
+    private static Image? LoadRailBrandIcon()
+    {
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "assets", "ExileLedger.ico");
+        if (File.Exists(iconPath))
+        {
+            using var icon = new Icon(iconPath, new Size(128, 128));
+            return icon.ToBitmap();
+        }
+
+        return Icon.ExtractAssociatedIcon(Application.ExecutablePath)?.ToBitmap();
     }
 
     private static Label CreateStashModeSectionHeader(string text, int top)

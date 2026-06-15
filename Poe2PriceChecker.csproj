@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="assets\ExileLedger.ico" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="assets\count-digits-reference.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="Data\runeshaping_reward_vocabulary.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
