@@ -1,4 +1,4 @@
-# POE2 Price Checker App
+# Exile Ledger (POE2 Price Checker App)
 
 First-pass PoE2 Runes of Aldur runeshaping helper.
 
@@ -6,9 +6,9 @@ First-pass PoE2 Runes of Aldur runeshaping helper.
 
 - Click `Runeshaping` or press `F8` for the encounter scanner.
 - Choose a stash mode from the dropdown, then click `Scan Stash`.
-- Check `Folder` for stash modes that live inside a stash folder. This setting is saved per stash mode.
+- Check `In-game stash folder mode` for stash modes that live inside a Path of Exile stash folder. This setting is saved per stash mode and does not choose a Windows folder.
 - Click `Icons` to refresh the local poe.ninja icon cache used by slot suggestions.
-- Click `Copy` to copy the current scan summary to the clipboard.
+- Click `Copy Summary` to copy the current scan summary to the clipboard.
 - Before live scans and captures, the app tries to bring the Path of Exile 2 window to the foreground.
 - Press `F8` while the Runeshape Combinations panel is open.
 - The app screenshots the selected 4K PoE2 screen and crops the runeshaping reward area.
