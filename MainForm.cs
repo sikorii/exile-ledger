@@ -189,6 +189,7 @@ internal sealed class MainForm : Form
         _manualPriceRefreshCooldownTimer.Interval = 1000;
         _manualPriceRefreshCooldownTimer.Tick += (_, _) => UpdateManualPriceRefreshCooldownUi();
         BuildUi();
+        Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         LoadPersistedLatestScans();
         UpdateManualPriceRefreshCooldownUi();
     }
