@@ -69,11 +69,13 @@ internal sealed class MainForm : Form
     private readonly CheckBox _saveCountDebugCropsCheckBox = new();
     private readonly Button _reviewCountCropsButton = new();
     private readonly Button _aiReadCountsButton = new();
+    private readonly Button _settingsButton = new();
     private readonly Label _statusLabel = new();
     private readonly Label _totalStashValueLabel = new();
     private readonly TextBox _detailsBox = new();
     private readonly PictureBox _stashPictureBox = new();
     private readonly MenuStrip _menuStrip = new();
+    private readonly ToolTip _toolTip = new();
     private readonly ToolStripMenuItem _manualLayoutEditorMenuItem = new();
     private readonly ToolStripMenuItem _saveLayoutMenuItem = new();
     private readonly ToolStripMenuItem _reloadLayoutMenuItem = new();
@@ -171,6 +173,7 @@ internal sealed class MainForm : Form
         {
             _manualPriceRefreshCooldownTimer.Stop();
             _manualPriceRefreshCooldownTimer.Dispose();
+            _toolTip.Dispose();
         }
 
         base.Dispose(disposing);
@@ -201,7 +204,7 @@ internal sealed class MainForm : Form
     private void BuildUi()
     {
         AutoScaleMode = AutoScaleMode.Dpi;
-        Text = "POE2 Price Checker";
+        Text = "Exile Ledger";
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.FixedSingle;
         FormBorderStyle = FormBorderStyle.Sizable;
@@ -214,19 +217,28 @@ internal sealed class MainForm : Form
 
         var title = new Label
         {
-            Text = "POE2 Price Checker",
-            Font = new Font("Segoe UI", 18, FontStyle.Bold),
+            Text = "Exile Ledger",
+            Font = new Font("Segoe UI", 20, FontStyle.Bold),
             Location = new Point(18, 38),
-            AutoSize = true
+            AutoSize = true,
+            ForeColor = Color.FromArgb(96, 235, 228)
+        };
+
+        var modeLabel = new Label
+        {
+            Text = "Stash",
+            Location = new Point(22, 92),
+            Size = new Size(50, 22),
+            TextAlign = ContentAlignment.MiddleLeft
         };
 
         _runeshapingButton.Text = "Runeshaping";
-        _runeshapingButton.Location = new Point(22, 86);
-        _runeshapingButton.Size = new Size(120, 34);
+        _runeshapingButton.Location = new Point(444, 88);
+        _runeshapingButton.Size = new Size(118, 34);
         _runeshapingButton.Click += async (_, _) => await ScanLiveAsync();
 
-        _modeComboBox.Location = new Point(154, 87);
-        _modeComboBox.Size = new Size(205, 28);
+        _modeComboBox.Location = new Point(84, 88);
+        _modeComboBox.Size = new Size(210, 28);
         _modeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         _modeComboBox.Items.AddRange(ScanModes.Cast<object>().ToArray());
         _modeComboBox.SelectedIndex = 0;
@@ -238,21 +250,25 @@ internal sealed class MainForm : Form
             UpdateLayoutEditorControls();
         };
 
-        _insideFolderCheckBox.Text = "Folder";
-        _insideFolderCheckBox.Location = new Point(372, 85);
+        _insideFolderCheckBox.Text = "In-game stash folder mode";
+        _insideFolderCheckBox.Location = new Point(84, 126);
         _insideFolderCheckBox.AutoSize = true;
         _insideFolderCheckBox.Padding = new Padding(0, 5, 0, 5);
         _insideFolderCheckBox.CheckedChanged += (_, _) => SaveSelectedModeFolderSetting();
+        _toolTip.SetToolTip(
+            _insideFolderCheckBox,
+            "Enable when these tabs are inside a Path of Exile stash folder. This changes the stash crop/layout, not a Windows folder.");
 
         _scanButton.Text = "Scan Stash";
-        _scanButton.Location = new Point(466, 86);
-        _scanButton.Size = new Size(100, 34);
+        _scanButton.Location = new Point(320, 88);
+        _scanButton.Size = new Size(112, 34);
         _scanButton.Click += async (_, _) => await ScanSelectedStashModeAsync();
 
         _refreshButton.Text = RefreshPricesButtonText;
-        _refreshButton.Location = new Point(578, 86);
-        _refreshButton.Size = new Size(130, 34);
+        _refreshButton.Location = new Point(574, 88);
+        _refreshButton.Size = new Size(174, 34);
         _refreshButton.Click += async (_, _) => await RefreshPricesAsync();
+        _toolTip.SetToolTip(_refreshButton, "Refresh poe.ninja prices. A successful manual refresh starts a 30-minute cooldown.");
 
         _testButton.Text = "Test";
         _testButton.Location = new Point(720, 86);
@@ -277,9 +293,9 @@ internal sealed class MainForm : Form
         _refreshIconsButton.Visible = false;
         _refreshIconsButton.Click += async (_, _) => await RefreshIconCacheAsync();
 
-        _copySummaryButton.Text = "Copy";
-        _copySummaryButton.Location = new Point(720, 86);
-        _copySummaryButton.Size = new Size(74, 34);
+        _copySummaryButton.Text = "Copy Summary";
+        _copySummaryButton.Location = new Point(760, 88);
+        _copySummaryButton.Size = new Size(122, 34);
         _copySummaryButton.Click += (_, _) => CopyCurrentSummary();
 
         _editLayoutCheckBox.Text = "Edit Layout";
@@ -341,12 +357,17 @@ internal sealed class MainForm : Form
         _reviewCountCropsButton.Click += (_, _) => GenerateCountCropReviewReport();
 
         _aiReadCountsButton.Text = "AI Read Counts";
-        _aiReadCountsButton.Location = new Point(806, 86);
+        _aiReadCountsButton.Location = new Point(894, 88);
         _aiReadCountsButton.Size = new Size(128, 30);
         _aiReadCountsButton.Click += async (_, _) => await ReadCountsWithAiAsync();
 
-        _statusLabel.Text = $"Runeshaping is separate. Choose a stash mode, then Scan Stash. Hotkeys: {_hotkeySettings.Runeshaping.ToDisplayString()} Runeshaping, {_hotkeySettings.ScanCurrentStash.ToDisplayString()} selected stash.";
-        _statusLabel.Location = new Point(22, 140);
+        _settingsButton.Text = "Settings";
+        _settingsButton.Location = new Point(1034, 88);
+        _settingsButton.Size = new Size(92, 34);
+        _settingsButton.Click += (_, _) => OpenSettingsDialog();
+
+        _statusLabel.Text = $"Exile Ledger is ready. Choose a stash mode, use in-game stash folder mode only for PoE stash folders, then Scan Stash. Hotkeys: {_hotkeySettings.Runeshaping.ToDisplayString()} Runeshaping, {_hotkeySettings.ScanCurrentStash.ToDisplayString()} selected stash.";
+        _statusLabel.Location = new Point(22, 164);
         _statusLabel.Size = new Size(1200, 24);
 
         _totalStashValueLabel.Text = "All scanned: 0 tabs | 0ex / 0div";
@@ -358,8 +379,8 @@ internal sealed class MainForm : Form
         _totalStashValueLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         _totalStashValueLabel.AutoEllipsis = true;
 
-        _stashPictureBox.Location = new Point(22, 174);
-        _stashPictureBox.Size = new Size(780, 622);
+        _stashPictureBox.Location = new Point(22, 198);
+        _stashPictureBox.Size = new Size(780, 598);
         _stashPictureBox.BorderStyle = BorderStyle.FixedSingle;
         _stashPictureBox.BackColor = Color.FromArgb(24, 24, 24);
         _stashPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
@@ -368,8 +389,8 @@ internal sealed class MainForm : Form
         _stashPictureBox.MouseClick += StashPictureBox_MouseClick;
         _stashPictureBox.KeyDown += StashPictureBox_KeyDown;
 
-        _detailsBox.Location = new Point(820, 174);
-        _detailsBox.Size = new Size(420, 622);
+        _detailsBox.Location = new Point(820, 198);
+        _detailsBox.Size = new Size(420, 598);
         _detailsBox.Multiline = true;
         _detailsBox.ReadOnly = true;
         _detailsBox.ScrollBars = ScrollBars.Vertical;
@@ -380,7 +401,7 @@ internal sealed class MainForm : Form
         _detailsBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
         _stashPictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
-        Controls.AddRange([_menuStrip, title, _runeshapingButton, _modeComboBox, _insideFolderCheckBox, _scanButton, _refreshButton, _copySummaryButton, _aiReadCountsButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
+        Controls.AddRange([_menuStrip, title, modeLabel, _modeComboBox, _insideFolderCheckBox, _scanButton, _runeshapingButton, _refreshButton, _copySummaryButton, _aiReadCountsButton, _settingsButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
         MainMenuStrip = _menuStrip;
         LoadSelectedModeFolderSetting();
         UpdateLayoutEditorControls();
@@ -392,7 +413,7 @@ internal sealed class MainForm : Form
         _menuStrip.Items.Clear();
 
         var fileMenu = new ToolStripMenuItem("&File");
-        _openScreenshotMenuItem.Text = "Open Screenshot...";
+        _openScreenshotMenuItem.Text = "Open Screenshot File...";
         _openScreenshotMenuItem.Click += async (_, _) => await OpenScreenshotAsync();
         fileMenu.DropDownItems.Add(_openScreenshotMenuItem);
         fileMenu.DropDownItems.Add(new ToolStripSeparator());
@@ -657,8 +678,8 @@ internal sealed class MainForm : Form
         var version = Application.ProductVersion;
         MessageBox.Show(
             this,
-            $"POE2 Price Checker\r\nVersion: {version}\r\nBuild path: {AppContext.BaseDirectory}\r\nApp data: {AppPaths.RootDirectory}",
-            "About POE2 Price Checker",
+            $"Exile Ledger\r\nVersion: {version}\r\nBuild path: {AppContext.BaseDirectory}\r\nApp data: {AppPaths.RootDirectory}",
+            "About Exile Ledger",
             MessageBoxButtons.OK,
             MessageBoxIcon.Information);
     }
@@ -1473,8 +1494,9 @@ internal sealed class MainForm : Form
     {
         if (IsManualPriceRefreshCooldownActive(out var remaining))
         {
-            _refreshButton.Text = $"Refresh ({FormatManualPriceRefreshButtonCountdown(remaining)})";
+            _refreshButton.Text = $"Refresh Prices ({FormatManualPriceRefreshButtonCountdown(remaining)})";
             _refreshButton.Enabled = false;
+            _toolTip.SetToolTip(_refreshButton, $"Refresh Prices cooldown remaining: {FormatManualPriceRefreshStatus(remaining)}.");
             if (!_manualPriceRefreshCooldownTimer.Enabled)
             {
                 _manualPriceRefreshCooldownTimer.Start();
@@ -1490,6 +1512,7 @@ internal sealed class MainForm : Form
 
         _refreshButton.Text = RefreshPricesButtonText;
         _refreshButton.Enabled = !_scanInProgress;
+        _toolTip.SetToolTip(_refreshButton, "Refresh poe.ninja prices. A successful manual refresh starts a 30-minute cooldown.");
     }
 
     private static string FormatManualPriceRefreshButtonCountdown(TimeSpan remaining)
@@ -1570,7 +1593,7 @@ internal sealed class MainForm : Form
     {
         var lines = new List<string>
         {
-            "POE2 Price Checker",
+            "Exile Ledger",
             $"Status: {_statusLabel.Text}",
             $"Copied: {DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss zzz}",
             string.Empty
@@ -3980,6 +4003,7 @@ internal sealed class MainForm : Form
         _copySummaryButton.Enabled = !busy;
         _reviewCountCropsButton.Enabled = !busy;
         _aiReadCountsButton.Enabled = !busy;
+        _settingsButton.Enabled = !busy;
         _openScreenshotMenuItem.Enabled = !busy;
         _scanRuneshapingMenuItem.Enabled = !busy;
         _scanCurrentStashMenuItem.Enabled = !busy;
