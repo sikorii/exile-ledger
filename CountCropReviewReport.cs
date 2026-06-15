@@ -77,7 +77,7 @@ internal static class CountCropReviewReport
         var directory = new DirectoryInfo(startDirectory);
         while (directory is not null)
         {
-            if (File.Exists(Path.Combine(directory.FullName, "Poe2PriceChecker.csproj")))
+            if (File.Exists(Path.Combine(directory.FullName, "ExileLedger.csproj")))
             {
                 return directory.FullName;
             }

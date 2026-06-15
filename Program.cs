@@ -101,7 +101,7 @@ static class Program
 
     private static void RunCurrencyTest(string? screenshotPath)
     {
-        screenshotPath ??= @"C:\POE2 Price Checker App\Screenshots\recovered-currency\currency-01.png";
+        screenshotPath ??= ProjectPath("Screenshots", "recovered-currency", "currency-01.png");
         var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
@@ -124,7 +124,7 @@ static class Program
 
     private static void RunRunesTest(string? screenshotPath)
     {
-        screenshotPath ??= @"C:\POE2 Price Checker App\publish\debug\stash-tab-captures\latest-stash-tab-fullscreen.png";
+        screenshotPath ??= ProjectPath("publish", "debug", "stash-tab-captures", "latest-stash-tab-fullscreen.png");
         var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
@@ -153,7 +153,7 @@ static class Program
 
     private static void RunKalguuranRunesTest(string? screenshotPath)
     {
-        screenshotPath ??= @"C:\POE2 Price Checker App\publish\debug\stash-tab-captures\latest-stash-tab-fullscreen.png";
+        screenshotPath ??= ProjectPath("publish", "debug", "stash-tab-captures", "latest-stash-tab-fullscreen.png");
         var debugDirectory = AppPaths.DebugDirectory;
         Directory.CreateDirectory(debugDirectory);
 
@@ -180,7 +180,7 @@ static class Program
     private static void RunFixedStashTest(string? profileKey, string? screenshotPath, string? layoutName)
     {
         profileKey ??= FixedStashScannerProfiles.Abyss.Key;
-        screenshotPath ??= @"C:\POE2 Price Checker App\Screenshots\Stashes\Abyss.png";
+        screenshotPath ??= ProjectPath("Screenshots", "Stashes", "Abyss.png");
         var profile = FindProfile(profileKey) ?? FixedStashScannerProfiles.Abyss;
         var layout = ParseLayoutProfile(layoutName, StashLayoutProfile.Folder);
         var debugDirectory = AppPaths.DebugDirectory;
@@ -212,7 +212,7 @@ static class Program
     private static void RunSlotLayoutDebug(string? profileKey, string? screenshotPath, string? layoutName)
     {
         profileKey ??= FixedStashScannerProfiles.Essence.Key;
-        screenshotPath ??= @"C:\POE2 Price Checker App\publish\debug\essence-fullscreen.png";
+        screenshotPath ??= ProjectPath("publish", "debug", "essence-fullscreen.png");
         var profile = FindProfile(profileKey) ?? FixedStashScannerProfiles.Essence;
         var layout = ParseLayoutProfile(layoutName, StashLayoutProfile.FolderFull);
         var debugDirectory = AppPaths.DebugDirectory;
@@ -314,7 +314,7 @@ static class Program
 
     private static void RunIconMatch(string? screenshotPath, string? mode, string? slotText)
     {
-        screenshotPath ??= @"C:\POE2 Price Checker App\publish\debug\stash-tab-captures\latest-stash-tab-fullscreen.png";
+        screenshotPath ??= ProjectPath("publish", "debug", "stash-tab-captures", "latest-stash-tab-fullscreen.png");
         mode ??= "currency";
 
         var debugDirectory = AppPaths.DebugDirectory;
@@ -432,6 +432,20 @@ static class Program
         return FixedStashScannerProfiles.BuiltIn.FirstOrDefault(profile =>
             profile.Key.Equals(profileKeyOrLabel, StringComparison.OrdinalIgnoreCase) ||
             profile.Label.Equals(profileKeyOrLabel, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string ProjectPath(params string[] pathParts)
+    {
+        var baseDirectory = new DirectoryInfo(AppContext.BaseDirectory);
+        for (var current = baseDirectory; current is not null; current = current.Parent)
+        {
+            if (File.Exists(Path.Combine(current.FullName, "ExileLedger.csproj")))
+            {
+                return Path.Combine([current.FullName, .. pathParts]);
+            }
+        }
+
+        return Path.Combine([Directory.GetCurrentDirectory(), .. pathParts]);
     }
 
     private static StashLayoutProfile ParseLayoutProfile(string? layoutName, StashLayoutProfile fallback)
