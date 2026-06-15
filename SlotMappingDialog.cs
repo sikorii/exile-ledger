@@ -2,6 +2,16 @@ namespace Poe2PriceChecker;
 
 internal sealed class SlotMappingDialog : Form
 {
+    private static readonly Color AppBackground = Color.FromArgb(16, 20, 24);
+    private static readonly Color CardBackground = Color.FromArgb(24, 31, 38);
+    private static readonly Color CardBackgroundAlt = Color.FromArgb(28, 35, 43);
+    private static readonly Color FieldBackground = Color.FromArgb(13, 17, 21);
+    private static readonly Color BorderColor = Color.FromArgb(43, 52, 61);
+    private static readonly Color TextPrimary = Color.FromArgb(236, 241, 244);
+    private static readonly Color TextSecondary = Color.FromArgb(168, 179, 188);
+    private static readonly Color AccentCyan = Color.FromArgb(83, 224, 218);
+    private static readonly Color AccentTeal = Color.FromArgb(21, 148, 146);
+
     private readonly TextBox _itemNameBox = new();
     private readonly TextBox _countOverrideBox = new();
     private readonly ListBox _suggestionsList = new();
@@ -36,126 +46,136 @@ internal sealed class SlotMappingDialog : Form
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = true;
         MinimizeBox = false;
+        BackColor = AppBackground;
+        ForeColor = TextPrimary;
+        Font = new Font("Segoe UI", 9f);
         var hasCountPreview = _countCropPreview?.Saved == true;
+        var hasSuggestions = _iconSuggestions.Count > 0;
         ClientSize = _iconSuggestions.Count > 0
-            ? new Size(640, hasCountPreview ? 520 : 440)
-            : new Size(480, hasCountPreview ? 340 : 240);
+            ? new Size(760, hasCountPreview ? 734 : 632)
+            : new Size(620, hasCountPreview ? 568 : 382);
         MinimumSize = _iconSuggestions.Count > 0
-            ? new Size(560, hasCountPreview ? 440 : 360)
-            : new Size(460, hasCountPreview ? 340 : 260);
+            ? new Size(680, hasCountPreview ? 624 : 532)
+            : new Size(560, hasCountPreview ? 518 : 352);
 
-        var label = new Label
+        var margin = 18;
+        var footerHeight = 64;
+        var contentWidth = ClientSize.Width - (margin * 2);
+
+        var titleLabel = new Label
         {
-            Text = "Item name",
-            Location = new Point(16, 18),
-            AutoSize = true
+            Text = "Map Stash Slot",
+            Location = new Point(margin, 12),
+            Size = new Size(contentWidth, 36),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            Font = new Font("Segoe UI", 14.5f, FontStyle.Bold),
+            ForeColor = TextPrimary,
+            BackColor = AppBackground
         };
 
-        _itemNameBox.Location = new Point(16, 44);
-        _itemNameBox.Size = new Size(ClientSize.Width - 32, 28);
+        var helperLabel = new Label
+        {
+            Text = "Correct the item name or stack count for this slot.",
+            Location = new Point(margin, 50),
+            Size = new Size(contentWidth, 24),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            ForeColor = TextSecondary,
+            BackColor = AppBackground
+        };
+
+        var itemCard = CreateCard("Item mapping", new Point(margin, 86), new Size(contentWidth, 190));
+
+        var itemNameLabel = CreateFieldLabel("Item name", new Point(16, 46), new Size(140, 24));
+        _itemNameBox.Location = new Point(16, 74);
+        _itemNameBox.Size = new Size(itemCard.Width - 32, 28);
         _itemNameBox.Text = currentName;
         _itemNameBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        StyleTextBox(_itemNameBox);
 
-        var countLabel = new Label
-        {
-            Text = currentQuantity is null
+        var countLabel = CreateFieldLabel(
+            currentQuantity is null
                 ? "Count override (blank = local read, 0 = empty)"
                 : $"Count override (blank = local read, 0 = empty, current x{currentQuantity})",
-            Location = new Point(16, 86),
-            AutoSize = true
-        };
+            new Point(16, 114),
+            new Size(itemCard.Width - 32, 28));
+        countLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-        _countOverrideBox.Location = new Point(16, 112);
-        _countOverrideBox.Size = new Size(120, 28);
+        _countOverrideBox.Location = new Point(16, 146);
+        _countOverrideBox.Size = new Size(124, 28);
         _countOverrideBox.Text = countOverride?.ToString() ?? string.Empty;
+        StyleTextBox(_countOverrideBox);
 
-        var buttonTop = ClientSize.Height - 48;
-        var controls = new List<Control> { label, _itemNameBox, countLabel, _countOverrideBox };
+        itemCard.Controls.AddRange([itemNameLabel, _itemNameBox, countLabel, _countOverrideBox]);
 
         if (currentQuantity is > 0)
         {
             var confirmCountButton = new Button
             {
                 Text = $"Confirm x{currentQuantity}",
-                Location = new Point(148, 111),
-                Size = new Size(124, 30),
+                Location = new Point(154, 144),
+                Size = new Size(132, 30),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
+            StyleButton(confirmCountButton);
             confirmCountButton.Click += (_, _) =>
             {
                 _countOverrideBox.Text = currentQuantity.Value.ToString();
                 _countOverrideBox.SelectAll();
                 _countOverrideBox.Focus();
             };
-            controls.Add(confirmCountButton);
+            itemCard.Controls.Add(confirmCountButton);
         }
 
-        var nextTop = 150;
+        var nextTop = itemCard.Bottom + 14;
+        Panel? previewCard = null;
         if (hasCountPreview)
         {
             LoadCountPreviewImages();
-
-            var previewLabel = new Label
-            {
-                Text = "Count crop preview",
-                Location = new Point(16, 152),
-                AutoSize = true
-            };
-
-            var rawLabel = new Label
-            {
-                Text = "Raw",
-                Location = new Point(16, 178),
-                AutoSize = true
-            };
+            previewCard = CreateCard("Count crop preview", new Point(margin, nextTop), new Size(contentWidth, 166));
 
             var rawBox = new PictureBox
             {
-                Location = new Point(16, 202),
-                Size = new Size(150, 62),
+                Dock = DockStyle.Fill,
                 BorderStyle = BorderStyle.FixedSingle,
-                BackColor = Color.White,
+                BackColor = FieldBackground,
                 SizeMode = PictureBoxSizeMode.Zoom,
                 Image = _rawCountPreviewImage
             };
-
-            var cleanedLabel = new Label
-            {
-                Text = "Cleaned",
-                Location = new Point(184, 178),
-                AutoSize = true
-            };
+            StylePreviewBox(rawBox);
 
             var cleanedBox = new PictureBox
             {
-                Location = new Point(184, 202),
-                Size = new Size(190, 62),
+                Dock = DockStyle.Fill,
                 BorderStyle = BorderStyle.FixedSingle,
-                BackColor = Color.White,
+                BackColor = FieldBackground,
                 SizeMode = PictureBoxSizeMode.Zoom,
                 Image = _cleanedCountPreviewImage
             };
+            StylePreviewBox(cleanedBox);
 
-            controls.AddRange([previewLabel, rawLabel, rawBox, cleanedLabel, cleanedBox]);
-            nextTop = 286;
+            var previewGrid = CreatePreviewGrid(rawBox, cleanedBox, previewCard.Width - 32);
+            previewCard.Controls.Add(previewGrid);
+            nextTop = previewCard.Bottom + 14;
         }
 
-        if (_iconSuggestions.Count > 0)
+        Panel? suggestionsCard = null;
+        if (hasSuggestions)
         {
             LoadSuggestionImages();
+            suggestionsCard = CreateCard(
+                "Icon suggestions",
+                new Point(margin, nextTop),
+                new Size(contentWidth, ClientSize.Height - nextTop - footerHeight - margin));
+            suggestionsCard.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
-            var suggestionsLabel = new Label
-            {
-                Text = "Icon suggestions",
-                Location = new Point(16, nextTop),
-                AutoSize = true
-            };
-
-            _suggestionsList.Location = new Point(16, nextTop + 26);
-            _suggestionsList.Size = new Size(ClientSize.Width - 164, ClientSize.Height - nextTop - 86);
+            _suggestionsList.Location = new Point(16, 44);
+            _suggestionsList.Size = new Size(suggestionsCard.Width - 156, suggestionsCard.Height - 60);
             _suggestionsList.DrawMode = DrawMode.OwnerDrawFixed;
-            _suggestionsList.ItemHeight = 46;
+            _suggestionsList.ItemHeight = 50;
             _suggestionsList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            _suggestionsList.BorderStyle = BorderStyle.FixedSingle;
+            _suggestionsList.BackColor = FieldBackground;
+            _suggestionsList.ForeColor = TextPrimary;
             _suggestionsList.DrawItem += SuggestionsList_DrawItem;
             _suggestionsList.Items.AddRange(_iconSuggestions
                 .Select(suggestion => new IconSuggestionListItem(suggestion))
@@ -170,22 +190,32 @@ internal sealed class SlotMappingDialog : Form
             var useSuggestionButton = new Button
             {
                 Text = "Use",
-                Location = new Point(ClientSize.Width - 132, nextTop + 26),
-                Size = new Size(116, 32),
+                Location = new Point(suggestionsCard.Width - 124, 44),
+                Size = new Size(108, 32),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
+            StyleButton(useSuggestionButton, primary: true);
             useSuggestionButton.Click += (_, _) => ApplySelectedSuggestion();
-            controls.AddRange([suggestionsLabel, _suggestionsList, useSuggestionButton]);
+            suggestionsCard.Controls.AddRange([_suggestionsList, useSuggestionButton]);
         }
+
+        var footer = new Panel
+        {
+            Location = new Point(0, ClientSize.Height - footerHeight),
+            Size = new Size(ClientSize.Width, footerHeight),
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+            BackColor = AppBackground
+        };
 
         var saveButton = new Button
         {
             Text = "Save",
-            Location = new Point(ClientSize.Width - 204, buttonTop),
-            Size = new Size(86, 32),
+            Location = new Point(footer.Width - 218, 15),
+            Size = new Size(96, 34),
             DialogResult = DialogResult.OK,
-            Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
         };
+        StyleButton(saveButton, primary: true);
         saveButton.Click += (_, _) =>
         {
             var countText = _countOverrideBox.Text.Trim();
@@ -205,16 +235,177 @@ internal sealed class SlotMappingDialog : Form
         var cancelButton = new Button
         {
             Text = "Cancel",
-            Location = new Point(ClientSize.Width - 110, buttonTop),
-            Size = new Size(86, 32),
+            Location = new Point(footer.Width - 112, 15),
+            Size = new Size(94, 34),
             DialogResult = DialogResult.Cancel,
-            Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
         };
+        StyleButton(cancelButton);
 
         AcceptButton = saveButton;
         CancelButton = cancelButton;
-        controls.AddRange([saveButton, cancelButton]);
-        Controls.AddRange(controls.ToArray());
+        footer.Controls.AddRange([saveButton, cancelButton]);
+
+        Controls.AddRange([titleLabel, helperLabel, itemCard]);
+        if (previewCard is not null)
+        {
+            Controls.Add(previewCard);
+        }
+
+        if (suggestionsCard is not null)
+        {
+            Controls.Add(suggestionsCard);
+        }
+
+        Controls.Add(footer);
+    }
+
+    protected override void OnHandleCreated(EventArgs e)
+    {
+        base.OnHandleCreated(e);
+        TryApplyDarkTitleBar();
+    }
+
+    private void TryApplyDarkTitleBar()
+    {
+        try
+        {
+            var enabled = 1;
+            if (DwmSetWindowAttribute(Handle, 20, ref enabled, sizeof(int)) != 0)
+            {
+                _ = DwmSetWindowAttribute(Handle, 19, ref enabled, sizeof(int));
+            }
+        }
+        catch
+        {
+            // Older Windows builds may not support immersive dark title bars.
+        }
+    }
+
+    private static Panel CreateCard(string title, Point location, Size size)
+    {
+        var card = new Panel
+        {
+            Location = location,
+            Size = size,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            BackColor = CardBackground
+        };
+        card.Paint += PaintCardBorder;
+
+        card.Controls.Add(new Label
+        {
+            Text = title,
+            Location = new Point(16, 12),
+            Size = new Size(size.Width - 32, 28),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
+            ForeColor = AccentCyan,
+            BackColor = CardBackground
+        });
+
+        return card;
+    }
+
+    private static Label CreateFieldLabel(string text, Point location, Size size)
+    {
+        return new Label
+        {
+            Text = text,
+            Location = location,
+            Size = size,
+            TextAlign = ContentAlignment.MiddleLeft,
+            ForeColor = TextSecondary,
+            BackColor = CardBackground
+        };
+    }
+
+    private static TableLayoutPanel CreatePreviewGrid(PictureBox rawBox, PictureBox cleanedBox, int width)
+    {
+        var grid = new TableLayoutPanel
+        {
+            Location = new Point(16, 48),
+            Size = new Size(width, 100),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            ColumnCount = 2,
+            RowCount = 2,
+            BackColor = CardBackground,
+            CellBorderStyle = TableLayoutPanelCellBorderStyle.None
+        };
+        grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
+        grid.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+
+        grid.Controls.Add(CreatePreviewLabel("Raw"), 0, 0);
+        grid.Controls.Add(CreatePreviewLabel("Cleaned"), 1, 0);
+        grid.Controls.Add(CreatePreviewCell(rawBox), 0, 1);
+        grid.Controls.Add(CreatePreviewCell(cleanedBox), 1, 1);
+        return grid;
+    }
+
+    private static Label CreatePreviewLabel(string text)
+    {
+        return new Label
+        {
+            Text = text,
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleLeft,
+            ForeColor = TextSecondary,
+            BackColor = CardBackground
+        };
+    }
+
+    private static Panel CreatePreviewCell(PictureBox box)
+    {
+        var panel = new Panel
+        {
+            Dock = DockStyle.Fill,
+            Margin = new Padding(0, 0, 12, 0),
+            Padding = new Padding(8),
+            BackColor = FieldBackground
+        };
+        panel.Paint += PaintCardBorder;
+        panel.Controls.Add(box);
+        return panel;
+    }
+
+    private static void StyleButton(Button button, bool primary = false)
+    {
+        button.FlatStyle = FlatStyle.Flat;
+        button.UseVisualStyleBackColor = false;
+        button.BackColor = primary ? AccentTeal : Color.FromArgb(25, 32, 40);
+        button.ForeColor = primary ? Color.White : TextPrimary;
+        button.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+        button.FlatAppearance.BorderSize = 1;
+        button.FlatAppearance.BorderColor = primary ? AccentCyan : BorderColor;
+        button.FlatAppearance.MouseOverBackColor = primary ? Color.FromArgb(28, 172, 169) : CardBackgroundAlt;
+        button.FlatAppearance.MouseDownBackColor = primary ? Color.FromArgb(15, 120, 118) : Color.FromArgb(18, 24, 30);
+    }
+
+    private static void StyleTextBox(TextBox textBox)
+    {
+        textBox.BackColor = FieldBackground;
+        textBox.ForeColor = TextPrimary;
+        textBox.BorderStyle = BorderStyle.FixedSingle;
+    }
+
+    private static void StylePreviewBox(PictureBox pictureBox)
+    {
+        pictureBox.BorderStyle = BorderStyle.None;
+        pictureBox.BackColor = FieldBackground;
+    }
+
+    private static void PaintCardBorder(object? sender, PaintEventArgs e)
+    {
+        if (sender is not Control control)
+        {
+            return;
+        }
+
+        using var pen = new Pen(BorderColor);
+        var rect = new Rectangle(0, 0, control.ClientSize.Width - 1, control.ClientSize.Height - 1);
+        e.Graphics.DrawRectangle(pen, rect);
     }
 
     protected override void OnFormClosed(FormClosedEventArgs e)
@@ -289,7 +480,6 @@ internal sealed class SlotMappingDialog : Form
 
     private void SuggestionsList_DrawItem(object? sender, DrawItemEventArgs e)
     {
-        e.DrawBackground();
         if (e.Index < 0 || e.Index >= _suggestionsList.Items.Count)
         {
             return;
@@ -301,14 +491,24 @@ internal sealed class SlotMappingDialog : Form
         }
 
         var selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-        var textColor = selected ? SystemColors.HighlightText : SystemColors.ControlText;
+        var background = selected ? Color.FromArgb(20, 108, 113) : FieldBackground;
+        var textColor = selected ? Color.White : TextPrimary;
+        var metaColor = selected ? Color.FromArgb(217, 247, 245) : TextSecondary;
+
+        using var backgroundBrush = new SolidBrush(background);
+        e.Graphics.FillRectangle(backgroundBrush, e.Bounds);
+
         var imageRect = new Rectangle(e.Bounds.Left + 5, e.Bounds.Top + 5, 36, 36);
         if (_suggestionImages.TryGetValue(item.Match.LocalPath, out var image))
         {
             e.Graphics.DrawImage(image, imageRect);
         }
 
-        using var brush = new SolidBrush(textColor);
+        using var imageBorderPen = new Pen(BorderColor);
+        e.Graphics.DrawRectangle(imageBorderPen, imageRect);
+
+        using var nameBrush = new SolidBrush(textColor);
+        using var metaBrush = new SolidBrush(metaColor);
         using var nameFont = new Font("Segoe UI", 9.5f, FontStyle.Bold);
         using var metaFont = new Font("Segoe UI", 8.5f, FontStyle.Regular);
         using var format = new StringFormat
@@ -319,9 +519,9 @@ internal sealed class SlotMappingDialog : Form
 
         var textLeft = imageRect.Right + 8;
         var textWidth = e.Bounds.Right - textLeft - 4;
-        e.Graphics.DrawString(item.Match.ItemName, nameFont, brush, new RectangleF(textLeft, e.Bounds.Top + 5, textWidth, 21), format);
+        e.Graphics.DrawString(item.Match.ItemName, nameFont, nameBrush, new RectangleF(textLeft, e.Bounds.Top + 5, textWidth, 21), format);
         var meta = $"{item.Match.Confidence:0.000} {item.Match.SourceKind} {item.Match.Type} gap {item.Match.SecondBestGap:0.000}";
-        e.Graphics.DrawString(meta, metaFont, brush, new RectangleF(textLeft, e.Bounds.Top + 27, textWidth, 16), format);
+        e.Graphics.DrawString(meta, metaFont, metaBrush, new RectangleF(textLeft, e.Bounds.Top + 27, textWidth, 16), format);
         e.DrawFocusRectangle();
     }
 
@@ -329,4 +529,7 @@ internal sealed class SlotMappingDialog : Form
     {
         public override string ToString() => $"{Match.ItemName} ({Match.Confidence:0.000})";
     }
+
+    [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
+    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
 }
