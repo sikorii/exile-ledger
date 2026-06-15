@@ -381,8 +381,9 @@ internal sealed class MainForm : Form
         _runeshapingButton.Click += async (_, _) => await ScanLiveAsync();
 
         _refreshButton.Text = RefreshPricesButtonText;
-        _refreshButton.Size = new Size(174, 36);
+        _refreshButton.Size = new Size(198, 36);
         StyleButton(_refreshButton);
+        _refreshButton.Paint += RefreshButton_Paint;
         _refreshButton.Click += async (_, _) => await RefreshPricesAsync();
         _toolTip.SetToolTip(_refreshButton, "Refresh poe.ninja prices. A successful manual refresh starts a 30-minute cooldown.");
 
@@ -696,6 +697,28 @@ internal sealed class MainForm : Form
         button.BackColor = Color.FromArgb(39, 34, 24);
         button.ForeColor = AccentGold;
         button.FlatAppearance.BorderColor = AccentGold;
+    }
+
+    private void RefreshButton_Paint(object? sender, PaintEventArgs e)
+    {
+        if (sender is not Button button ||
+            button.Enabled ||
+            !button.Text.StartsWith($"{RefreshPricesButtonText} (", StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        using var backgroundBrush = new SolidBrush(button.BackColor);
+        using var borderPen = new Pen(AccentGold);
+        e.Graphics.FillRectangle(backgroundBrush, button.ClientRectangle);
+        e.Graphics.DrawRectangle(borderPen, 0, 0, button.ClientSize.Width - 1, button.ClientSize.Height - 1);
+        TextRenderer.DrawText(
+            e.Graphics,
+            button.Text,
+            button.Font,
+            button.ClientRectangle,
+            AccentGold,
+            TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
     }
 
     private void StyleMenuStrip()
