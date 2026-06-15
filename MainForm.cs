@@ -13,6 +13,17 @@ internal sealed class MainForm : Form
     private const uint ModNoRepeat = 0x4000;
     private const string RefreshPricesButtonText = "Refresh Prices";
     private static readonly TimeSpan ManualPriceRefreshCooldown = TimeSpan.FromMinutes(30);
+    private static readonly Color AppBackground = Color.FromArgb(16, 20, 24);
+    private static readonly Color RailBackground = Color.FromArgb(12, 17, 21);
+    private static readonly Color CardBackground = Color.FromArgb(24, 31, 38);
+    private static readonly Color CardBackgroundAlt = Color.FromArgb(28, 35, 43);
+    private static readonly Color BorderColor = Color.FromArgb(43, 52, 61);
+    private static readonly Color TextPrimary = Color.FromArgb(236, 241, 244);
+    private static readonly Color TextSecondary = Color.FromArgb(168, 179, 188);
+    private static readonly Color TextMuted = Color.FromArgb(115, 127, 137);
+    private static readonly Color AccentCyan = Color.FromArgb(83, 224, 218);
+    private static readonly Color AccentTeal = Color.FromArgb(21, 148, 146);
+    private static readonly Color AccentGold = Color.FromArgb(214, 171, 69);
 
     private static readonly ScanModeOption[] ScanModes =
     [
@@ -29,6 +40,23 @@ internal sealed class MainForm : Form
         new(FixedStashScannerProfiles.Idols.Label, FixedStashScannerProfiles.Idols.Key, ScanModeKind.GenericFixedStash, FixedStashScannerProfiles.Idols),
         new(FixedStashScannerProfiles.AncientAugments.Label, FixedStashScannerProfiles.AncientAugments.Key, ScanModeKind.GenericFixedStash, FixedStashScannerProfiles.AncientAugments),
         new(FixedStashScannerProfiles.Essence.Label, FixedStashScannerProfiles.Essence.Key, ScanModeKind.GenericFixedStash, FixedStashScannerProfiles.Essence)
+    ];
+
+    private static readonly (string DisplayLabel, string InternalLabel)[] RailStashModes =
+    [
+        ("Currency Stash", FixedStashScannerProfiles.Currency.Label),
+        ("Runes", FixedStashScannerProfiles.AugmentRunes.Label),
+        ("Kalguuran Runes", FixedStashScannerProfiles.KalguuranRunes.Label),
+        ("Soul Cores", FixedStashScannerProfiles.SoulCores.Label),
+        ("Idols", FixedStashScannerProfiles.Idols.Label),
+        ("Ancient Augments", FixedStashScannerProfiles.AncientAugments.Label),
+        ("Abyss Stash", FixedStashScannerProfiles.Abyss.Label),
+        ("Delirium Stash", FixedStashScannerProfiles.Delirium.Label),
+        ("Expedition Stash", FixedStashScannerProfiles.Expedition.Label),
+        ("Ritual Stash", FixedStashScannerProfiles.Ritual.Label),
+        ("Breach Catalysts", FixedStashScannerProfiles.BreachCatalysts.Label),
+        ("Fragments", FixedStashScannerProfiles.Fragments.Label),
+        ("Essence Stash", FixedStashScannerProfiles.Essence.Label)
     ];
 
     private readonly RuneshapingScanner _scanner;
@@ -76,6 +104,16 @@ internal sealed class MainForm : Form
     private readonly PictureBox _stashPictureBox = new();
     private readonly MenuStrip _menuStrip = new();
     private readonly ToolTip _toolTip = new();
+    private readonly Panel _leftNavPanel = new();
+    private readonly Panel _headerPanel = new();
+    private readonly Panel _toolbarPanel = new();
+    private readonly Panel _previewPanel = new();
+    private readonly Panel _detailsPanel = new();
+    private readonly Panel _totalStatusPanel = new();
+    private readonly Label _headerTitleLabel = new();
+    private readonly Label _previewTitleLabel = new();
+    private readonly Label _detailsTitleLabel = new();
+    private readonly List<Label> _stashModeLabels = [];
     private readonly ToolStripMenuItem _manualLayoutEditorMenuItem = new();
     private readonly ToolStripMenuItem _saveLayoutMenuItem = new();
     private readonly ToolStripMenuItem _reloadLayoutMenuItem = new();
@@ -206,40 +244,90 @@ internal sealed class MainForm : Form
         AutoScaleMode = AutoScaleMode.Dpi;
         Text = "Exile Ledger";
         StartPosition = FormStartPosition.CenterScreen;
-        FormBorderStyle = FormBorderStyle.FixedSingle;
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = true;
         MinimizeBox = true;
         ClientSize = new Size(1280, 840);
         MinimumSize = new Size(980, 680);
+        BackColor = AppBackground;
+        ForeColor = TextPrimary;
         TopMost = false;
         BuildMenuStrip();
+        StyleMenuStrip();
 
-        var title = new Label
+        _leftNavPanel.BackColor = RailBackground;
+        _leftNavPanel.Paint += PaintCardBorder;
+
+        var railMark = new Label
         {
-            Text = "Exile Ledger",
-            Font = new Font("Segoe UI", 20, FontStyle.Bold),
-            Location = new Point(18, 38),
-            AutoSize = true,
-            ForeColor = Color.FromArgb(96, 235, 228)
+            Text = "EL",
+            Location = new Point(18, 22),
+            Size = new Size(44, 44),
+            TextAlign = ContentAlignment.MiddleCenter,
+            Font = new Font("Segoe UI", 12f, FontStyle.Bold),
+            BackColor = Color.FromArgb(17, 82, 82),
+            ForeColor = AccentCyan
         };
-
-        var modeLabel = new Label
+        var stashModesHeader = new Label
         {
-            Text = "Stash",
-            Location = new Point(22, 92),
-            Size = new Size(50, 22),
-            TextAlign = ContentAlignment.MiddleLeft
+            Text = "STASH MODES",
+            Location = new Point(18, 82),
+            Size = new Size(220, 18),
+            Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
+            ForeColor = AccentGold
         };
+        _leftNavPanel.Controls.AddRange([
+            railMark,
+            stashModesHeader
+        ]);
 
-        _runeshapingButton.Text = "Runeshaping";
-        _runeshapingButton.Location = new Point(444, 88);
-        _runeshapingButton.Size = new Size(118, 34);
-        _runeshapingButton.Click += async (_, _) => await ScanLiveAsync();
+        _headerPanel.BackColor = AppBackground;
+        _headerTitleLabel.Text = "Exile Ledger";
+        _headerTitleLabel.Location = new Point(18, 6);
+        _headerTitleLabel.Size = new Size(380, 58);
+        _headerTitleLabel.Font = new Font("Segoe UI", 22f, FontStyle.Bold);
+        _headerTitleLabel.ForeColor = AccentCyan;
+        var subtitle = new Label
+        {
+            Text = "Path of Exile 2 stash valuation",
+            Location = new Point(22, 64),
+            Size = new Size(310, 24),
+            Font = new Font("Segoe UI", 9.5f),
+            ForeColor = TextSecondary
+        };
+        _totalStatusPanel.Size = new Size(520, 72);
+        _totalStatusPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        _totalStatusPanel.BackColor = CardBackground;
+        _totalStatusPanel.Paint += PaintCardBorder;
+        var totalCaption = new Label
+        {
+            Text = "TOTAL / CURRENT STATUS",
+            Location = new Point(16, 9),
+            Size = new Size(250, 18),
+            Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
+            ForeColor = AccentGold
+        };
+        _totalStashValueLabel.Text = "All scanned: 0 tabs | 0ex / 0div";
+        _totalStashValueLabel.Location = new Point(16, 28);
+        _totalStashValueLabel.Size = new Size(488, 30);
+        _totalStashValueLabel.TextAlign = ContentAlignment.MiddleRight;
+        _totalStashValueLabel.Font = new Font("Segoe UI", 11.5f, FontStyle.Bold);
+        _totalStashValueLabel.ForeColor = Color.FromArgb(92, 255, 124);
+        _totalStashValueLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        _totalStashValueLabel.AutoEllipsis = true;
+        _totalStatusPanel.Controls.AddRange([totalCaption, _totalStashValueLabel]);
+        _headerPanel.Controls.AddRange([_headerTitleLabel, subtitle, _totalStatusPanel]);
 
-        _modeComboBox.Location = new Point(84, 88);
+        _toolbarPanel.BackColor = CardBackground;
+        _toolbarPanel.Paint += PaintCardBorder;
+
         _modeComboBox.Size = new Size(210, 28);
         _modeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        _modeComboBox.FlatStyle = FlatStyle.Flat;
+        _modeComboBox.BackColor = CardBackgroundAlt;
+        _modeComboBox.ForeColor = TextPrimary;
+        _modeComboBox.Font = new Font("Segoe UI", 9.5f);
+        _modeComboBox.Visible = false;
         _modeComboBox.Items.AddRange(ScanModes.Cast<object>().ToArray());
         _modeComboBox.SelectedIndex = 0;
         _modeComboBox.SelectedIndexChanged += (_, _) =>
@@ -248,25 +336,53 @@ internal sealed class MainForm : Form
             LoadSelectedModeFolderSetting();
             ShowSavedScanForSelectedMode();
             UpdateLayoutEditorControls();
+            UpdateStashModeSelectorSelection();
         };
 
-        _insideFolderCheckBox.Text = "In-game stash folder mode";
-        _insideFolderCheckBox.Location = new Point(84, 126);
+        _insideFolderCheckBox.Text = "Game stash folder mode";
         _insideFolderCheckBox.AutoSize = true;
         _insideFolderCheckBox.Padding = new Padding(0, 5, 0, 5);
+        _insideFolderCheckBox.Font = new Font("Segoe UI", 9f);
+        _insideFolderCheckBox.ForeColor = TextSecondary;
+        _insideFolderCheckBox.BackColor = CardBackground;
         _insideFolderCheckBox.CheckedChanged += (_, _) => SaveSelectedModeFolderSetting();
         _toolTip.SetToolTip(
             _insideFolderCheckBox,
             "Enable when these tabs are inside a Path of Exile stash folder. This changes the stash crop/layout, not a Windows folder.");
+        _leftNavPanel.Controls.Add(_insideFolderCheckBox);
+
+        var railTop = 152;
+        for (var i = 0; i < RailStashModes.Length; i++)
+        {
+            if (i == 1)
+            {
+                _leftNavPanel.Controls.Add(CreateStashModeSectionHeader("AUGMENTS", railTop));
+                railTop += 25;
+            }
+
+            var modeIndex = FindScanModeIndex(RailStashModes[i].InternalLabel);
+            var item = CreateStashModeItem(RailStashModes[i].DisplayLabel, modeIndex, railTop);
+            item.Click += (_, _) => SelectStashModeFromRail(modeIndex);
+            _stashModeLabels.Add(item);
+            _leftNavPanel.Controls.Add(item);
+            railTop += 36;
+        }
+        _leftNavPanel.Controls.Add(_modeComboBox);
+        UpdateStashModeSelectorSelection();
 
         _scanButton.Text = "Scan Stash";
-        _scanButton.Location = new Point(320, 88);
-        _scanButton.Size = new Size(112, 34);
+        _scanButton.Size = new Size(116, 36);
+        StyleButton(_scanButton, primary: true);
         _scanButton.Click += async (_, _) => await ScanSelectedStashModeAsync();
 
+        _runeshapingButton.Text = "Runeshape";
+        _runeshapingButton.Size = new Size(124, 36);
+        StyleButton(_runeshapingButton);
+        _runeshapingButton.Click += async (_, _) => await ScanLiveAsync();
+
         _refreshButton.Text = RefreshPricesButtonText;
-        _refreshButton.Location = new Point(574, 88);
-        _refreshButton.Size = new Size(174, 34);
+        _refreshButton.Size = new Size(174, 36);
+        StyleButton(_refreshButton);
         _refreshButton.Click += async (_, _) => await RefreshPricesAsync();
         _toolTip.SetToolTip(_refreshButton, "Refresh poe.ninja prices. A successful manual refresh starts a 30-minute cooldown.");
 
@@ -294,9 +410,26 @@ internal sealed class MainForm : Form
         _refreshIconsButton.Click += async (_, _) => await RefreshIconCacheAsync();
 
         _copySummaryButton.Text = "Copy Summary";
-        _copySummaryButton.Location = new Point(760, 88);
-        _copySummaryButton.Size = new Size(122, 34);
+        _copySummaryButton.Size = new Size(122, 36);
+        StyleButton(_copySummaryButton);
         _copySummaryButton.Click += (_, _) => CopyCurrentSummary();
+
+        _aiReadCountsButton.Text = "AI Read Counts";
+        _aiReadCountsButton.Size = new Size(132, 36);
+        StyleButton(_aiReadCountsButton);
+        _aiReadCountsButton.Click += async (_, _) => await ReadCountsWithAiAsync();
+
+        _settingsButton.Text = "Settings";
+        _settingsButton.Size = new Size(96, 36);
+        StyleButton(_settingsButton);
+        _settingsButton.Click += (_, _) => OpenSettingsDialog();
+
+        _reviewCountCropsButton.Text = "Review Crops";
+        _reviewCountCropsButton.Size = new Size(124, 36);
+        StyleButton(_reviewCountCropsButton);
+        _reviewCountCropsButton.Click += (_, _) => GenerateCountCropReviewReport();
+
+        _toolbarPanel.Controls.AddRange([_scanButton, _runeshapingButton, _refreshButton, _copySummaryButton, _aiReadCountsButton, _reviewCountCropsButton, _settingsButton]);
 
         _editLayoutCheckBox.Text = "Edit Layout";
         _editLayoutCheckBox.Location = new Point(22, 104);
@@ -351,61 +484,272 @@ internal sealed class MainForm : Form
             CountCropDebugSettings.SaveCountDebugCrops = _saveCountDebugCropsCheckBox.Checked;
         };
 
-        _reviewCountCropsButton.Text = "Review Crops";
-        _reviewCountCropsButton.Location = new Point(772, 104);
-        _reviewCountCropsButton.Size = new Size(116, 30);
-        _reviewCountCropsButton.Click += (_, _) => GenerateCountCropReviewReport();
+        _previewPanel.BackColor = CardBackground;
+        _previewPanel.Paint += PaintCardBorder;
+        _previewTitleLabel.Text = "STASH PREVIEW";
+        _previewTitleLabel.Location = new Point(16, 14);
+        _previewTitleLabel.Size = new Size(220, 22);
+        _previewTitleLabel.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+        _previewTitleLabel.ForeColor = TextPrimary;
 
-        _aiReadCountsButton.Text = "AI Read Counts";
-        _aiReadCountsButton.Location = new Point(894, 88);
-        _aiReadCountsButton.Size = new Size(128, 30);
-        _aiReadCountsButton.Click += async (_, _) => await ReadCountsWithAiAsync();
-
-        _settingsButton.Text = "Settings";
-        _settingsButton.Location = new Point(1034, 88);
-        _settingsButton.Size = new Size(92, 34);
-        _settingsButton.Click += (_, _) => OpenSettingsDialog();
-
-        _statusLabel.Text = $"Exile Ledger is ready. Choose a stash mode, use in-game stash folder mode only for PoE stash folders, then Scan Stash. Hotkeys: {_hotkeySettings.Runeshaping.ToDisplayString()} Runeshaping, {_hotkeySettings.ScanCurrentStash.ToDisplayString()} selected stash.";
-        _statusLabel.Location = new Point(22, 164);
-        _statusLabel.Size = new Size(1200, 24);
-
-        _totalStashValueLabel.Text = "All scanned: 0 tabs | 0ex / 0div";
-        _totalStashValueLabel.Location = new Point(500, 38);
-        _totalStashValueLabel.Size = new Size(740, 34);
-        _totalStashValueLabel.TextAlign = ContentAlignment.MiddleRight;
-        _totalStashValueLabel.Font = new Font("Segoe UI", 12.5f, FontStyle.Bold);
-        _totalStashValueLabel.ForeColor = Color.FromArgb(92, 255, 124);
-        _totalStashValueLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        _totalStashValueLabel.AutoEllipsis = true;
-
-        _stashPictureBox.Location = new Point(22, 198);
-        _stashPictureBox.Size = new Size(780, 598);
-        _stashPictureBox.BorderStyle = BorderStyle.FixedSingle;
-        _stashPictureBox.BackColor = Color.FromArgb(24, 24, 24);
+        _stashPictureBox.BorderStyle = BorderStyle.None;
+        _stashPictureBox.BackColor = Color.FromArgb(12, 15, 18);
         _stashPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
         _stashPictureBox.TabStop = true;
         _stashPictureBox.Paint += StashPictureBox_Paint;
         _stashPictureBox.MouseClick += StashPictureBox_MouseClick;
         _stashPictureBox.KeyDown += StashPictureBox_KeyDown;
+        _previewPanel.Controls.AddRange([_previewTitleLabel, _stashPictureBox]);
 
-        _detailsBox.Location = new Point(820, 198);
-        _detailsBox.Size = new Size(420, 598);
+        _detailsPanel.BackColor = CardBackground;
+        _detailsPanel.Paint += PaintCardBorder;
+        _detailsTitleLabel.Text = "RESULTS / STATUS";
+        _detailsTitleLabel.Location = new Point(16, 14);
+        _detailsTitleLabel.Size = new Size(220, 22);
+        _detailsTitleLabel.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+        _detailsTitleLabel.ForeColor = TextPrimary;
+
+        _statusLabel.Text = $"Exile Ledger is ready. Choose a stash mode, use in-game stash folder mode only for PoE stash folders, then Scan Stash. Hotkeys: {_hotkeySettings.Runeshaping.ToDisplayString()} Runeshape, {_hotkeySettings.ScanCurrentStash.ToDisplayString()} selected stash.";
+        _statusLabel.Font = new Font("Segoe UI", 9f);
+        _statusLabel.ForeColor = TextSecondary;
+        _statusLabel.BackColor = CardBackground;
+        _statusLabel.AutoEllipsis = true;
+
         _detailsBox.Multiline = true;
         _detailsBox.ReadOnly = true;
         _detailsBox.ScrollBars = ScrollBars.Vertical;
         _detailsBox.WordWrap = true;
-        _detailsBox.Font = new Font("Segoe UI", 10f);
-        _detailsBox.BackColor = Color.FromArgb(18, 18, 18);
-        _detailsBox.ForeColor = Color.Gainsboro;
-        _detailsBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-        _stashPictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        _detailsBox.Font = new Font("Consolas", 9.5f);
+        _detailsBox.BackColor = Color.FromArgb(13, 17, 21);
+        _detailsBox.ForeColor = TextPrimary;
+        _detailsBox.BorderStyle = BorderStyle.FixedSingle;
+        _detailsPanel.Controls.AddRange([_detailsTitleLabel, _statusLabel, _detailsBox]);
 
-        Controls.AddRange([_menuStrip, title, modeLabel, _modeComboBox, _insideFolderCheckBox, _scanButton, _runeshapingButton, _refreshButton, _copySummaryButton, _aiReadCountsButton, _settingsButton, _statusLabel, _totalStashValueLabel, _stashPictureBox, _detailsBox]);
+        Controls.AddRange([_menuStrip, _leftNavPanel, _headerPanel, _toolbarPanel, _previewPanel, _detailsPanel]);
         MainMenuStrip = _menuStrip;
+        Resize += (_, _) => LayoutMainShell();
+        LayoutMainShell();
         LoadSelectedModeFolderSetting();
         UpdateLayoutEditorControls();
         UpdateAllScannedTabsTotal();
+    }
+
+    private void LayoutMainShell()
+    {
+        var menuHeight = _menuStrip.Height > 0 ? _menuStrip.Height : 24;
+        const int railWidth = 260;
+        const int outerGap = 10;
+        const int panelGap = 10;
+        const int headerHeight = 102;
+        const int toolbarHeight = 76;
+
+        _leftNavPanel.Location = new Point(0, menuHeight);
+        _leftNavPanel.Size = new Size(railWidth, Math.Max(0, ClientSize.Height - menuHeight));
+
+        var contentX = railWidth + outerGap;
+        var contentWidth = Math.Max(760, ClientSize.Width - contentX - outerGap);
+        var headerY = menuHeight + 12;
+
+        _headerPanel.Location = new Point(contentX, headerY);
+        _headerPanel.Size = new Size(contentWidth, headerHeight);
+        _toolbarPanel.Location = new Point(contentX, _headerPanel.Bottom + 10);
+        _toolbarPanel.Size = new Size(contentWidth, toolbarHeight);
+
+        var contentTop = _toolbarPanel.Bottom + panelGap;
+        var contentHeight = Math.Max(360, ClientSize.Height - contentTop - outerGap);
+        var detailsWidth = Math.Min(360, Math.Max(300, (int)(contentWidth * 0.30)));
+        var previewWidth = contentWidth - detailsWidth - panelGap;
+        if (previewWidth < 470)
+        {
+            detailsWidth = Math.Max(300, contentWidth - 470 - panelGap);
+            previewWidth = contentWidth - detailsWidth - panelGap;
+        }
+
+        _previewPanel.Location = new Point(contentX, contentTop);
+        _previewPanel.Size = new Size(Math.Max(420, previewWidth), contentHeight);
+        _detailsPanel.Location = new Point(_previewPanel.Right + panelGap, contentTop);
+        _detailsPanel.Size = new Size(Math.Max(300, detailsWidth), contentHeight);
+
+        var statusCardWidth = Math.Min(520, Math.Max(380, _headerPanel.ClientSize.Width - 400));
+        _totalStatusPanel.Size = new Size(statusCardWidth, 72);
+        _totalStatusPanel.Location = new Point(Math.Max(390, _headerPanel.ClientSize.Width - _totalStatusPanel.Width - 12), 10);
+        _totalStashValueLabel.Size = new Size(Math.Max(120, _totalStatusPanel.ClientSize.Width - 32), 30);
+
+        _modeComboBox.Location = new Point(-500, -500);
+        _insideFolderCheckBox.Location = new Point(18, 108);
+
+        var actionX = 20;
+        var actionY = 20;
+        var rowStartX = actionX;
+        var actionGap = 8;
+        var maxActionRight = Math.Max(rowStartX + 120, _toolbarPanel.ClientSize.Width - 16);
+        foreach (var button in new[] { _scanButton, _runeshapingButton, _refreshButton, _copySummaryButton, _aiReadCountsButton, _reviewCountCropsButton, _settingsButton })
+        {
+            if (actionX + button.Width > maxActionRight && actionX > rowStartX)
+            {
+                actionX = rowStartX;
+                actionY += button.Height + 8;
+            }
+
+            button.Location = new Point(actionX, actionY);
+            actionX += button.Width + actionGap;
+        }
+
+        _stashPictureBox.Location = new Point(12, 44);
+        _stashPictureBox.Size = new Size(Math.Max(80, _previewPanel.ClientSize.Width - 24), Math.Max(80, _previewPanel.ClientSize.Height - 56));
+
+        _statusLabel.Location = new Point(16, 44);
+        _statusLabel.Size = new Size(Math.Max(80, _detailsPanel.ClientSize.Width - 32), 62);
+        _detailsBox.Location = new Point(16, 116);
+        _detailsBox.Size = new Size(Math.Max(80, _detailsPanel.ClientSize.Width - 32), Math.Max(80, _detailsPanel.ClientSize.Height - 132));
+
+        _leftNavPanel.Invalidate();
+        _headerPanel.Invalidate();
+        _toolbarPanel.Invalidate();
+        _previewPanel.Invalidate();
+        _detailsPanel.Invalidate();
+    }
+
+    private static int FindScanModeIndex(string internalLabel)
+    {
+        var index = Array.FindIndex(
+            ScanModes,
+            mode => string.Equals(mode.Label, internalLabel, StringComparison.OrdinalIgnoreCase));
+        return index >= 0
+            ? index
+            : throw new InvalidOperationException($"Missing scan mode for left rail label: {internalLabel}");
+    }
+
+    private static Label CreateStashModeSectionHeader(string text, int top)
+    {
+        return new Label
+        {
+            Text = text,
+            Location = new Point(18, top),
+            Size = new Size(220, 18),
+            Font = new Font("Segoe UI", 8f, FontStyle.Bold),
+            ForeColor = AccentGold,
+            BackColor = RailBackground,
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+    }
+
+    private static Label CreateStashModeItem(string text, int modeIndex, int top)
+    {
+        var label = new Label
+        {
+            Text = text,
+            Tag = modeIndex,
+            Location = new Point(14, top),
+            Size = new Size(232, 32),
+            TextAlign = ContentAlignment.MiddleLeft,
+            Padding = new Padding(14, 0, 8, 0),
+            Cursor = Cursors.Hand,
+            AutoEllipsis = true
+        };
+        ApplyStashModeItemStyle(label, selected: false);
+        return label;
+    }
+
+    private void SelectStashModeFromRail(int modeIndex)
+    {
+        if (modeIndex < 0 || modeIndex >= _modeComboBox.Items.Count)
+        {
+            return;
+        }
+
+        _modeComboBox.SelectedIndex = modeIndex;
+        UpdateStashModeSelectorSelection();
+    }
+
+    private void UpdateStashModeSelectorSelection()
+    {
+        foreach (var label in _stashModeLabels)
+        {
+            ApplyStashModeItemStyle(label, label.Tag is int modeIndex && modeIndex == _modeComboBox.SelectedIndex);
+        }
+    }
+
+    private static void ApplyStashModeItemStyle(Label label, bool selected)
+    {
+        label.Font = new Font("Segoe UI", 8.6f, FontStyle.Regular);
+        label.ForeColor = selected ? AccentCyan : TextSecondary;
+        label.BackColor = selected ? Color.FromArgb(18, 48, 52) : RailBackground;
+    }
+
+    private static void StyleButton(Button button, bool primary = false)
+    {
+        button.FlatStyle = FlatStyle.Flat;
+        button.UseVisualStyleBackColor = false;
+        button.BackColor = primary ? AccentTeal : Color.FromArgb(25, 32, 40);
+        button.ForeColor = primary ? Color.White : TextPrimary;
+        button.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
+        button.FlatAppearance.BorderSize = 1;
+        button.FlatAppearance.BorderColor = primary ? Color.FromArgb(80, 230, 224) : BorderColor;
+        button.FlatAppearance.MouseOverBackColor = primary ? Color.FromArgb(28, 172, 169) : Color.FromArgb(34, 43, 52);
+        button.FlatAppearance.MouseDownBackColor = primary ? Color.FromArgb(15, 120, 118) : Color.FromArgb(18, 24, 30);
+    }
+
+    private static void StyleCooldownButton(Button button)
+    {
+        button.UseVisualStyleBackColor = false;
+        button.BackColor = Color.FromArgb(39, 34, 24);
+        button.ForeColor = AccentGold;
+        button.FlatAppearance.BorderColor = AccentGold;
+    }
+
+    private void StyleMenuStrip()
+    {
+        _menuStrip.BackColor = Color.FromArgb(9, 12, 15);
+        _menuStrip.ForeColor = TextPrimary;
+        _menuStrip.RenderMode = ToolStripRenderMode.Professional;
+        _menuStrip.Renderer = new ToolStripProfessionalRenderer(new DarkMenuColorTable());
+        StyleMenuItems(_menuStrip.Items);
+    }
+
+    private static void StyleMenuItems(ToolStripItemCollection items)
+    {
+        foreach (ToolStripItem item in items)
+        {
+            item.BackColor = Color.FromArgb(9, 12, 15);
+            item.ForeColor = TextPrimary;
+            if (item is ToolStripMenuItem menuItem)
+            {
+                menuItem.DropDown.BackColor = CardBackground;
+                menuItem.DropDown.ForeColor = TextPrimary;
+                StyleMenuItems(menuItem.DropDownItems);
+            }
+        }
+    }
+
+    private static void PaintCardBorder(object? sender, PaintEventArgs e)
+    {
+        if (sender is not Control control)
+        {
+            return;
+        }
+
+        using var pen = new Pen(BorderColor);
+        var rect = new Rectangle(0, 0, control.ClientSize.Width - 1, control.ClientSize.Height - 1);
+        e.Graphics.DrawRectangle(pen, rect);
+    }
+
+    private sealed class DarkMenuColorTable : ProfessionalColorTable
+    {
+        public override Color MenuStripGradientBegin => Color.FromArgb(9, 12, 15);
+        public override Color MenuStripGradientEnd => Color.FromArgb(9, 12, 15);
+        public override Color ToolStripDropDownBackground => CardBackground;
+        public override Color ImageMarginGradientBegin => CardBackground;
+        public override Color ImageMarginGradientMiddle => CardBackground;
+        public override Color ImageMarginGradientEnd => CardBackground;
+        public override Color MenuItemSelected => Color.FromArgb(28, 58, 61);
+        public override Color MenuItemBorder => AccentTeal;
+        public override Color MenuItemSelectedGradientBegin => Color.FromArgb(28, 58, 61);
+        public override Color MenuItemSelectedGradientEnd => Color.FromArgb(28, 58, 61);
+        public override Color MenuItemPressedGradientBegin => Color.FromArgb(18, 48, 52);
+        public override Color MenuItemPressedGradientEnd => Color.FromArgb(18, 48, 52);
+        public override Color SeparatorDark => BorderColor;
+        public override Color SeparatorLight => BorderColor;
     }
 
     private void BuildMenuStrip()
@@ -1495,6 +1839,7 @@ internal sealed class MainForm : Form
         if (IsManualPriceRefreshCooldownActive(out var remaining))
         {
             _refreshButton.Text = $"Refresh Prices ({FormatManualPriceRefreshButtonCountdown(remaining)})";
+            StyleCooldownButton(_refreshButton);
             _refreshButton.Enabled = false;
             _toolTip.SetToolTip(_refreshButton, $"Refresh Prices cooldown remaining: {FormatManualPriceRefreshStatus(remaining)}.");
             if (!_manualPriceRefreshCooldownTimer.Enabled)
@@ -1511,6 +1856,7 @@ internal sealed class MainForm : Form
         }
 
         _refreshButton.Text = RefreshPricesButtonText;
+        StyleButton(_refreshButton);
         _refreshButton.Enabled = !_scanInProgress;
         _toolTip.SetToolTip(_refreshButton, "Refresh poe.ninja prices. A successful manual refresh starts a 30-minute cooldown.");
     }
@@ -4004,6 +4350,10 @@ internal sealed class MainForm : Form
         _reviewCountCropsButton.Enabled = !busy;
         _aiReadCountsButton.Enabled = !busy;
         _settingsButton.Enabled = !busy;
+        foreach (var label in _stashModeLabels)
+        {
+            label.Enabled = !busy;
+        }
         _openScreenshotMenuItem.Enabled = !busy;
         _scanRuneshapingMenuItem.Enabled = !busy;
         _scanCurrentStashMenuItem.Enabled = !busy;
