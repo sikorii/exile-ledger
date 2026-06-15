@@ -1769,7 +1769,7 @@ internal static class StackCountReader
                 Path.Combine(AppContext.BaseDirectory, "assets", "count-digits-reference.png"),
                 Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "Screenshots", "fix.png")),
                 Path.Combine(AppContext.BaseDirectory, "Screenshots", "fix.png"),
-                @"C:\POE2 Price Checker App\Screenshots\fix.png"
+                Path.Combine(Directory.GetCurrentDirectory(), "Screenshots", "fix.png")
             };
 
             return candidates.FirstOrDefault(File.Exists);

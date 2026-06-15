@@ -1,4 +1,4 @@
-# Exile Ledger (POE2 Price Checker App)
+# Exile Ledger
 
 First-pass PoE2 Runes of Aldur runeshaping helper.
 
@@ -61,8 +61,8 @@ The first pass is tuned from the provided `3840x2160` screenshots. Debug crops a
 dotnet build
 dotnet run
 dotnet run -- --icon-cache
-dotnet run -- --icon-match "C:/POE2 Price Checker App/publish/debug/currency-fullscreen.png" currency 23
-dotnet run -- --kalguuran-runes-test "C:/POE2 Price Checker App/publish/debug/stash-tab-captures/latest-stash-tab-fullscreen.png"
+dotnet run -- --icon-match "C:/path/to/repo/publish/debug/currency-fullscreen.png" currency 23
+dotnet run -- --kalguuran-runes-test "C:/path/to/repo/publish/debug/stash-tab-captures/latest-stash-tab-fullscreen.png"
 ```
 
 The `Test Screenshot` button scans:

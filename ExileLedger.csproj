@@ -6,6 +6,11 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>ExileLedger</AssemblyName>
+    <RootNamespace>Poe2PriceChecker</RootNamespace>
+    <Product>Exile Ledger</Product>
+    <Title>Exile Ledger</Title>
+    <Description>Exile Ledger</Description>
     <ApplicationIcon>assets\ExileLedger.ico</ApplicationIcon>
   </PropertyGroup>
 
