@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
@@ -44,6 +45,7 @@ internal sealed class MainForm : Form
     private readonly LatestStashScanStore _latestScanStore;
     private readonly OpenAiApiKeyStore _openAiApiKeyStore;
     private readonly ManualPriceRefreshStateStore _manualPriceRefreshStateStore;
+    private readonly HotkeySettingsStore _hotkeySettingsStore;
     private readonly OpenAiVisionHelper _openAiVisionHelper;
     private readonly AiCountReader _aiCountReader;
     private readonly PoeNinjaIconCache _iconCache;
@@ -97,6 +99,9 @@ internal sealed class MainForm : Form
     private int? _selectedLayoutSlotIndex;
     private string? _lastScreenshotDirectory;
     private DateTimeOffset? _lastSuccessfulManualPriceRefreshUtc;
+    private HotkeySettings _hotkeySettings;
+    private bool _runeshapingHotkeyRegistered;
+    private bool _scanCurrentStashHotkeyRegistered;
 
     public MainForm()
     {
@@ -113,6 +118,8 @@ internal sealed class MainForm : Form
         _openAiApiKeyStore = new OpenAiApiKeyStore(AppPaths.ConfigFile("secrets.json"));
         _manualPriceRefreshStateStore = new ManualPriceRefreshStateStore(AppPaths.ConfigFile("refresh-state.json"));
         _lastSuccessfulManualPriceRefreshUtc = _manualPriceRefreshStateStore.LoadLastSuccessfulManualPriceRefreshUtc();
+        _hotkeySettingsStore = new HotkeySettingsStore(AppPaths.ConfigFile("hotkeys.json"));
+        _hotkeySettings = _hotkeySettingsStore.Load();
         _runeScanner = new AugmentRuneScanner(AppPaths.DebugDirectory, _runeMappingStore);
         _kalguuranRuneMappingStore = new CurrencyMappingStore(
             FixedStashScannerProfiles.ConfigPath(FixedStashScannerProfiles.KalguuranRunes.MappingFileName),
@@ -149,21 +156,12 @@ internal sealed class MainForm : Form
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
-        if (!RegisterHotKey(Handle, RuneshapingHotkeyId, ModNoRepeat, (uint)Keys.F8))
-        {
-            _statusLabel.Text = "F8 hotkey unavailable. Use the Scan Runeshaping button.";
-        }
-
-        if (!RegisterHotKey(Handle, CurrencyHotkeyId, ModNoRepeat, (uint)Keys.F7))
-        {
-            _statusLabel.Text = "F7 hotkey unavailable. Use the Scan Currency button.";
-        }
+        RegisterConfiguredHotkeysOnStartup();
     }
 
     protected override void OnHandleDestroyed(EventArgs e)
     {
-        UnregisterHotKey(Handle, RuneshapingHotkeyId);
-        UnregisterHotKey(Handle, CurrencyHotkeyId);
+        UnregisterConfiguredHotkeys();
         base.OnHandleDestroyed(e);
     }
 
@@ -347,7 +345,7 @@ internal sealed class MainForm : Form
         _aiReadCountsButton.Size = new Size(128, 30);
         _aiReadCountsButton.Click += async (_, _) => await ReadCountsWithAiAsync();
 
-        _statusLabel.Text = "Runeshaping is separate. Choose a stash mode, then Scan Stash. Hotkeys: F8 Runeshaping, F7 selected stash.";
+        _statusLabel.Text = $"Runeshaping is separate. Choose a stash mode, then Scan Stash. Hotkeys: {_hotkeySettings.Runeshaping.ToDisplayString()} Runeshaping, {_hotkeySettings.ScanCurrentStash.ToDisplayString()} selected stash.";
         _statusLabel.Location = new Point(22, 140);
         _statusLabel.Size = new Size(1200, 24);
 
@@ -477,6 +475,9 @@ internal sealed class MainForm : Form
                 CountCropDebugSettings.SaveCountDebugCrops,
                 ResolveOpenAiApiKeyStatus(),
                 ResolveOpenAiCountModelStatus(),
+                _hotkeySettings.Runeshaping.ToDisplayString(),
+                _hotkeySettings.ScanCurrentStash.ToDisplayString(),
+                ResolveHotkeySettingsStatus(),
                 AppPaths.RootDirectory,
                 AppPaths.ConfigDirectory,
                 AppPaths.LatestStashScansPath,
@@ -494,6 +495,7 @@ internal sealed class MainForm : Form
                 GenerateCountCropReviewReport,
                 SaveOpenAiApiKeyFromSettingsAsync,
                 ClearOpenAiApiKeyFromSettingsAsync,
+                SaveHotkeysFromSettings,
                 () => OpenFolder(AppPaths.RootDirectory),
                 () => OpenFolder(AppPaths.ConfigDirectory),
                 () => OpenFolder(AppPaths.DebugDirectory),
@@ -537,6 +539,94 @@ internal sealed class MainForm : Form
             _statusLabel.Text = "OpenAI API key clear failed.";
             return "OpenAI API key clear failed";
         }
+    }
+
+    private HotkeySettingsSaveResult SaveHotkeysFromSettings(string runeshapingText, string scanCurrentStashText)
+    {
+        if (!HotkeyBinding.TryParse(runeshapingText, out var runeshaping, out var runeshapingError))
+        {
+            return CreateHotkeySettingsSaveResult(false, $"Runeshaping hotkey: {runeshapingError}");
+        }
+
+        if (!HotkeyBinding.TryParse(scanCurrentStashText, out var scanCurrentStash, out var scanError))
+        {
+            return CreateHotkeySettingsSaveResult(false, $"Scan hotkey: {scanError}");
+        }
+
+        var requested = new HotkeySettings(runeshaping, scanCurrentStash);
+        if (requested.HasDuplicateHotkeys())
+        {
+            return CreateHotkeySettingsSaveResult(false, "Runeshaping and scan hotkeys must be different.");
+        }
+
+        var previous = _hotkeySettings;
+        if (IsHandleCreated)
+        {
+            var registration = TryRegisterHotkeys(requested);
+            if (!registration.Succeeded)
+            {
+                var restore = TryRegisterHotkeys(previous);
+                var restoreStatus = restore.Succeeded
+                    ? " Previous hotkeys kept."
+                    : $" Previous hotkeys could not be restored: {restore.Status}";
+                return CreateHotkeySettingsSaveResult(false, $"{registration.Status}{restoreStatus}");
+            }
+        }
+
+        if (!_hotkeySettingsStore.TrySave(requested, out var saveError))
+        {
+            HotkeyRegistrationResult? restore = null;
+            if (IsHandleCreated)
+            {
+                restore = TryRegisterHotkeys(previous);
+            }
+
+            var detail = saveError is null ? string.Empty : $" {saveError.Message}";
+            var restoreStatus = restore is null
+                ? string.Empty
+                : restore.Succeeded
+                    ? " Previous hotkeys restored."
+                    : $" Previous hotkeys could not be restored: {restore.Status}";
+            return CreateHotkeySettingsSaveResult(false, $"Hotkey settings could not be saved.{detail}{restoreStatus}".Trim());
+        }
+
+        _hotkeySettings = requested;
+        var status = $"Hotkeys saved: Runeshaping {requested.Runeshaping.ToDisplayString()}, Scan {requested.ScanCurrentStash.ToDisplayString()}.";
+        _statusLabel.Text = status;
+        return new HotkeySettingsSaveResult(
+            true,
+            requested.Runeshaping.ToDisplayString(),
+            requested.ScanCurrentStash.ToDisplayString(),
+            status);
+    }
+
+    private HotkeySettingsSaveResult CreateHotkeySettingsSaveResult(bool saved, string status)
+    {
+        return new HotkeySettingsSaveResult(
+            saved,
+            _hotkeySettings.Runeshaping.ToDisplayString(),
+            _hotkeySettings.ScanCurrentStash.ToDisplayString(),
+            status);
+    }
+
+    private string ResolveHotkeySettingsStatus()
+    {
+        if (!IsHandleCreated)
+        {
+            return $"Configured hotkeys: Runeshaping {_hotkeySettings.Runeshaping.ToDisplayString()}, Scan {_hotkeySettings.ScanCurrentStash.ToDisplayString()}.";
+        }
+
+        if (_runeshapingHotkeyRegistered && _scanCurrentStashHotkeyRegistered)
+        {
+            return $"Active hotkeys: Runeshaping {_hotkeySettings.Runeshaping.ToDisplayString()}, Scan {_hotkeySettings.ScanCurrentStash.ToDisplayString()}.";
+        }
+
+        if (_runeshapingHotkeyRegistered || _scanCurrentStashHotkeyRegistered)
+        {
+            return "One global hotkey is unavailable. Buttons remain available.";
+        }
+
+        return "Global hotkeys are unavailable. Buttons remain available.";
     }
 
     private string ResolveOpenAiApiKeyStatus()
@@ -3783,6 +3873,88 @@ internal sealed class MainForm : Form
                 File.Delete(tempPath);
             }
         }
+    }
+
+    private void RegisterConfiguredHotkeysOnStartup()
+    {
+        var registration = TryRegisterHotkeys(_hotkeySettings);
+        if (registration.Succeeded)
+        {
+            return;
+        }
+
+        if (_hotkeySettings != HotkeySettings.Default)
+        {
+            var defaultRegistration = TryRegisterHotkeys(HotkeySettings.Default);
+            if (defaultRegistration.Succeeded)
+            {
+                _hotkeySettings = HotkeySettings.Default;
+                _statusLabel.Text = $"{registration.Status} Default hotkeys are active.";
+                return;
+            }
+        }
+
+        _statusLabel.Text = $"{registration.Status} Use the buttons or Scan menu.";
+    }
+
+    private HotkeyRegistrationResult TryRegisterHotkeys(HotkeySettings settings)
+    {
+        UnregisterConfiguredHotkeys();
+
+        var failures = new List<string>();
+        if (RegisterHotKey(Handle, RuneshapingHotkeyId, settings.Runeshaping.ToWindowsModifiers(ModNoRepeat), (uint)settings.Runeshaping.Key))
+        {
+            _runeshapingHotkeyRegistered = true;
+        }
+        else
+        {
+            failures.Add(FormatHotkeyRegistrationFailure("Runeshaping", settings.Runeshaping));
+        }
+
+        if (RegisterHotKey(Handle, CurrencyHotkeyId, settings.ScanCurrentStash.ToWindowsModifiers(ModNoRepeat), (uint)settings.ScanCurrentStash.Key))
+        {
+            _scanCurrentStashHotkeyRegistered = true;
+        }
+        else
+        {
+            failures.Add(FormatHotkeyRegistrationFailure("Scan", settings.ScanCurrentStash));
+        }
+
+        if (failures.Count > 0)
+        {
+            UnregisterConfiguredHotkeys();
+            return new HotkeyRegistrationResult(
+                false,
+                $"Could not register {string.Join("; ", failures)}.");
+        }
+
+        return new HotkeyRegistrationResult(
+            true,
+            $"Hotkeys active: Runeshaping {settings.Runeshaping.ToDisplayString()}, Scan {settings.ScanCurrentStash.ToDisplayString()}.");
+    }
+
+    private void UnregisterConfiguredHotkeys()
+    {
+        if (!IsHandleCreated)
+        {
+            _runeshapingHotkeyRegistered = false;
+            _scanCurrentStashHotkeyRegistered = false;
+            return;
+        }
+
+        UnregisterHotKey(Handle, RuneshapingHotkeyId);
+        UnregisterHotKey(Handle, CurrencyHotkeyId);
+        _runeshapingHotkeyRegistered = false;
+        _scanCurrentStashHotkeyRegistered = false;
+    }
+
+    private static string FormatHotkeyRegistrationFailure(string label, HotkeyBinding hotkey)
+    {
+        var errorCode = Marshal.GetLastWin32Error();
+        var error = errorCode == 0
+            ? "unknown error"
+            : new Win32Exception(errorCode).Message;
+        return $"{label} {hotkey.ToDisplayString()} ({error})";
     }
 
     private void SetBusy(bool busy, string? status = null)

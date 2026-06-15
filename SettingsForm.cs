@@ -61,8 +61,68 @@ internal sealed class SettingsForm : Form
             panel.Controls.Add(CreateStatusRow("Migrated from", state.MigrationSourceConfigPath));
         }
 
+        panel.Controls.Add(CreateHeader("Hotkeys"));
+        panel.Controls.Add(CreateHotkeySection(state));
+
         page.Controls.Add(panel);
         return page;
+    }
+
+    private Control CreateHotkeySection(SettingsFormState state)
+    {
+        var panel = new FlowLayoutPanel
+        {
+            FlowDirection = FlowDirection.TopDown,
+            WrapContents = false,
+            AutoSize = true,
+            Width = 570,
+            Margin = new Padding(0, 0, 0, 12)
+        };
+
+        var statusLabel = new Label
+        {
+            Text = state.HotkeyStatus,
+            AutoSize = true,
+            MaximumSize = new Size(570, 0),
+            Margin = new Padding(0, 0, 0, 8)
+        };
+
+        var runeshapingBox = new TextBox
+        {
+            Text = state.RuneshapingHotkey,
+            Dock = DockStyle.Fill
+        };
+
+        var scanBox = new TextBox
+        {
+            Text = state.ScanCurrentStashHotkey,
+            Dock = DockStyle.Fill
+        };
+
+        var saveButton = new Button
+        {
+            Text = "Save Hotkeys",
+            AutoSize = true,
+            MinimumSize = new Size(110, 30),
+            Margin = new Padding(0, 0, 8, 0)
+        };
+        saveButton.Click += (_, _) =>
+        {
+            var result = _actions.SaveHotkeys(runeshapingBox.Text, scanBox.Text);
+            statusLabel.Text = result.Status;
+            if (result.Saved)
+            {
+                runeshapingBox.Text = result.RuneshapingHotkey;
+                scanBox.Text = result.ScanCurrentStashHotkey;
+            }
+        };
+
+        panel.Controls.Add(statusLabel);
+        panel.Controls.Add(CreateTextBoxRow("Runeshaping", runeshapingBox));
+        panel.Controls.Add(CreateTextBoxRow("Scan current stash", scanBox));
+        panel.Controls.Add(saveButton);
+        panel.Controls.Add(CreateWrappedLabel("Examples: F8, F7, Ctrl+Shift+R, Ctrl+Alt+S."));
+        return panel;
     }
 
     private TabPage BuildAiCountReaderTab(SettingsFormState state)
@@ -316,6 +376,24 @@ internal sealed class SettingsForm : Form
         return panel;
     }
 
+    private static Control CreateTextBoxRow(string label, TextBox textBox)
+    {
+        var panel = new TableLayoutPanel
+        {
+            ColumnCount = 2,
+            RowCount = 1,
+            Width = 570,
+            Height = 34,
+            Margin = new Padding(0, 0, 0, 4)
+        };
+        panel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
+        panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+
+        panel.Controls.Add(new Label { Text = label, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
+        panel.Controls.Add(textBox, 1, 0);
+        return panel;
+    }
+
     private static Control CreateButtonRow(params (string Text, Action Action)[] buttons)
     {
         var panel = new FlowLayoutPanel
@@ -359,6 +437,9 @@ internal sealed record SettingsFormState(
     bool SaveCountDebugCrops,
     string OpenAiApiKeyStatus,
     string OpenAiCountModelStatus,
+    string RuneshapingHotkey,
+    string ScanCurrentStashHotkey,
+    string HotkeyStatus,
     string AppDataPath,
     string ConfigPath,
     string LatestStashScansPath,
@@ -377,6 +458,7 @@ internal sealed record SettingsFormActions(
     Action ReviewCountCrops,
     Func<string, Task<string>> SaveOpenAiApiKeyAsync,
     Func<Task<string>> ClearOpenAiApiKeyAsync,
+    Func<string, string, HotkeySettingsSaveResult> SaveHotkeys,
     Action OpenAppDataFolder,
     Action OpenConfigFolder,
     Action OpenDebugFolder,
