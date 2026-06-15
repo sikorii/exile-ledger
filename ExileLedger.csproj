@@ -36,4 +36,12 @@
     <None Include="Data\runeshaping_reward_vocabulary.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <Target Name="KeepTesseractFilesExternalForSingleFile" BeforeTargets="_ComputeFilesToBundle">
+    <ItemGroup>
+      <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.RelativePath)' == 'Tesseract.dll' Or '%(ResolvedFileToPublish.RelativePath)' == 'x64\leptonica-1.82.0.dll' Or '%(ResolvedFileToPublish.RelativePath)' == 'x64\tesseract50.dll'">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
 </Project>
