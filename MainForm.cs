@@ -10,6 +10,8 @@ internal sealed class MainForm : Form
     private const int CurrencyHotkeyId = 9002;
     private const int WmHotkey = 0x0312;
     private const uint ModNoRepeat = 0x4000;
+    private const string RefreshPricesButtonText = "Refresh Prices";
+    private static readonly TimeSpan ManualPriceRefreshCooldown = TimeSpan.FromMinutes(30);
 
     private static readonly ScanModeOption[] ScanModes =
     [
@@ -41,9 +43,11 @@ internal sealed class MainForm : Form
     private readonly SlotLayoutOverrideStore _slotLayoutOverrideStore;
     private readonly LatestStashScanStore _latestScanStore;
     private readonly OpenAiApiKeyStore _openAiApiKeyStore;
+    private readonly ManualPriceRefreshStateStore _manualPriceRefreshStateStore;
     private readonly OpenAiVisionHelper _openAiVisionHelper;
     private readonly AiCountReader _aiCountReader;
     private readonly PoeNinjaIconCache _iconCache;
+    private readonly System.Windows.Forms.Timer _manualPriceRefreshCooldownTimer = new();
     private readonly OverlayForm _overlay = new();
     private readonly Button _runeshapingButton = new();
     private readonly ComboBox _modeComboBox = new();
@@ -92,6 +96,7 @@ internal sealed class MainForm : Form
     private SlotLayoutOverrides _slotLayoutOverrides;
     private int? _selectedLayoutSlotIndex;
     private string? _lastScreenshotDirectory;
+    private DateTimeOffset? _lastSuccessfulManualPriceRefreshUtc;
 
     public MainForm()
     {
@@ -106,6 +111,8 @@ internal sealed class MainForm : Form
         _slotLayoutOverrides = _slotLayoutOverrideStore.Load();
         _latestScanStore = new LatestStashScanStore(AppPaths.LatestStashScansPath);
         _openAiApiKeyStore = new OpenAiApiKeyStore(AppPaths.ConfigFile("secrets.json"));
+        _manualPriceRefreshStateStore = new ManualPriceRefreshStateStore(AppPaths.ConfigFile("refresh-state.json"));
+        _lastSuccessfulManualPriceRefreshUtc = _manualPriceRefreshStateStore.LoadLastSuccessfulManualPriceRefreshUtc();
         _runeScanner = new AugmentRuneScanner(AppPaths.DebugDirectory, _runeMappingStore);
         _kalguuranRuneMappingStore = new CurrencyMappingStore(
             FixedStashScannerProfiles.ConfigPath(FixedStashScannerProfiles.KalguuranRunes.MappingFileName),
@@ -132,8 +139,11 @@ internal sealed class MainForm : Form
         _aiCountReader = new AiCountReader(Path.Combine(AppPaths.DebugDirectory, "ai-counts"), _openAiApiKeyStore);
         _iconCache = PoeNinjaIconCache.CreateDefault();
         _overlay.Dismissed += (_, _) => _scanner.ClearMergedRuneshapingRewards();
+        _manualPriceRefreshCooldownTimer.Interval = 1000;
+        _manualPriceRefreshCooldownTimer.Tick += (_, _) => UpdateManualPriceRefreshCooldownUi();
         BuildUi();
         LoadPersistedLatestScans();
+        UpdateManualPriceRefreshCooldownUi();
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -155,6 +165,17 @@ internal sealed class MainForm : Form
         UnregisterHotKey(Handle, RuneshapingHotkeyId);
         UnregisterHotKey(Handle, CurrencyHotkeyId);
         base.OnHandleDestroyed(e);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _manualPriceRefreshCooldownTimer.Stop();
+            _manualPriceRefreshCooldownTimer.Dispose();
+        }
+
+        base.Dispose(disposing);
     }
 
     protected override void WndProc(ref Message m)
@@ -230,7 +251,7 @@ internal sealed class MainForm : Form
         _scanButton.Size = new Size(100, 34);
         _scanButton.Click += async (_, _) => await ScanSelectedStashModeAsync();
 
-        _refreshButton.Text = "Refresh Prices";
+        _refreshButton.Text = RefreshPricesButtonText;
         _refreshButton.Location = new Point(578, 86);
         _refreshButton.Size = new Size(130, 34);
         _refreshButton.Click += async (_, _) => await RefreshPricesAsync();
@@ -1298,6 +1319,13 @@ internal sealed class MainForm : Form
             return;
         }
 
+        if (IsManualPriceRefreshCooldownActive(out var cooldownRemaining))
+        {
+            UpdateManualPriceRefreshCooldownUi();
+            _statusLabel.Text = $"Refresh available in {FormatManualPriceRefreshStatus(cooldownRemaining)}.";
+            return;
+        }
+
         SetBusy(true, "Refreshing poe.ninja prices...");
         try
         {
@@ -1310,7 +1338,17 @@ internal sealed class MainForm : Form
                 await scanner.RefreshPricesAsync(CancellationToken.None, forceRefresh: true);
             }
 
-            _statusLabel.Text = "Prices refreshed.";
+            var refreshCompletedUtc = DateTimeOffset.UtcNow;
+            if (_manualPriceRefreshStateStore.TrySaveLastSuccessfulManualPriceRefreshUtc(refreshCompletedUtc, out var saveError))
+            {
+                _lastSuccessfulManualPriceRefreshUtc = refreshCompletedUtc;
+                _statusLabel.Text = "Prices refreshed. Refresh available in 30m.";
+            }
+            else
+            {
+                _statusLabel.Text = "Prices refreshed, but cooldown state could not be saved.";
+                _detailsBox.Text = saveError?.Message ?? "Cooldown state could not be saved.";
+            }
         }
         catch (Exception ex)
         {
@@ -1321,6 +1359,61 @@ internal sealed class MainForm : Form
         {
             SetBusy(false);
         }
+    }
+
+    private bool IsManualPriceRefreshCooldownActive(out TimeSpan remaining)
+    {
+        remaining = TimeSpan.Zero;
+        if (_lastSuccessfulManualPriceRefreshUtc is null)
+        {
+            return false;
+        }
+
+        remaining = ManualPriceRefreshCooldown - (DateTimeOffset.UtcNow - _lastSuccessfulManualPriceRefreshUtc.Value);
+        if (remaining > TimeSpan.Zero)
+        {
+            return true;
+        }
+
+        remaining = TimeSpan.Zero;
+        return false;
+    }
+
+    private void UpdateManualPriceRefreshCooldownUi()
+    {
+        if (IsManualPriceRefreshCooldownActive(out var remaining))
+        {
+            _refreshButton.Text = $"Refresh ({FormatManualPriceRefreshButtonCountdown(remaining)})";
+            _refreshButton.Enabled = false;
+            if (!_manualPriceRefreshCooldownTimer.Enabled)
+            {
+                _manualPriceRefreshCooldownTimer.Start();
+            }
+
+            return;
+        }
+
+        if (_manualPriceRefreshCooldownTimer.Enabled)
+        {
+            _manualPriceRefreshCooldownTimer.Stop();
+        }
+
+        _refreshButton.Text = RefreshPricesButtonText;
+        _refreshButton.Enabled = !_scanInProgress;
+    }
+
+    private static string FormatManualPriceRefreshButtonCountdown(TimeSpan remaining)
+    {
+        return remaining.TotalHours >= 1
+            ? $"{(int)remaining.TotalHours:0}:{remaining.Minutes:00}:{remaining.Seconds:00}"
+            : $"{remaining.Minutes:00}:{remaining.Seconds:00}";
+    }
+
+    private static string FormatManualPriceRefreshStatus(TimeSpan remaining)
+    {
+        return remaining.TotalHours >= 1
+            ? $"{(int)remaining.TotalHours:0}h {remaining.Minutes:00}m"
+            : $"{Math.Max(1, (int)Math.Ceiling(remaining.TotalMinutes)):0}m";
     }
 
     private async Task RefreshIconCacheAsync()
@@ -3699,7 +3792,15 @@ internal sealed class MainForm : Form
         _modeComboBox.Enabled = !busy;
         _insideFolderCheckBox.Enabled = !busy;
         _scanButton.Enabled = !busy;
-        _refreshButton.Enabled = !busy;
+        if (busy)
+        {
+            _refreshButton.Enabled = false;
+        }
+        else
+        {
+            UpdateManualPriceRefreshCooldownUi();
+        }
+
         _testButton.Enabled = !busy;
         _captureTabButton.Enabled = !busy;
         _aiAnalyzeButton.Enabled = !busy;
