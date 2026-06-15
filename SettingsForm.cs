@@ -28,6 +28,7 @@ internal sealed class SettingsForm : Form
         BackColor = AppBackground;
         ForeColor = TextPrimary;
         Font = new Font("Segoe UI", 9f);
+        Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
         var tabShell = CreateDarkTabShell(
             ("General", BuildGeneralTab(state)),

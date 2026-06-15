@@ -49,6 +49,7 @@ internal sealed class SlotMappingDialog : Form
         BackColor = AppBackground;
         ForeColor = TextPrimary;
         Font = new Font("Segoe UI", 9f);
+        Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         var hasCountPreview = _countCropPreview?.Saved == true;
         var hasSuggestions = _iconSuggestions.Count > 0;
         ClientSize = _iconSuggestions.Count > 0
