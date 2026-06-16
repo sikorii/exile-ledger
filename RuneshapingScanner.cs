@@ -18,6 +18,21 @@ internal sealed class RuneshapingScanner
     private static readonly Regex QuantityLineStart = new(
         @"^\s*\d+\s*[xX]\b",
         RegexOptions.Compiled);
+    private static readonly Regex StandaloneQuantityLine = new(
+        @"^\s*(?<qty>\d{1,3})\s*$",
+        RegexOptions.Compiled);
+    private static readonly Regex MissingLeadingDigitBeforeX = new(
+        @"^\s*[xX]{1,2}\s+(?<name>[A-Za-z][A-Za-z0-9'\u2019 -]{2,})\s*$",
+        RegexOptions.Compiled);
+    private static readonly Regex OcrOneQuantityPrefix = new(
+        @"^\s*[Il|]\s*[xX]\s+(?<name>[A-Za-z][A-Za-z0-9'\u2019 -]{2,})\s*$",
+        RegexOptions.Compiled);
+    private static readonly Regex RewardNameContinuation = new(
+        @"^\s*(?<fragment>of|the|and)\s+(?<rest>[A-Za-z][A-Za-z0-9'\u2019 -]{1,})\s*$",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex NoQuantityRewardCandidate = new(
+        @"^\s*(?<name>[A-Za-z][A-Za-z0-9'\u2019 -]{5,})\s*$",
+        RegexOptions.Compiled);
     private static readonly Regex QuantityLineWithTrailingFragment = new(
         @"^(?<prefix>\s*\d+\s*[xX]\s+.*?)(?<fragment>[A-Za-z]{1,5})$",
         RegexOptions.Compiled);
@@ -75,6 +90,72 @@ internal sealed class RuneshapingScanner
         _lastMergedScanUtc = DateTimeOffset.MinValue;
     }
 
+    internal static IReadOnlyList<string> RunParserSelfTest()
+    {
+        var vocabulary = RewardVocabulary.Value;
+        var cases = new[]
+        {
+            new RuneshapingParserTestCase("missing leading digit", "x Runic Alloy", ["1x Runic Alloy"], []),
+            new RuneshapingParserTestCase("split quantity one", "1\nx Swift Alloy", ["1x Swift Alloy"], []),
+            new RuneshapingParserTestCase("split quantity one with Xx", "1\nXx Cyclonic Alloy", ["1x Cyclonic Alloy"], []),
+            new RuneshapingParserTestCase("split quantity two with Xx", "2\nXx Artificer's Orb", ["2x Artificer's Orb"], []),
+            new RuneshapingParserTestCase("split quantity four", "4\nx Blacksmith's Whetstone", ["4x Blacksmith's Whetstone"], []),
+            new RuneshapingParserTestCase("split quantity six", "6\nx Armourer's Scrap", ["6x Armourer's Scrap"], []),
+            new RuneshapingParserTestCase("joined rune continuation", "1x Ancient Rune\nof Animosity", ["1x Ancient Rune of Animosity"], ["1x Ancient Rune"]),
+            new RuneshapingParserTestCase("no quantity canonical reward", "Uncut Spirit Gem", ["1x Uncut Spirit Gem"], []),
+            new RuneshapingParserTestCase("tiny full vocabulary fallback", "2x Orb of Augmentatio", ["2x Orb of Augmentation"], []),
+            new RuneshapingParserTestCase("one read as I", "Ix Warding Rune of Courage", ["1x Warding Rune of Courage"], []),
+            new RuneshapingParserTestCase("short garbage suffix ignored", "1x Warding Rune of Ee", [], ["1x Warding Rune of Ee"])
+        };
+
+        var lines = new List<string>();
+        var failures = new List<string>();
+        foreach (var testCase in cases)
+        {
+            var rewards = ParseRewards(testCase.RawText, vocabulary, out _);
+            var matches = MatchRewards(rewards, vocabulary);
+            var accepted = matches
+                .Where(match => match.Matched)
+                .Select(match => $"{match.Reward.Quantity}x {match.Reward.ItemName}")
+                .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            var ignored = matches
+                .Where(match => !match.Matched)
+                .Select(match => $"{match.ParsedReward.Quantity}x {match.ParsedReward.ItemName}")
+                .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            var expectedAccepted = testCase.ExpectedAccepted
+                .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            var expectedIgnored = testCase.ExpectedIgnored
+                .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            var acceptedPass = accepted.SequenceEqual(expectedAccepted, StringComparer.OrdinalIgnoreCase);
+            var ignoredPass = expectedIgnored.All(expected =>
+                ignored.Contains(expected, StringComparer.OrdinalIgnoreCase));
+            var pass = acceptedPass && ignoredPass;
+            lines.Add($"{(pass ? "PASS" : "FAIL")} {testCase.Name}");
+            lines.Add($"  accepted: {string.Join("; ", accepted.DefaultIfEmpty("(none)"))}");
+            lines.Add($"  ignored: {string.Join("; ", ignored.DefaultIfEmpty("(none)"))}");
+
+            if (!pass)
+            {
+                failures.Add(testCase.Name);
+                lines.Add($"  expected accepted: {string.Join("; ", expectedAccepted.DefaultIfEmpty("(none)"))}");
+                lines.Add($"  expected ignored: {string.Join("; ", expectedIgnored.DefaultIfEmpty("(none)"))}");
+            }
+        }
+
+        if (failures.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"Runeshaping parser self-test failed: {string.Join(", ", failures)}{Environment.NewLine}{string.Join(Environment.NewLine, lines)}");
+        }
+
+        return lines;
+    }
+
     private async Task<ScanResult> ScanBitmapAsync(
         Bitmap screenshot,
         Rectangle screenBounds,
@@ -93,7 +174,8 @@ internal sealed class RuneshapingScanner
         var tessData = await EnsureTessDataAsync(Path.Combine(AppContext.BaseDirectory, "tessdata"), cancellationToken).ConfigureAwait(false);
         var rawText = RunOcr(processedPath, tessData);
         File.WriteAllText(Path.Combine(_debugDirectory, "runeshaping-ocr.txt"), rawText);
-        var rewards = ParseRewards(rawText, out var rewardParseCandidates);
+        var vocabulary = RewardVocabulary.Value;
+        var rewards = ParseRewards(rawText, vocabulary, out var rewardParseCandidates);
 
         if (_cachedPrices is null || DateTimeOffset.UtcNow - _lastPriceRefresh > TimeSpan.FromMinutes(30))
         {
@@ -102,9 +184,14 @@ internal sealed class RuneshapingScanner
 
         var prices = _cachedPrices ?? throw new InvalidOperationException("Runeshaping price cache was not initialized.");
         var notes = new List<string>();
-        var vocabulary = RewardVocabulary.Value;
         var matchedRewards = MatchRewards(rewards, vocabulary);
-        var canonicalRewards = matchedRewards
+        var acceptedMatches = matchedRewards
+            .Where(match => match.Matched)
+            .ToArray();
+        var ignoredRewards = matchedRewards
+            .Where(match => !match.Matched)
+            .ToArray();
+        var canonicalRewards = acceptedMatches
             .Select(match => match.Reward)
             .ToArray();
         var rewardsForPricing = mergeWithRecentRuneshapingScans
@@ -147,6 +234,10 @@ internal sealed class RuneshapingScanner
                     : rewardParseCandidates.Select(FormatParseCandidateDebugLine))
                 .Concat(new[] { string.Empty, "Canonical match results:" })
                 .Concat(matchedRewards.Select(match => FormatMatchDebugLine(match, prices)))
+                .Concat(new[] { string.Empty, "Ignored low-confidence OCR rewards:" })
+                .Concat(ignoredRewards.Length == 0
+                    ? ["(none)"]
+                    : ignoredRewards.Select(match => FormatIgnoredRewardDebugLine(match, vocabulary)))
                 .Concat(new[] { string.Empty, "Runeshaping vocabulary:" })
                 .Concat([$"{vocabulary.CanonicalNames.Count} canonical rewards loaded from {vocabulary.SourcePath}"])
                 .Concat(string.IsNullOrWhiteSpace(vocabulary.LoadError) ? [] : [$"load warning: {vocabulary.LoadError}"])
@@ -225,9 +316,12 @@ internal sealed class RuneshapingScanner
             .ToArray();
     }
 
-    private static IReadOnlyList<RawReward> ParseRewards(string rawText, out IReadOnlyList<RewardParseCandidate> parseCandidates)
+    private static IReadOnlyList<RawReward> ParseRewards(
+        string rawText,
+        RuneshapingRewardVocabulary vocabulary,
+        out IReadOnlyList<RewardParseCandidate> parseCandidates)
     {
-        parseCandidates = BuildRewardParseCandidates(rawText);
+        parseCandidates = BuildRewardParseCandidates(rawText, vocabulary);
         var rewards = new List<RawReward>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -270,7 +364,9 @@ internal sealed class RuneshapingScanner
         return rewards;
     }
 
-    private static IReadOnlyList<RewardParseCandidate> BuildRewardParseCandidates(string rawText)
+    private static IReadOnlyList<RewardParseCandidate> BuildRewardParseCandidates(
+        string rawText,
+        RuneshapingRewardVocabulary vocabulary)
     {
         var sourceLines = rawText
             .Replace("\r\n", "\n", StringComparison.Ordinal)
@@ -286,6 +382,7 @@ internal sealed class RuneshapingScanner
         {
             var line = sourceLines[index];
             AddParseCandidate("original", line, candidates, seen);
+            AddRepairedParseCandidates(sourceLines, index, vocabulary, candidates, seen);
 
             if (!QuantityLineStart.IsMatch(line) || RewardLine.IsMatch(line))
             {
@@ -327,6 +424,141 @@ internal sealed class RuneshapingScanner
         return candidates;
     }
 
+    private static void AddRepairedParseCandidates(
+        IReadOnlyList<string> sourceLines,
+        int index,
+        RuneshapingRewardVocabulary vocabulary,
+        List<RewardParseCandidate> candidates,
+        HashSet<string> seen)
+    {
+        var line = sourceLines[index];
+
+        var ocrOneMatch = OcrOneQuantityPrefix.Match(line);
+        if (ocrOneMatch.Success)
+        {
+            AddSafeRepairedCandidate(
+                "ocr-repair",
+                $"1x {NormalizeItemName(ocrOneMatch.Groups["name"].Value)}",
+                $"quantityNormalized=1 reason=ocrOneReadAsOne sourceLine={index}",
+                [line],
+                vocabulary,
+                candidates,
+                seen);
+        }
+
+        var previousLineIsStandaloneQuantity = index > 0 && StandaloneQuantityLine.IsMatch(sourceLines[index - 1]);
+        var missingDigitMatch = MissingLeadingDigitBeforeX.Match(line);
+        if (missingDigitMatch.Success && !previousLineIsStandaloneQuantity)
+        {
+            AddSafeRepairedCandidate(
+                "ocr-repair",
+                $"1x {NormalizeItemName(missingDigitMatch.Groups["name"].Value)}",
+                $"quantityInferred=1 reason=missingLeadingDigitBeforeX sourceLine={index}",
+                [line],
+                vocabulary,
+                candidates,
+                seen);
+        }
+
+        var standaloneQuantityMatch = StandaloneQuantityLine.Match(line);
+        if (standaloneQuantityMatch.Success)
+        {
+            var quantityText = standaloneQuantityMatch.Groups["qty"].Value;
+            for (var nextIndex = index + 1; nextIndex < sourceLines.Count && nextIndex <= index + 2; nextIndex++)
+            {
+                var nextLine = sourceLines[nextIndex];
+                var nextMatch = MissingLeadingDigitBeforeX.Match(nextLine);
+                if (!nextMatch.Success)
+                {
+                    if (QuantityLineStart.IsMatch(nextLine) || StandaloneQuantityLine.IsMatch(nextLine))
+                    {
+                        break;
+                    }
+
+                    continue;
+                }
+
+                AddSafeRepairedCandidate(
+                    "ocr-repair",
+                    $"{quantityText}x {NormalizeItemName(nextMatch.Groups["name"].Value)}",
+                    $"quantityReconstructed={quantityText} reason=splitQuantityBeforeX sourceLines={index},{nextIndex}",
+                    [line, nextLine],
+                    vocabulary,
+                    candidates,
+                    seen);
+                break;
+            }
+        }
+
+        var rewardMatch = RewardLine.Match(line);
+        if (rewardMatch.Success && index + 1 < sourceLines.Count)
+        {
+            var continuation = RewardNameContinuation.Match(sourceLines[index + 1]);
+            if (continuation.Success)
+            {
+                AddSafeRepairedCandidate(
+                    "ocr-repair",
+                    $"{rewardMatch.Groups["qty"].Value}x {NormalizeItemName($"{rewardMatch.Groups["name"].Value} {continuation.Groups["fragment"].Value} {continuation.Groups["rest"].Value}")}",
+                    $"reason=joinedRewardNameContinuation sourceLines={index},{index + 1}",
+                    [line, sourceLines[index + 1]],
+                    vocabulary,
+                    candidates,
+                    seen);
+            }
+        }
+
+        if (!previousLineIsStandaloneQuantity &&
+            !QuantityLineStart.IsMatch(line) &&
+            !StandaloneQuantityLine.IsMatch(line) &&
+            !MissingLeadingDigitBeforeX.IsMatch(line) &&
+            !OcrOneQuantityPrefix.IsMatch(line))
+        {
+            var noQuantityMatch = NoQuantityRewardCandidate.Match(line);
+            if (noQuantityMatch.Success)
+            {
+                AddSafeRepairedCandidate(
+                    "ocr-repair",
+                    $"1x {NormalizeItemName(noQuantityMatch.Groups["name"].Value)}",
+                    $"quantityInferred=1 reason=noQuantityCanonicalReward sourceLine={index}",
+                    [line],
+                    vocabulary,
+                    candidates,
+                    seen);
+            }
+        }
+    }
+
+    private static void AddSafeRepairedCandidate(
+        string source,
+        string candidate,
+        string repairReason,
+        IReadOnlyList<string> sourceLines,
+        RuneshapingRewardVocabulary vocabulary,
+        List<RewardParseCandidate> candidates,
+        HashSet<string> seen)
+    {
+        var rewardMatch = RewardLine.Match(candidate);
+        if (!rewardMatch.Success)
+        {
+            return;
+        }
+
+        var itemName = NormalizeItemName(rewardMatch.Groups["name"].Value);
+        if (!IsSafeVocabularyRewardCandidate(itemName, vocabulary))
+        {
+            return;
+        }
+
+        AddParseCandidate(source, candidate, candidates, seen, repairReason: repairReason, sourceLines: sourceLines);
+    }
+
+    private static bool IsSafeVocabularyRewardCandidate(
+        string itemName,
+        RuneshapingRewardVocabulary vocabulary)
+    {
+        return MatchRewardName(new RawReward(1, itemName), vocabulary).Matched;
+    }
+
     private static bool TryBuildGluedWordCandidate(string firstLine, string nextLine, out string candidate)
     {
         candidate = string.Empty;
@@ -356,17 +588,26 @@ internal sealed class RuneshapingScanner
         string candidate,
         List<RewardParseCandidate> candidates,
         HashSet<string> seen,
-        string stitchKey = "")
+        string stitchKey = "",
+        string repairReason = "",
+        IReadOnlyList<string>? sourceLines = null)
     {
         if (seen.Add(candidate))
         {
-            candidates.Add(new RewardParseCandidate(source, candidate, stitchKey));
+            candidates.Add(new RewardParseCandidate(source, candidate, stitchKey, repairReason, sourceLines ?? []));
         }
     }
 
     private static string FormatParseCandidateDebugLine(RewardParseCandidate candidate)
     {
-        return $"{candidate.Source}: {candidate.Text}";
+        var repairReason = string.IsNullOrWhiteSpace(candidate.RepairReason)
+            ? string.Empty
+            : $" {candidate.RepairReason}";
+        var sourceLineValues = candidate.SourceLines ?? [];
+        var sourceLines = sourceLineValues.Count == 0
+            ? string.Empty
+            : $" sourceText='{string.Join(" | ", sourceLineValues)}'";
+        return $"{candidate.Source}: {candidate.Text}{repairReason}{sourceLines}";
     }
 
     private static string NormalizeItemName(string value)
@@ -374,6 +615,7 @@ internal sealed class RuneshapingScanner
         var asciiValue = value.Replace("\u2019", "'");
         var cleaned = Regex.Replace(asciiValue, @"\s+", " ").Trim(' ', '-', '\'');
         var titled = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(cleaned.ToLowerInvariant());
+        titled = Regex.Replace(titled, @"'S\b", "'s", RegexOptions.IgnoreCase);
         return Regex.Replace(titled, @"\b(Of|The|And)\b", m => m.Value.ToLowerInvariant());
     }
 
@@ -461,12 +703,25 @@ internal sealed class RuneshapingScanner
                 nearMatch.RejectionReason);
         }
 
+        var tinyFullMatch = FindTinyFullVocabularyName(matchingName, vocabulary);
+        if (tinyFullMatch.Accepted)
+        {
+            return RuneshapingRewardMatch.Near(
+                reward,
+                tinyFullMatch.KnownName,
+                PoeNinjaPrices.Normalize(itemName),
+                tinyFullMatch.Distance,
+                tinyFullMatch.SecondBestDistance,
+                tinyFullMatch.Candidates,
+                tinyFullMatch.RejectionReason);
+        }
+
         return RuneshapingRewardMatch.Unmatched(
             reward,
             matchingName,
             PoeNinjaPrices.Normalize(itemName),
-            nearMatch.Candidates,
-            nearMatch.RejectionReason);
+            tinyFullMatch.Candidates.Count > 0 ? tinyFullMatch.Candidates : nearMatch.Candidates,
+            tinyFullMatch.RejectionReason.Length > 0 ? tinyFullMatch.RejectionReason : nearMatch.RejectionReason);
     }
 
     private static string ApplyExplicitRuneshapingRepairs(string itemName)
@@ -582,6 +837,51 @@ internal sealed class RuneshapingScanner
         {
             return NearKnownNameMatch.Rejected(
                 $"ambiguous best {best.Distance}, second {secondBest.Distance}",
+                candidateSummaries);
+        }
+
+        return NearKnownNameMatch.AcceptedMatch(best.Name, best.Distance, secondBest?.Distance, candidateSummaries);
+    }
+
+    private static NearKnownNameMatch FindTinyFullVocabularyName(
+        string itemName,
+        RuneshapingRewardVocabulary vocabulary)
+    {
+        var normalized = PoeNinjaPrices.Normalize(itemName);
+        if (normalized.Length < 12)
+        {
+            return NearKnownNameMatch.Rejected("full vocabulary fallback input too short", []);
+        }
+
+        var candidates = vocabulary.MatchCandidates
+            .Where(candidate => candidate.NormalizedName.Length >= 12)
+            .Select(candidate => new NearCandidate(
+                candidate.DisplayName,
+                EditDistance(normalized, candidate.NormalizedName)))
+            .OrderBy(candidate => candidate.Distance)
+            .ThenBy(candidate => candidate.Name, StringComparer.OrdinalIgnoreCase)
+            .Take(6)
+            .ToArray();
+
+        var candidateSummaries = candidates
+            .Select(candidate => $"{candidate.Name}:{candidate.Distance}")
+            .ToArray();
+        var best = candidates.FirstOrDefault();
+        if (best is null)
+        {
+            return NearKnownNameMatch.Rejected("no full vocabulary candidates", candidateSummaries);
+        }
+
+        if (best.Distance > 1)
+        {
+            return NearKnownNameMatch.Rejected($"full vocabulary best distance {best.Distance} > 1", candidateSummaries);
+        }
+
+        var secondBest = candidates.Skip(1).FirstOrDefault();
+        if (secondBest is not null && secondBest.Distance - best.Distance < 2)
+        {
+            return NearKnownNameMatch.Rejected(
+                $"full vocabulary ambiguous best {best.Distance}, second {secondBest.Distance}",
                 candidateSummaries);
         }
 
@@ -754,7 +1054,7 @@ internal sealed class RuneshapingScanner
             : $" secondBest={match.SecondBestDistance}";
         var anchor = string.IsNullOrWhiteSpace(match.AnchorLabel)
             ? string.Empty
-            : $" anchor={match.AnchorLabel}";
+            : $" acceptedByUniqueAnchor=true anchor={match.AnchorLabel}";
         var exact = match.Method.Equals("exact", StringComparison.OrdinalIgnoreCase)
             ? $" exact={match.Reward.ItemName}"
             : " exact=(none)";
@@ -762,7 +1062,8 @@ internal sealed class RuneshapingScanner
         var nearCandidates = nearMatchCandidates.Count == 0
             ? " nearCandidates=(none)"
             : $" nearCandidates={string.Join("; ", nearMatchCandidates)}";
-        var nearRejection = string.IsNullOrWhiteSpace(match.NearMatchRejection)
+        var nearRejection = string.IsNullOrWhiteSpace(match.NearMatchRejection) ||
+            match.Method.Equals("anchor", StringComparison.OrdinalIgnoreCase)
             ? string.Empty
             : $" nearRejected='{match.NearMatchRejection}'";
         var priceLookup = priceLookupName.Equals(match.Reward.ItemName, StringComparison.OrdinalIgnoreCase)
@@ -770,6 +1071,89 @@ internal sealed class RuneshapingScanner
             : $" priceLookup='{priceLookupName}'";
         var priceStatus = price is null ? "missing" : "ok";
         return $"{match.ParsedReward.Quantity}x parsed='{match.ParsedReward.ItemName}' normalized='{match.NormalizedParsedName}' canonical='{canonical}' method={match.Method}{exact}{anchor}{score}{secondBest}{nearCandidates}{nearRejection} mergeKey='{match.MergeKey}'{priceLookup} price={priceStatus}";
+    }
+
+    private static string FormatIgnoredRewardDebugLine(
+        RuneshapingRewardMatch match,
+        RuneshapingRewardVocabulary vocabulary)
+    {
+        var nearMatchCandidates = match.NearMatchCandidates ?? [];
+        var nearCandidates = nearMatchCandidates.Count == 0
+            ? "nearCandidates=(none)"
+            : $"nearCandidates={string.Join("; ", nearMatchCandidates)}";
+        var nearRejection = string.IsNullOrWhiteSpace(match.NearMatchRejection)
+            ? "nearRejected=(none)"
+            : $"nearRejected='{match.NearMatchRejection}'";
+        return $"{match.ParsedReward.Quantity}x parsed='{match.ParsedReward.ItemName}' reason='{DescribeIgnoredReward(match, vocabulary)}' {nearCandidates} {nearRejection}";
+    }
+
+    private static string DescribeIgnoredReward(
+        RuneshapingRewardMatch match,
+        RuneshapingRewardVocabulary vocabulary)
+    {
+        var itemName = match.ParsedReward.ItemName;
+        if (TryFindKnownFamilyPrefixWithBadSuffix(itemName, vocabulary, out var familyReason))
+        {
+            return familyReason;
+        }
+
+        if (LooksLikeIncompleteFamilyPrefix(itemName, vocabulary))
+        {
+            return "incomplete known reward family prefix";
+        }
+
+        return "unmatched low-confidence OCR reward";
+    }
+
+    private static bool TryFindKnownFamilyPrefixWithBadSuffix(
+        string itemName,
+        RuneshapingRewardVocabulary vocabulary,
+        out string reason)
+    {
+        reason = string.Empty;
+        var normalized = PoeNinjaPrices.Normalize(itemName);
+        var prefix = vocabulary.CanonicalNames
+            .Select(name => Regex.Match(PoeNinjaPrices.Normalize(name), @"^(?<prefix>.+ RUNE OF) (?<suffix>.+)$"))
+            .Where(match => match.Success)
+            .Select(match => match.Groups["prefix"].Value)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Where(candidatePrefix => normalized.StartsWith(candidatePrefix + " ", StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(candidatePrefix => candidatePrefix.Length)
+            .FirstOrDefault();
+
+        if (prefix is null)
+        {
+            return false;
+        }
+
+        var suffix = normalized[(prefix.Length + 1)..].Trim();
+        if (suffix.Length <= 3 || suffix.Any(char.IsDigit))
+        {
+            reason = $"known family prefix with malformed suffix prefix='{NormalizeDebugToken(prefix)}' suffix='{NormalizeDebugToken(suffix)}'";
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool LooksLikeIncompleteFamilyPrefix(
+        string itemName,
+        RuneshapingRewardVocabulary vocabulary)
+    {
+        var normalized = PoeNinjaPrices.Normalize(itemName);
+        if (!normalized.EndsWith(" RUNE", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return vocabulary.CanonicalNames
+            .Select(PoeNinjaPrices.Normalize)
+            .Any(name => name.StartsWith(normalized + " OF ", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string NormalizeDebugToken(string value)
+    {
+        return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(value.ToLowerInvariant());
     }
 
     private static string ResolveRuneshapingPriceLookupName(string canonicalName)
@@ -893,7 +1277,12 @@ internal sealed class RuneshapingScanner
 
     private sealed record AnchorFamily(string Label, string[] Tokens);
 
-    private sealed record RewardParseCandidate(string Source, string Text, string StitchKey = "");
+    private sealed record RewardParseCandidate(
+        string Source,
+        string Text,
+        string StitchKey = "",
+        string RepairReason = "",
+        IReadOnlyList<string>? SourceLines = null);
 
     private sealed record RuneshapingVocabularyItem(
         string CanonicalName,
@@ -944,6 +1333,12 @@ internal sealed class RuneshapingScanner
             return new NearKnownNameMatch(false, string.Empty, 0, null, candidates, reason);
         }
     }
+
+    private sealed record RuneshapingParserTestCase(
+        string Name,
+        string RawText,
+        IReadOnlyList<string> ExpectedAccepted,
+        IReadOnlyList<string> ExpectedIgnored);
 
     private static string RunOcr(string imagePath, string tessDataDirectory)
     {
