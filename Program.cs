@@ -80,7 +80,9 @@ static class Program
         }
 
         ApplicationConfiguration.Initialize();
-        Application.Run(new MainForm());
+        var mainForm = new MainForm();
+        mainForm.Shown += (_, _) => UpdateChecker.CheckForUpdatesAsync(mainForm);
+        Application.Run(mainForm);
     }
 
     private static void RunSelfTest(string? screenshotPath)
