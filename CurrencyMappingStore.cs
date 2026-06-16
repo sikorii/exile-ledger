@@ -5,13 +5,15 @@ namespace Poe2PriceChecker;
 internal sealed class CurrencyMappingStore
 {
     private readonly string _path;
+    private readonly string? _defaultMappingPath;
     private readonly string _countOverridePath;
     private readonly Dictionary<int, string> _customNames = new();
     private readonly Dictionary<int, int> _countOverrides = new();
 
-    public CurrencyMappingStore(string path, string? countOverridePath = null)
+    public CurrencyMappingStore(string path, string? countOverridePath = null, string? defaultMappingPath = null)
     {
         _path = path;
+        _defaultMappingPath = defaultMappingPath ?? DefaultMappingPathFor(path);
         _countOverridePath = countOverridePath ??
             Path.Combine(
                 Path.GetDirectoryName(path) ?? AppContext.BaseDirectory,
@@ -74,21 +76,27 @@ internal sealed class CurrencyMappingStore
 
     private void Load()
     {
-        if (!File.Exists(_path))
+        _customNames.Clear();
+        LoadNames(_defaultMappingPath);
+        LoadNames(_path);
+    }
+
+    private void LoadNames(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
         {
             return;
         }
 
         try
         {
-            var json = File.ReadAllText(_path);
+            var json = File.ReadAllText(path);
             var data = JsonSerializer.Deserialize<Dictionary<int, string>>(json);
             if (data is null)
             {
                 return;
             }
 
-            _customNames.Clear();
             foreach (var (slot, name) in data)
             {
                 if (!string.IsNullOrWhiteSpace(name))
@@ -99,8 +107,16 @@ internal sealed class CurrencyMappingStore
         }
         catch
         {
-            // Keep running even if the user-edited mapping JSON is malformed.
+            // Keep running even if a mapping JSON file is malformed.
         }
+    }
+
+    private static string? DefaultMappingPathFor(string path)
+    {
+        var fileName = Path.GetFileName(path);
+        return string.IsNullOrWhiteSpace(fileName)
+            ? null
+            : Path.Combine(AppContext.BaseDirectory, "Data", "default-mappings", fileName);
     }
 
     private void Save()
