@@ -89,6 +89,7 @@ internal sealed class MainForm : Form
     private readonly Button _aiAnalyzeButton = new();
     private readonly Button _refreshIconsButton = new();
     private readonly Button _copySummaryButton = new();
+    private readonly Button _copyRuneshapingDebugButton = new();
     private readonly CheckBox _editLayoutCheckBox = new();
     private readonly Button _saveLayoutButton = new();
     private readonly Button _reloadLayoutButton = new();
@@ -125,6 +126,7 @@ internal sealed class MainForm : Form
     private readonly ToolStripMenuItem _scanCurrentStashMenuItem = new();
     private readonly ToolStripMenuItem _aiReadCountsMenuItem = new();
     private readonly ToolStripMenuItem _scanRuneshapingMenuItem = new();
+    private readonly ToolStripMenuItem _copyRuneshapingDebugMenuItem = new();
 
     private bool _scanInProgress;
     private readonly Dictionary<string, CurrencyScanResult> _savedCurrencyResults = new(StringComparer.OrdinalIgnoreCase);
@@ -415,6 +417,12 @@ internal sealed class MainForm : Form
         StyleButton(_copySummaryButton);
         _copySummaryButton.Click += (_, _) => CopyCurrentSummary();
 
+        _copyRuneshapingDebugButton.Text = "Copy Debug";
+        _copyRuneshapingDebugButton.Size = new Size(116, 36);
+        StyleButton(_copyRuneshapingDebugButton);
+        _copyRuneshapingDebugButton.Click += (_, _) => CopyLastRuneshapingDebug();
+        _toolTip.SetToolTip(_copyRuneshapingDebugButton, "Copy the latest runeshaping debug text to the clipboard.");
+
         _aiReadCountsButton.Text = "AI Read Counts";
         _aiReadCountsButton.Size = new Size(132, 36);
         StyleButton(_aiReadCountsButton);
@@ -430,7 +438,7 @@ internal sealed class MainForm : Form
         StyleButton(_reviewCountCropsButton);
         _reviewCountCropsButton.Click += (_, _) => GenerateCountCropReviewReport();
 
-        _toolbarPanel.Controls.AddRange([_scanButton, _runeshapingButton, _refreshButton, _copySummaryButton, _aiReadCountsButton, _reviewCountCropsButton, _settingsButton]);
+        _toolbarPanel.Controls.AddRange([_scanButton, _runeshapingButton, _refreshButton, _copySummaryButton, _copyRuneshapingDebugButton, _aiReadCountsButton, _reviewCountCropsButton, _settingsButton]);
 
         _editLayoutCheckBox.Text = "Edit Layout";
         _editLayoutCheckBox.Location = new Point(22, 104);
@@ -584,7 +592,7 @@ internal sealed class MainForm : Form
         var rowStartX = actionX;
         var actionGap = 8;
         var maxActionRight = Math.Max(rowStartX + 120, _toolbarPanel.ClientSize.Width - 16);
-        foreach (var button in new[] { _scanButton, _runeshapingButton, _refreshButton, _copySummaryButton, _aiReadCountsButton, _reviewCountCropsButton, _settingsButton })
+        foreach (var button in new[] { _scanButton, _runeshapingButton, _refreshButton, _copySummaryButton, _copyRuneshapingDebugButton, _aiReadCountsButton, _reviewCountCropsButton, _settingsButton })
         {
             if (actionX + button.Width > maxActionRight && actionX > rowStartX)
             {
@@ -833,6 +841,8 @@ internal sealed class MainForm : Form
         _resetSelectedSlotMenuItem.Click += (_, _) => ResetSelectedLayoutSlot();
         _resetCurrentTabMenuItem.Text = "Reset Current Tab";
         _resetCurrentTabMenuItem.Click += (_, _) => ResetCurrentLayoutTab();
+        _copyRuneshapingDebugMenuItem.Text = "Copy Last Runeshaping Debug";
+        _copyRuneshapingDebugMenuItem.Click += (_, _) => CopyLastRuneshapingDebug();
         toolsMenu.DropDownItems.AddRange([
             _manualLayoutEditorMenuItem,
             _saveLayoutMenuItem,
@@ -848,6 +858,7 @@ internal sealed class MainForm : Form
             CreateMenuItem("Review Count Crops Report", (_, _) => GenerateCountCropReviewReport()),
             CreateMenuItem("Open Count Crop Folder", (_, _) => OpenFolder(Path.Combine(AppPaths.DebugDirectory, "count-crops"))),
             CreateMenuItem("Open AI Count Debug Folder", (_, _) => OpenFolder(Path.Combine(AppPaths.DebugDirectory, "ai-counts"))),
+            _copyRuneshapingDebugMenuItem,
             CreateMenuItem("Open Debug Folder", (_, _) => OpenFolder(AppPaths.DebugDirectory))
         ]);
 
@@ -1966,6 +1977,34 @@ internal sealed class MainForm : Form
         catch (Exception ex)
         {
             _statusLabel.Text = "Copy failed.";
+            _detailsBox.Text = ex.ToString();
+        }
+    }
+
+    private void CopyLastRuneshapingDebug()
+    {
+        var debugPath = AppPaths.RuneshapingDebugPath;
+        if (!File.Exists(debugPath))
+        {
+            _statusLabel.Text = "No runeshaping debug file found yet. Press F8 on a runeshaping screen first.";
+            return;
+        }
+
+        try
+        {
+            var debugText = File.ReadAllText(debugPath);
+            if (string.IsNullOrWhiteSpace(debugText))
+            {
+                _statusLabel.Text = "Runeshaping debug file is empty. Press F8 on a runeshaping screen first.";
+                return;
+            }
+
+            Clipboard.SetText(debugText);
+            _statusLabel.Text = "Copied last runeshaping debug to clipboard.";
+        }
+        catch (Exception ex)
+        {
+            _statusLabel.Text = "Copy runeshaping debug failed.";
             _detailsBox.Text = ex.ToString();
         }
     }
@@ -4382,6 +4421,7 @@ internal sealed class MainForm : Form
         _aiAnalyzeButton.Enabled = !busy;
         _refreshIconsButton.Enabled = !busy;
         _copySummaryButton.Enabled = !busy;
+        _copyRuneshapingDebugButton.Enabled = !busy;
         _reviewCountCropsButton.Enabled = !busy;
         _aiReadCountsButton.Enabled = !busy;
         _settingsButton.Enabled = !busy;
@@ -4393,6 +4433,7 @@ internal sealed class MainForm : Form
         _scanRuneshapingMenuItem.Enabled = !busy;
         _scanCurrentStashMenuItem.Enabled = !busy;
         _aiReadCountsMenuItem.Enabled = !busy;
+        _copyRuneshapingDebugMenuItem.Enabled = !busy;
         _recalculateValuesMenuItem.Enabled = !busy;
         _clearCurrentScanMenuItem.Enabled = !busy;
         UseWaitCursor = busy;

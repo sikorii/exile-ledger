@@ -226,7 +226,16 @@ internal sealed class RuneshapingScanner
         var colored = AssignColors(priced);
         File.WriteAllLines(
             Path.Combine(_debugDirectory, "runeshaping-debug.txt"),
-            new[] { "Raw OCR:", rawText, string.Empty, "Parsed rewards:" }
+            new[]
+            {
+                $"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss} local",
+                $"App version: {Application.ProductVersion}",
+                string.Empty,
+                "Raw OCR:",
+                rawText,
+                string.Empty,
+                "Parsed rewards:"
+            }
                 .Concat(rewards.Select(reward => $"{reward.Quantity}x {reward.ItemName}"))
                 .Concat(new[] { string.Empty, "Reward parse candidates:" })
                 .Concat(rewardParseCandidates.Count == 0
