@@ -15,6 +15,7 @@ internal static class AppPaths
 
     public static string ConfigDirectory => Path.Combine(RootDirectory, "config");
     public static string DebugDirectory => Path.Combine(RootDirectory, "debug");
+    public static string RuneshapingDebugPath => DebugFile("runeshaping-debug.txt");
     public static string CacheDirectory => Path.Combine(RootDirectory, "cache");
     public static string TrainingDirectory => Path.Combine(RootDirectory, "training");
     public static string LatestStashScansPath => ConfigFile(LatestStashScansFileName);
