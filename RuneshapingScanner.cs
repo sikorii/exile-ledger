@@ -105,6 +105,8 @@ internal sealed class RuneshapingScanner
             new RuneshapingParserTestCase("no quantity canonical reward", "Uncut Spirit Gem", ["1x Uncut Spirit Gem"], []),
             new RuneshapingParserTestCase("tiny full vocabulary fallback", "2x Orb of Augmentatio", ["2x Orb of Augmentation"], []),
             new RuneshapingParserTestCase("one read as I", "Ix Warding Rune of Courage", ["1x Warding Rune of Courage"], []),
+            new RuneshapingParserTestCase("unique prefix completion", "2x Glassblower's", ["2x Glassblower's Bauble"], []),
+            new RuneshapingParserTestCase("ambiguous prefix ignored", "1x Ancient Rune", [], ["1x Ancient Rune"]),
             new RuneshapingParserTestCase("short garbage suffix ignored", "1x Warding Rune of Ee", [], ["1x Warding Rune of Ee"])
         };
 
@@ -688,6 +690,15 @@ internal sealed class RuneshapingScanner
             ? withoutLeadingJunk
             : repaired;
 
+        if (TryFindUniquePrefixVocabularyName(matchingName, vocabulary, out known))
+        {
+            return RuneshapingRewardMatch.UniquePrefixCompletion(
+                reward,
+                known,
+                matchingName,
+                PoeNinjaPrices.Normalize(itemName));
+        }
+
         var nearMatch = FindNearVocabularyName(matchingName, vocabulary);
         if (nearMatch.Accepted)
         {
@@ -802,6 +813,51 @@ internal sealed class RuneshapingScanner
 
         knownName = string.Empty;
         return false;
+    }
+
+    private static bool TryFindUniquePrefixVocabularyName(
+        string itemName,
+        RuneshapingRewardVocabulary vocabulary,
+        out string knownName)
+    {
+        knownName = string.Empty;
+        var normalized = PoeNinjaPrices.Normalize(itemName);
+        if (!IsSpecificEnoughForPrefixCompletion(itemName, normalized, vocabulary))
+        {
+            return false;
+        }
+
+        var matches = vocabulary.CanonicalNames
+            .Where(name => PoeNinjaPrices.Normalize(name).StartsWith(normalized + " ", StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Take(2)
+            .ToArray();
+
+        if (matches.Length != 1)
+        {
+            return false;
+        }
+
+        knownName = matches[0];
+        return true;
+    }
+
+    private static bool IsSpecificEnoughForPrefixCompletion(
+        string itemName,
+        string normalized,
+        RuneshapingRewardVocabulary vocabulary)
+    {
+        if (normalized.Length < 10)
+        {
+            return false;
+        }
+
+        if (!NormalizedTokens(itemName).Any(token => token.Length >= 6))
+        {
+            return false;
+        }
+
+        return !TryFindKnownFamilyPrefixWithBadSuffix(itemName, vocabulary, out _);
     }
 
     private static NearKnownNameMatch FindNearVocabularyName(
@@ -1064,6 +1120,9 @@ internal sealed class RuneshapingScanner
         var anchor = string.IsNullOrWhiteSpace(match.AnchorLabel)
             ? string.Empty
             : $" acceptedByUniqueAnchor=true anchor={match.AnchorLabel}";
+        var prefixCompletion = string.IsNullOrWhiteSpace(match.PrefixCompletion)
+            ? string.Empty
+            : $" prefix='{match.PrefixCompletion}'";
         var exact = match.Method.Equals("exact", StringComparison.OrdinalIgnoreCase)
             ? $" exact={match.Reward.ItemName}"
             : " exact=(none)";
@@ -1079,7 +1138,7 @@ internal sealed class RuneshapingScanner
             ? " priceLookup=(canonical)"
             : $" priceLookup='{priceLookupName}'";
         var priceStatus = price is null ? "missing" : "ok";
-        return $"{match.ParsedReward.Quantity}x parsed='{match.ParsedReward.ItemName}' normalized='{match.NormalizedParsedName}' canonical='{canonical}' method={match.Method}{exact}{anchor}{score}{secondBest}{nearCandidates}{nearRejection} mergeKey='{match.MergeKey}'{priceLookup} price={priceStatus}";
+        return $"{match.ParsedReward.Quantity}x parsed='{match.ParsedReward.ItemName}' normalized='{match.NormalizedParsedName}' canonical='{canonical}' method={match.Method}{prefixCompletion}{exact}{anchor}{score}{secondBest}{nearCandidates}{nearRejection} mergeKey='{match.MergeKey}'{priceLookup} price={priceStatus}";
     }
 
     private static string FormatIgnoredRewardDebugLine(
@@ -1202,6 +1261,7 @@ internal sealed class RuneshapingScanner
         int? Distance = null,
         int? SecondBestDistance = null,
         string NormalizedParsedName = "",
+        string PrefixCompletion = "",
         IReadOnlyList<string>? NearMatchCandidates = null,
         string NearMatchRejection = "")
     {
@@ -1226,6 +1286,21 @@ internal sealed class RuneshapingScanner
                 reward with { ItemName = canonicalName },
                 "alias",
                 NormalizedParsedName: normalizedParsedName,
+                NearMatchCandidates: []);
+        }
+
+        public static RuneshapingRewardMatch UniquePrefixCompletion(
+            RawReward reward,
+            string canonicalName,
+            string prefix,
+            string normalizedParsedName)
+        {
+            return new RuneshapingRewardMatch(
+                reward,
+                reward with { ItemName = canonicalName },
+                "uniquePrefixCompletion",
+                NormalizedParsedName: normalizedParsedName,
+                PrefixCompletion: prefix,
                 NearMatchCandidates: []);
         }
 
