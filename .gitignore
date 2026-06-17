@@ -2,6 +2,7 @@
 bin/
 obj/
 publish/
+artifacts/
 [Bb]uild/
 [Dd]ebug/
 [Rr]elease/

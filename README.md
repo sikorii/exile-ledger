@@ -86,7 +86,17 @@ dotnet build
 dotnet run
 ```
 
-Create a Windows x64 self-contained single-file friends-alpha publish with:
+Create a Windows x64 friends-alpha release zip with:
+
+```powershell
+.\tools\package-release.ps1
+```
+
+The packaging script publishes the app in self-contained single-file mode, stages only the intended release contents, wraps them in a top-level `Exile Ledger` folder, writes the zip to `artifacts\`, and prints the SHA256.
+
+Use the script for GitHub release zips. Do not upload the old loose self-contained publish output, which includes hundreds of .NET runtime files and culture folders directly in the release root.
+
+The underlying publish command is:
 
 ```powershell
 dotnet publish ".\ExileLedger.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=None -p:DebugSymbols=false -o ".\publish\ExileLedger-singlefile"
@@ -96,8 +106,10 @@ Expected friends-alpha publish layout:
 
 ```text
 ExileLedger.exe
+Tesseract.dll
 assets\
 Data\
+x64\
 README.txt
 ```
 
@@ -107,8 +119,10 @@ Release zips should wrap those files in a top-level folder:
 Exile Ledger\
   ExileLedger.exe
   README.txt
+  Tesseract.dll
   assets\
   Data\
+  x64\
 ```
 
 ## Notes
