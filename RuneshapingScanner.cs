@@ -21,10 +21,10 @@ internal sealed class RuneshapingScanner
         @"^\s*(?<qty>\d{1,3})\s*$",
         RegexOptions.Compiled);
     private static readonly Regex MissingLeadingDigitBeforeX = new(
-        @"^\s*[xX]{1,2}\s+(?<name>[A-Za-z][A-Za-z0-9'\u2019 -]{2,})\s*$",
+        @"^\s*[xX]{1,2}\s+(?<name>[A-Za-z].{2,80}?)\s*$",
         RegexOptions.Compiled);
     private static readonly Regex OcrOneQuantityPrefix = new(
-        @"^\s*[Il|]\s*[xX]\s+(?<name>[A-Za-z][A-Za-z0-9'\u2019 -]{2,})\s*$",
+        @"^\s*[Il|]\s*[xX]\s+(?<name>[A-Za-z].{2,80}?)\s*$",
         RegexOptions.Compiled);
     private static readonly Regex RewardNameContinuation = new(
         @"^\s*(?<fragment>of|the|and)\s+(?<rest>[A-Za-z][A-Za-z0-9'\u2019 -]{1,})\s*$",
@@ -104,6 +104,9 @@ internal sealed class RuneshapingScanner
             new RuneshapingParserTestCase("no quantity canonical reward", "Uncut Spirit Gem", ["1x Uncut Spirit Gem"], []),
             new RuneshapingParserTestCase("tiny full vocabulary fallback", "2x Orb of Augmentatio", ["2x Orb of Augmentation"], []),
             new RuneshapingParserTestCase("one read as I", "Ix Warding Rune of Courage", ["1x Warding Rune of Courage"], []),
+            new RuneshapingParserTestCase("one read as l with trailing slash", "lx Mystic Alloy/", ["1x Mystic Alloy"], []),
+            new RuneshapingParserTestCase("one read as l with trailing bracket", "lx Orb of Alchemy]", ["1x Orb of Alchemy"], []),
+            new RuneshapingParserTestCase("trailing quote on reward name", "5x Random Currency\"", ["5x Random Currency"], []),
             new RuneshapingParserTestCase("unique prefix completion", "2x Glassblower's", ["2x Glassblower's Bauble"], []),
             new RuneshapingParserTestCase("ambiguous prefix ignored", "1x Ancient Rune", [], ["1x Ancient Rune"]),
             new RuneshapingParserTestCase("short garbage suffix ignored", "1x Warding Rune of Ee", [], ["1x Warding Rune of Ee"])
@@ -374,7 +377,7 @@ internal sealed class RuneshapingScanner
                     continue;
                 }
 
-                var itemName = NormalizeItemName(match.Groups["name"].Value);
+                var itemName = NormalizeParsedRewardName(match.Groups["name"].Value);
                 if (itemName.Length == 0 || itemName.Length > 80)
                 {
                     continue;
@@ -463,10 +466,13 @@ internal sealed class RuneshapingScanner
         var ocrOneMatch = OcrOneQuantityPrefix.Match(line);
         if (ocrOneMatch.Success)
         {
+            var itemName = NormalizeParsedRewardName(ocrOneMatch.Groups["name"].Value, out var trimmedTrailingJunk);
             AddSafeRepairedCandidate(
                 "ocr-repair",
-                $"1x {NormalizeItemName(ocrOneMatch.Groups["name"].Value)}",
-                $"quantityNormalized=1 reason=ocrOneReadAsOne sourceLine={index}",
+                $"1x {itemName}",
+                AppendTrailingOcrJunkRepairReason(
+                    $"quantityNormalized=1 reason=ocrOneReadAsOne sourceLine={index}",
+                    trimmedTrailingJunk),
                 [line],
                 vocabulary,
                 candidates,
@@ -477,10 +483,13 @@ internal sealed class RuneshapingScanner
         var missingDigitMatch = MissingLeadingDigitBeforeX.Match(line);
         if (missingDigitMatch.Success && !previousLineIsStandaloneQuantity)
         {
+            var itemName = NormalizeParsedRewardName(missingDigitMatch.Groups["name"].Value, out var trimmedTrailingJunk);
             AddSafeRepairedCandidate(
                 "ocr-repair",
-                $"1x {NormalizeItemName(missingDigitMatch.Groups["name"].Value)}",
-                $"quantityInferred=1 reason=missingLeadingDigitBeforeX sourceLine={index}",
+                $"1x {itemName}",
+                AppendTrailingOcrJunkRepairReason(
+                    $"quantityInferred=1 reason=missingLeadingDigitBeforeX sourceLine={index}",
+                    trimmedTrailingJunk),
                 [line],
                 vocabulary,
                 candidates,
@@ -505,10 +514,13 @@ internal sealed class RuneshapingScanner
                     continue;
                 }
 
+                var itemName = NormalizeParsedRewardName(nextMatch.Groups["name"].Value, out var trimmedTrailingJunk);
                 AddSafeRepairedCandidate(
                     "ocr-repair",
-                    $"{quantityText}x {NormalizeItemName(nextMatch.Groups["name"].Value)}",
-                    $"quantityReconstructed={quantityText} reason=splitQuantityBeforeX sourceLines={index},{nextIndex}",
+                    $"{quantityText}x {itemName}",
+                    AppendTrailingOcrJunkRepairReason(
+                        $"quantityReconstructed={quantityText} reason=splitQuantityBeforeX sourceLines={index},{nextIndex}",
+                        trimmedTrailingJunk),
                     [line, nextLine],
                     vocabulary,
                     candidates,
@@ -523,10 +535,15 @@ internal sealed class RuneshapingScanner
             var continuation = RewardNameContinuation.Match(sourceLines[index + 1]);
             if (continuation.Success)
             {
+                var itemName = NormalizeParsedRewardName(
+                    $"{rewardMatch.Groups["name"].Value} {continuation.Groups["fragment"].Value} {continuation.Groups["rest"].Value}",
+                    out var trimmedTrailingJunk);
                 AddSafeRepairedCandidate(
                     "ocr-repair",
-                    $"{rewardMatch.Groups["qty"].Value}x {NormalizeItemName($"{rewardMatch.Groups["name"].Value} {continuation.Groups["fragment"].Value} {continuation.Groups["rest"].Value}")}",
-                    $"reason=joinedRewardNameContinuation sourceLines={index},{index + 1}",
+                    $"{rewardMatch.Groups["qty"].Value}x {itemName}",
+                    AppendTrailingOcrJunkRepairReason(
+                        $"reason=joinedRewardNameContinuation sourceLines={index},{index + 1}",
+                        trimmedTrailingJunk),
                     [line, sourceLines[index + 1]],
                     vocabulary,
                     candidates,
@@ -543,10 +560,13 @@ internal sealed class RuneshapingScanner
             var noQuantityMatch = NoQuantityRewardCandidate.Match(line);
             if (noQuantityMatch.Success)
             {
+                var itemName = NormalizeParsedRewardName(noQuantityMatch.Groups["name"].Value, out var trimmedTrailingJunk);
                 AddSafeRepairedCandidate(
                     "ocr-repair",
-                    $"1x {NormalizeItemName(noQuantityMatch.Groups["name"].Value)}",
-                    $"quantityInferred=1 reason=noQuantityCanonicalReward sourceLine={index}",
+                    $"1x {itemName}",
+                    AppendTrailingOcrJunkRepairReason(
+                        $"quantityInferred=1 reason=noQuantityCanonicalReward sourceLine={index}",
+                        trimmedTrailingJunk),
                     [line],
                     vocabulary,
                     candidates,
@@ -570,7 +590,7 @@ internal sealed class RuneshapingScanner
             return;
         }
 
-        var itemName = NormalizeItemName(rewardMatch.Groups["name"].Value);
+        var itemName = NormalizeParsedRewardName(rewardMatch.Groups["name"].Value);
         if (!IsSafeVocabularyRewardCandidate(itemName, vocabulary))
         {
             return;
@@ -667,6 +687,31 @@ internal sealed class RuneshapingScanner
         }
 
         return lines;
+    }
+
+    private static string NormalizeParsedRewardName(string value)
+    {
+        return NormalizeParsedRewardName(value, out _);
+    }
+
+    private static string NormalizeParsedRewardName(string value, out bool trimmedTrailingJunk)
+    {
+        var original = value.Trim();
+        var trimmed = TrimTrailingOcrJunk(original);
+        trimmedTrailingJunk = !trimmed.Equals(original, StringComparison.Ordinal);
+        return NormalizeItemName(trimmed);
+    }
+
+    private static string TrimTrailingOcrJunk(string value)
+    {
+        return Regex.Replace(value, @"[/\\\]\[""\|]+$", string.Empty).Trim();
+    }
+
+    private static string AppendTrailingOcrJunkRepairReason(string repairReason, bool trimmedTrailingJunk)
+    {
+        return trimmedTrailingJunk
+            ? $"{repairReason} trailingOcrJunkTrimmed=true"
+            : repairReason;
     }
 
     private static string NormalizeItemName(string value)
