@@ -19,6 +19,12 @@ static class Program
             return;
         }
 
+        if (args.Length > 0 && args[0].Equals("--runeshaping-ocr-backend-test", StringComparison.OrdinalIgnoreCase))
+        {
+            RunRuneshapingOcrBackendTest();
+            return;
+        }
+
         if (args.Length > 0 && args[0].Equals("--currency-test", StringComparison.OrdinalIgnoreCase))
         {
             RunCurrencyTest(args.Length > 1 ? args[1] : null);
@@ -113,6 +119,18 @@ static class Program
         Directory.CreateDirectory(debugDirectory);
         var lines = RuneshapingScanner.RunParserSelfTest();
         File.WriteAllLines(Path.Combine(debugDirectory, "runeshaping-parser-test.txt"), lines);
+    }
+
+    private static void RunRuneshapingOcrBackendTest()
+    {
+        var debugDirectory = AppPaths.DebugDirectory;
+        Directory.CreateDirectory(debugDirectory);
+        var lines = RuneshapingOcrPipeline.DescribeWindowsOcrAvailability();
+        File.WriteAllLines(Path.Combine(debugDirectory, "runeshaping-ocr-backend-test.txt"), lines);
+        foreach (var line in lines)
+        {
+            Console.WriteLine(line);
+        }
     }
 
     private static void RunCurrencyTest(string? screenshotPath)

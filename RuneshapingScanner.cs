@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using Tesseract;
 
 namespace Poe2PriceChecker;
 
@@ -179,7 +178,8 @@ internal sealed class RuneshapingScanner
         SaveBitmap(processed, Path.Combine(debugImageDirectory, "03-preprocessed-ocr-input.png"));
 
         var tessData = await EnsureTessDataAsync(Path.Combine(AppContext.BaseDirectory, "tessdata"), cancellationToken).ConfigureAwait(false);
-        var rawText = RunOcr(processedPath, tessData);
+        var ocrResult = await RuneshapingOcrPipeline.RecognizeAsync(processedPath, tessData, cancellationToken).ConfigureAwait(false);
+        var rawText = ocrResult.Text;
         File.WriteAllText(Path.Combine(_debugDirectory, "runeshaping-ocr.txt"), rawText);
         var vocabulary = RewardVocabulary.Value;
         var rewards = ParseRewards(rawText, vocabulary, out var rewardParseCandidates);
@@ -238,12 +238,22 @@ internal sealed class RuneshapingScanner
                 $"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss} local",
                 $"App version: {Application.ProductVersion}",
                 $"Debug images: {debugImageDirectory}",
+                $"OCR backend: {ocrResult.Backend}",
+                string.IsNullOrWhiteSpace(ocrResult.FallbackReason)
+                    ? "OCR fallback reason: (none)"
+                    : $"OCR fallback reason: {ocrResult.FallbackReason}",
                 string.Empty,
                 "Raw OCR:",
                 rawText,
                 string.Empty,
-                "Parsed rewards:"
+                "Structured OCR lines:",
             }
+                .Concat(FormatStructuredOcrDebugLines(ocrResult))
+                .Concat(new[]
+                {
+                string.Empty,
+                "Parsed rewards:"
+                })
                 .Concat(rewards.Select(reward => $"{reward.Quantity}x {reward.ItemName}"))
                 .Concat(new[] { string.Empty, "Reward parse candidates:" })
                 .Concat(rewardParseCandidates.Count == 0
@@ -625,6 +635,38 @@ internal sealed class RuneshapingScanner
             ? string.Empty
             : $" sourceText='{string.Join(" | ", sourceLineValues)}'";
         return $"{candidate.Source}: {candidate.Text}{repairReason}{sourceLines}";
+    }
+
+    private static IReadOnlyList<string> FormatStructuredOcrDebugLines(RuneshapingOcrResult result)
+    {
+        if (!result.Backend.Equals("windows", StringComparison.OrdinalIgnoreCase))
+        {
+            return [$"(not available for {result.Backend} backend)"];
+        }
+
+        if (result.Lines.Count == 0)
+        {
+            return ["(none)"];
+        }
+
+        var lines = new List<string>();
+        foreach (var line in result.Lines)
+        {
+            var bounds = string.IsNullOrWhiteSpace(line.Bounds)
+                ? string.Empty
+                : $" bounds=({line.Bounds})";
+            lines.Add($"line-{line.LineNumber:00} text='{line.Text}'{bounds}");
+
+            foreach (var word in line.Words)
+            {
+                var wordBounds = string.IsNullOrWhiteSpace(word.Bounds)
+                    ? string.Empty
+                    : $" bounds=({word.Bounds})";
+                lines.Add($"  word-{word.WordNumber:00} text='{word.Text}'{wordBounds}");
+            }
+        }
+
+        return lines;
     }
 
     private static string NormalizeItemName(string value)
@@ -1429,17 +1471,6 @@ internal sealed class RuneshapingScanner
         string RawText,
         IReadOnlyList<string> ExpectedAccepted,
         IReadOnlyList<string> ExpectedIgnored);
-
-    private static string RunOcr(string imagePath, string tessDataDirectory)
-    {
-        using var engine = new TesseractEngine(tessDataDirectory, "eng", EngineMode.Default);
-        engine.SetVariable("tessedit_char_whitelist", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' -x");
-        engine.DefaultPageSegMode = PageSegMode.SparseText;
-
-        using var pix = Pix.LoadFromFile(imagePath);
-        using var page = engine.Process(pix);
-        return page.GetText();
-    }
 
     private static Bitmap PrepareForOcr(Bitmap input)
     {
