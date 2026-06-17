@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Drawing;
 using Tesseract;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
@@ -113,19 +114,31 @@ internal static class RuneshapingOcrPipeline
                 FormatBounds(word.BoundingRect.X, word.BoundingRect.Y, word.BoundingRect.Width, word.BoundingRect.Height)))
             .ToArray();
         var lineBounds = words.Length == 0
+            ? (RectangleF?)null
+            : GetContainingBounds(line.Words.Select(word => word.BoundingRect));
+        var lineBoundsText = lineBounds is null
             ? string.Empty
-            : FormatContainingBounds(line.Words.Select(word => word.BoundingRect));
-        return new RuneshapingOcrLine(lineNumber, line.Text, lineBounds, words);
+            : FormatBounds(lineBounds.Value);
+        return new RuneshapingOcrLine(lineNumber, line.Text, lineBoundsText, lineBounds, words);
     }
 
-    private static string FormatContainingBounds(IEnumerable<Windows.Foundation.Rect> rectangles)
+    private static RectangleF GetContainingBounds(IEnumerable<Windows.Foundation.Rect> rectangles)
     {
         var bounds = rectangles.ToArray();
         var left = bounds.Min(rectangle => rectangle.X);
         var top = bounds.Min(rectangle => rectangle.Y);
         var right = bounds.Max(rectangle => rectangle.X + rectangle.Width);
         var bottom = bounds.Max(rectangle => rectangle.Y + rectangle.Height);
-        return FormatBounds(left, top, right - left, bottom - top);
+        return new RectangleF(
+            (float)left,
+            (float)top,
+            (float)(right - left),
+            (float)(bottom - top));
+    }
+
+    private static string FormatBounds(RectangleF bounds)
+    {
+        return FormatBounds(bounds.X, bounds.Y, bounds.Width, bounds.Height);
     }
 
     private static string FormatBounds(double x, double y, double width, double height)
@@ -157,6 +170,7 @@ internal sealed record RuneshapingOcrLine(
     int LineNumber,
     string Text,
     string Bounds,
+    RectangleF? BoundsRectangle,
     IReadOnlyList<RuneshapingOcrWord> Words);
 
 internal sealed record RuneshapingOcrWord(

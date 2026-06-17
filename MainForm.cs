@@ -2429,6 +2429,7 @@ internal sealed class MainForm : Form
             return;
         }
 
+        _overlay.HideRuneshapingInlineOverlay();
         SetBusy(true, "Scanning active screen...");
         try
         {

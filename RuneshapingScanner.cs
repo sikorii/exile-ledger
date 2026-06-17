@@ -10,6 +10,10 @@ namespace Poe2PriceChecker;
 
 internal sealed class RuneshapingScanner
 {
+    private const float RuneshapingOcrScale = 2f;
+    private const int InlineOverlayLabelHeight = 28;
+    private const int InlineOverlayMinLabelWidth = 58;
+    private const int InlineOverlayMaxLabelWidth = 170;
     private static readonly Rectangle Crop3840x2160 = new(407, 300, 680, 1080);
     private static readonly Regex RewardLine = new(
         @"(?<qty>\d+)\s*[xX]\s+(?<name>[A-Za-z][A-Za-z0-9'\u2019 -]{2,})",
@@ -213,27 +217,18 @@ internal sealed class RuneshapingScanner
             notes.Add("Reward list may be scrollable. Scroll the panel and press F8 again to merge hidden rows.");
         }
 
-        var priced = new List<RewardChoice>();
-        var unpriced = new List<string>();
-        foreach (var reward in rewardsForPricing)
-        {
-            var priceLookupName = ResolveRuneshapingPriceLookupName(reward.ItemName);
-            var value = prices.TryGetValue(priceLookupName, reward.Quantity);
-            if (value is null)
-            {
-                unpriced.Add($"{reward.Quantity}x {reward.ItemName}");
-                continue;
-            }
-
-            priced.Add(new RewardChoice(
-                reward.Quantity,
-                reward.ItemName,
-                value.Exalts,
-                value.Divines,
-                ChoiceColor.Red));
-        }
+        var currentVisibleColored = AssignColors(BuildPricedChoices(canonicalRewards, prices, out _));
+        var priced = BuildPricedChoices(rewardsForPricing, prices, out var unpriced);
 
         var colored = AssignColors(priced);
+        var overlayLabels = BuildOverlayLabels(ocrResult, currentVisibleColored, prices, vocabulary, cropRegion, screenBounds);
+        var overlayDebugLines = overlayLabels.Count == 0
+            ? [
+                currentVisibleColored.Count == 0
+                    ? "(none - no current visible priced rewards)"
+                    : "(none - current visible priced rewards could not be placed)"
+              ]
+            : overlayLabels.Select(FormatOverlayLabelDebugLine);
         File.WriteAllLines(
             Path.Combine(_debugDirectory, "runeshaping-debug.txt"),
             new[]
@@ -245,6 +240,11 @@ internal sealed class RuneshapingScanner
                 string.IsNullOrWhiteSpace(ocrResult.FallbackReason)
                     ? "OCR fallback reason: (none)"
                     : $"OCR fallback reason: {ocrResult.FallbackReason}",
+                $"Screenshot size: {screenshot.Width}x{screenshot.Height}",
+                $"Screen bounds: {FormatRectangle(screenBounds)}",
+                $"Crop region: {FormatRectangle(cropRegion)}",
+                $"Processed OCR scale: {RuneshapingOcrScale:0.#}x",
+                $"Overlay window bounds: {FormatRectangle(screenBounds)}",
                 string.Empty,
                 "Raw OCR:",
                 rawText,
@@ -277,6 +277,8 @@ internal sealed class RuneshapingScanner
                 .Concat(notes.DefaultIfEmpty("(none)"))
                 .Concat(new[] { string.Empty, "Unpriced:" })
                 .Concat(unpriced.DefaultIfEmpty("(none)"))
+                .Concat(new[] { string.Empty, "Overlay labels:" })
+                .Concat(overlayDebugLines)
                 .Concat(new[] { string.Empty, "Unpriced diagnostics:" })
                 .Concat(unpriced.Count == 0
                     ? ["(none)"]
@@ -286,7 +288,35 @@ internal sealed class RuneshapingScanner
                         var name = match.Success ? match.Groups["name"].Value : rewardText;
                         return prices.DiagnoseMissing(ResolveRuneshapingPriceLookupName(name)).ToDebugString();
                     })));
-        return new ScanResult(colored, unpriced, notes, rawText, cropRegion, screenBounds);
+        return new ScanResult(colored, unpriced, notes, rawText, cropRegion, screenBounds, overlayLabels);
+    }
+
+    private static List<RewardChoice> BuildPricedChoices(
+        IReadOnlyList<RawReward> rewards,
+        PoeNinjaPrices prices,
+        out List<string> unpriced)
+    {
+        var priced = new List<RewardChoice>();
+        unpriced = [];
+        foreach (var reward in rewards)
+        {
+            var priceLookupName = ResolveRuneshapingPriceLookupName(reward.ItemName);
+            var value = prices.TryGetValue(priceLookupName, reward.Quantity);
+            if (value is null)
+            {
+                unpriced.Add($"{reward.Quantity}x {reward.ItemName}");
+                continue;
+            }
+
+            priced.Add(new RewardChoice(
+                reward.Quantity,
+                reward.ItemName,
+                value.Exalts,
+                value.Divines,
+                ChoiceColor.Red));
+        }
+
+        return priced;
     }
 
     private IReadOnlyList<RawReward> MergeRewardsForCurrentEncounter(IReadOnlyList<RawReward> visibleRewards, List<string> notes)
@@ -306,7 +336,7 @@ internal sealed class RuneshapingScanner
 
         if (_mergedRewards.Count > visibleRewards.Count)
         {
-            notes.Add($"Merged {_mergedRewards.Count} rewards from this Runeshaping panel. Close the overlay x to reset.");
+            notes.Add($"Merged {_mergedRewards.Count} rewards from this Runeshaping panel. It resets after two minutes without scanning.");
         }
 
         return _mergedRewards.Values
@@ -345,6 +375,189 @@ internal sealed class RuneshapingScanner
             })
             .ToArray();
     }
+
+    private static IReadOnlyList<RuneshapingOverlayLabel> BuildOverlayLabels(
+        RuneshapingOcrResult ocrResult,
+        IReadOnlyList<RewardChoice> coloredChoices,
+        PoeNinjaPrices prices,
+        RuneshapingRewardVocabulary vocabulary,
+        Rectangle cropRegion,
+        Rectangle screenBounds)
+    {
+        if (coloredChoices.Count == 0)
+        {
+            return [];
+        }
+
+        var coloredByReward = coloredChoices
+            .GroupBy(choice => RewardKey(choice.Quantity, choice.ItemName), StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+        var labels = new List<RuneshapingOverlayLabel>();
+
+        foreach (var line in ocrResult.Lines.Where(line => line.BoundsRectangle is not null))
+        {
+            var lineRewards = ParseRewards(line.Text, vocabulary, out _);
+            var lineMatches = MatchRewards(lineRewards, vocabulary)
+                .Where(match => match.Matched);
+            var lineSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var match in lineMatches)
+            {
+                var priceLookupName = ResolveRuneshapingPriceLookupName(match.Reward.ItemName);
+                var value = prices.TryGetValue(priceLookupName, match.Reward.Quantity);
+                if (value is null)
+                {
+                    continue;
+                }
+
+                var key = RewardKey(match.Reward.Quantity, match.Reward.ItemName);
+                if (!lineSeen.Add(key))
+                {
+                    continue;
+                }
+
+                var choice = coloredByReward.TryGetValue(key, out var colored)
+                    ? colored
+                    : new RewardChoice(match.Reward.Quantity, match.Reward.ItemName, value.Exalts, value.Divines, ChoiceColor.Red);
+                var rowBounds = MapProcessedOcrBoundsToScreen(line.BoundsRectangle!.Value, cropRegion, screenBounds);
+                var placement = ResolveInlineLabelPlacement(
+                    choice.CompactPriceText,
+                    rowBounds,
+                    labels.Count,
+                    coloredChoices.Count,
+                    cropRegion,
+                    screenBounds);
+                labels.Add(new RuneshapingOverlayLabel(
+                    choice.CompactPriceText,
+                    choice.Color,
+                    placement.Bounds,
+                    rowBounds,
+                    $"ocr-row-{placement.Mode}",
+                    choice.CompactPriceBasis));
+            }
+        }
+
+        if (labels.Count > 0)
+        {
+            return labels;
+        }
+
+        return coloredChoices
+            .Take(12)
+            .Select((choice, index) =>
+            {
+                var placement = ResolveInlineLabelPlacement(
+                    choice.CompactPriceText,
+                    null,
+                    index,
+                    Math.Min(12, coloredChoices.Count),
+                    cropRegion,
+                    screenBounds);
+                return new RuneshapingOverlayLabel(
+                    choice.CompactPriceText,
+                    choice.Color,
+                    placement.Bounds,
+                    null,
+                    $"panel-spacing-{placement.Mode}",
+                    choice.CompactPriceBasis);
+            })
+            .ToArray();
+    }
+
+    private static Rectangle MapProcessedOcrBoundsToScreen(
+        RectangleF processedBounds,
+        Rectangle cropRegion,
+        Rectangle screenBounds)
+    {
+        return Rectangle.Round(new RectangleF(
+            screenBounds.Left + cropRegion.Left + processedBounds.X / RuneshapingOcrScale,
+            screenBounds.Top + cropRegion.Top + processedBounds.Y / RuneshapingOcrScale,
+            Math.Max(1f, processedBounds.Width / RuneshapingOcrScale),
+            Math.Max(1f, processedBounds.Height / RuneshapingOcrScale)));
+    }
+
+    private static string FormatOverlayLabelDebugLine(RuneshapingOverlayLabel label)
+    {
+        var rowBounds = label.RowBounds is null
+            ? "fallback-spacing"
+            : $"rowBounds={label.RowBounds.Value.X},{label.RowBounds.Value.Y},{label.RowBounds.Value.Width},{label.RowBounds.Value.Height}";
+        return $"{label.Text} color={label.Color} mode={label.PlacementMode} valueBasis='{label.ValueBasis}' {rowBounds} labelBounds={FormatRectangle(label.LabelBounds)}";
+    }
+
+    private static string RewardKey(int quantity, string itemName)
+    {
+        return $"{quantity}x {itemName}";
+    }
+
+    private static InlineLabelPlacement ResolveInlineLabelPlacement(
+        string text,
+        Rectangle? rowBounds,
+        int index,
+        int labelCount,
+        Rectangle cropRegion,
+        Rectangle screenBounds)
+    {
+        var panelBounds = new Rectangle(
+            screenBounds.Left + cropRegion.Left,
+            screenBounds.Top + cropRegion.Top,
+            cropRegion.Width,
+            cropRegion.Height);
+        var labelSize = MeasureInlineLabelSize(text);
+        var outsidePadding = Math.Max(6, ScalePanelLength(panelBounds.Width, 10));
+        var insidePadding = Math.Max(6, ScalePanelLength(panelBounds.Width, 10));
+        var outsideX = panelBounds.Right + outsidePadding;
+        var useOutside = outsideX + labelSize.Width <= screenBounds.Right - 8;
+        var x = useOutside
+            ? outsideX
+            : panelBounds.Right - labelSize.Width - insidePadding;
+        var y = rowBounds is null
+            ? ResolveFallbackInlineY(panelBounds, index, labelCount, labelSize.Height)
+            : rowBounds.Value.Top + (rowBounds.Value.Height - labelSize.Height) / 2;
+
+        if (rowBounds is not null && x < panelBounds.Right && rowBounds.Value.Right + 10 > x)
+        {
+            x = Math.Min(rowBounds.Value.Right + 10, panelBounds.Right - labelSize.Width - 6);
+        }
+
+        x = Math.Clamp(x, screenBounds.Left + 8, screenBounds.Right - labelSize.Width - 8);
+        y = Math.Clamp(y, screenBounds.Top + 8, screenBounds.Bottom - labelSize.Height - 8);
+        return new InlineLabelPlacement(
+            new Rectangle(x, y, labelSize.Width, labelSize.Height),
+            useOutside ? "outside-right" : "inside-right");
+    }
+
+    private static Size MeasureInlineLabelSize(string text)
+    {
+        var roughWidth = text.Length * 8 + 22;
+        return new Size(Math.Clamp(roughWidth, InlineOverlayMinLabelWidth, InlineOverlayMaxLabelWidth), InlineOverlayLabelHeight);
+    }
+
+    private static int ResolveFallbackInlineY(Rectangle panelBounds, int index, int labelCount, int labelHeight)
+    {
+        var top = panelBounds.Top + ScalePanelLength(panelBounds.Height, 150);
+        var step = ScalePanelLength(panelBounds.Height, 54);
+        var y = top + index * step;
+        var maxY = panelBounds.Bottom - labelHeight - 24;
+        if (labelCount > 1 && y > maxY)
+        {
+            step = Math.Max(labelHeight + 4, (maxY - top) / Math.Max(1, labelCount - 1));
+            y = top + index * step;
+        }
+
+        return y;
+    }
+
+    private static int ScalePanelLength(int actualLength, int base3840Length)
+    {
+        return Math.Max(1, (int)Math.Round(base3840Length * actualLength / 1080d));
+    }
+
+    private static string FormatRectangle(Rectangle rectangle)
+    {
+        return $"{rectangle.X},{rectangle.Y},{rectangle.Width},{rectangle.Height}";
+    }
+
+    private sealed record InlineLabelPlacement(Rectangle Bounds, string Mode);
 
     private static IReadOnlyList<RawReward> ParseRewards(
         string rawText,
