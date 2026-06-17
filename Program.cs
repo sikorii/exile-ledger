@@ -67,6 +67,12 @@ static class Program
             return;
         }
 
+        if (args.Length > 0 && args[0].Equals("--price-source-compare", StringComparison.OrdinalIgnoreCase))
+        {
+            RunPriceSourceCompare(args.Length > 1 ? args[1] : null);
+            return;
+        }
+
         if (args.Length > 0 &&
             (args[0].Equals("--stash-profile-report", StringComparison.OrdinalIgnoreCase) ||
              args[0].Equals("--layout-profile-report", StringComparison.OrdinalIgnoreCase) ||
@@ -320,6 +326,37 @@ static class Program
         var prices = PoeNinjaPrices.FetchAsync(CancellationToken.None).GetAwaiter().GetResult();
         var lines = EssenceStaticIdentity.BuildCompletenessReport(profile, mappingStore, prices);
         File.WriteAllLines(Path.Combine(debugDirectory, "essence-static-profile.txt"), lines);
+    }
+
+    private static void RunPriceSourceCompare(string? itemListPath)
+    {
+        if (string.IsNullOrWhiteSpace(itemListPath))
+        {
+            throw new ArgumentException("Usage: --price-source-compare <item-list-path>");
+        }
+
+        itemListPath = Path.GetFullPath(itemListPath);
+        var debugDirectory = AppPaths.DebugDirectory;
+        Directory.CreateDirectory(debugDirectory);
+
+        var result = PriceSourceComparisonReport.WriteAsync(
+            itemListPath,
+            debugDirectory,
+            CancellationToken.None).GetAwaiter().GetResult();
+
+        var lines = new[]
+        {
+            $"Input: {itemListPath}",
+            $"Csv: {result.CsvPath}",
+            $"Text: {result.TextPath}",
+            $"Rows: {result.Rows.Count}"
+        };
+
+        File.WriteAllLines(Path.Combine(debugDirectory, "price-source-compare-command.txt"), lines);
+        foreach (var line in lines)
+        {
+            Console.WriteLine(line);
+        }
     }
 
     private static void RunOverlayProfileReport(string? selector)
