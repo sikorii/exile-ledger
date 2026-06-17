@@ -164,14 +164,19 @@ internal sealed class RuneshapingScanner
         bool mergeWithRecentRuneshapingScans,
         CancellationToken cancellationToken)
     {
+        var debugImageDirectory = CreateRuneshapingDebugImageDirectory();
+        SaveBitmap(screenshot, Path.Combine(debugImageDirectory, "01-raw-capture.png"));
+
         var cropRegion = ResolveCropRegion(screenshot.Size);
         using var crop = screenshot.Clone(cropRegion, screenshot.PixelFormat);
         var panelLooksScrollable = LooksLikeScrollableRewardPanel(crop);
         SaveBitmap(crop, Path.Combine(_debugDirectory, "runeshaping-crop.png"));
+        SaveBitmap(crop, Path.Combine(debugImageDirectory, "02-runeshaping-panel-crop.png"));
 
         using var processed = PrepareForOcr(crop);
         var processedPath = Path.Combine(_debugDirectory, "runeshaping-ocr.png");
         SaveBitmap(processed, processedPath);
+        SaveBitmap(processed, Path.Combine(debugImageDirectory, "03-preprocessed-ocr-input.png"));
 
         var tessData = await EnsureTessDataAsync(Path.Combine(AppContext.BaseDirectory, "tessdata"), cancellationToken).ConfigureAwait(false);
         var rawText = RunOcr(processedPath, tessData);
@@ -232,6 +237,7 @@ internal sealed class RuneshapingScanner
             {
                 $"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss} local",
                 $"App version: {Application.ProductVersion}",
+                $"Debug images: {debugImageDirectory}",
                 string.Empty,
                 "Raw OCR:",
                 rawText,
@@ -1561,6 +1567,22 @@ internal sealed class RuneshapingScanner
         }
     }
 
+    private string CreateRuneshapingDebugImageDirectory()
+    {
+        var parent = Path.Combine(_debugDirectory, "runeshaping");
+        Directory.CreateDirectory(parent);
+
+        var timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss-fff", CultureInfo.InvariantCulture);
+        var path = Path.Combine(parent, timestamp);
+        for (var suffix = 2; Directory.Exists(path); suffix++)
+        {
+            path = Path.Combine(parent, $"{timestamp}-{suffix}");
+        }
+
+        Directory.CreateDirectory(path);
+        return path;
+    }
+
     private static Bitmap CaptureScreen(Rectangle bounds)
     {
         var bitmap = new Bitmap(bounds.Width, bounds.Height, PixelFormat.Format32bppArgb);
@@ -1571,6 +1593,8 @@ internal sealed class RuneshapingScanner
 
     private static void SaveBitmap(Bitmap bitmap, string path)
     {
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+
         if (File.Exists(path))
         {
             File.Delete(path);
