@@ -2,6 +2,8 @@ namespace Poe2PriceChecker;
 
 internal sealed class OverlayForm : Form
 {
+    private static readonly Color InlineTransparencyColor = Color.FromArgb(255, 255, 0, 255);
+    private const int InlineOverlayAutoHideMilliseconds = 8000;
     private const int WsExToolWindow = 0x80;
     private const int WsExNoActivate = 0x08000000;
     private const int WmNcHitTest = 0x0084;
@@ -26,6 +28,11 @@ internal sealed class OverlayForm : Form
         ForeColor = Color.White,
         TabStop = false
     };
+    private readonly System.Windows.Forms.Timer _inlineHideTimer = new()
+    {
+        Interval = InlineOverlayAutoHideMilliseconds
+    };
+    private readonly List<RuneshapingOverlayLabel> _inlineLabels = [];
 
     public OverlayForm()
     {
@@ -36,16 +43,28 @@ internal sealed class OverlayForm : Form
         ShowInTaskbar = false;
         StartPosition = FormStartPosition.Manual;
         TopMost = true;
+        SetStyle(
+            ControlStyles.AllPaintingInWmPaint |
+            ControlStyles.OptimizedDoubleBuffer |
+            ControlStyles.ResizeRedraw |
+            ControlStyles.UserPaint,
+            true);
         Controls.Add(_panel);
         Controls.Add(_closeButton);
         _closeButton.FlatAppearance.BorderColor = Color.FromArgb(95, 95, 95);
         _closeButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(70, 70, 70);
         _closeButton.Click += (_, _) =>
         {
+            _inlineHideTimer.Stop();
             Hide();
             Dismissed?.Invoke(this, EventArgs.Empty);
         };
         _closeButton.BringToFront();
+        _inlineHideTimer.Tick += (_, _) =>
+        {
+            _inlineHideTimer.Stop();
+            Hide();
+        };
     }
 
     public event EventHandler? Dismissed;
@@ -69,7 +88,7 @@ internal sealed class OverlayForm : Form
             var lParam = m.LParam.ToInt64();
             var screenPoint = new Point(unchecked((short)(lParam & 0xFFFF)), unchecked((short)((lParam >> 16) & 0xFFFF)));
             var clientPoint = PointToClient(screenPoint);
-            if (!_closeButton.Bounds.Contains(clientPoint))
+            if (!_closeButton.Visible || !_closeButton.Bounds.Contains(clientPoint))
             {
                 m.Result = HtTransparent;
                 return;
@@ -81,52 +100,35 @@ internal sealed class OverlayForm : Form
 
     public void ShowResult(ScanResult result)
     {
-        _panel.Controls.Clear();
-
-        if (result.Choices.Count == 0 && result.UnpricedRewards.Count == 0)
+        if (result.OverlayLabels.Count == 0)
         {
+            HideRuneshapingInlineOverlay();
             Hide();
             return;
         }
 
-        AddHeader("Runeshaping Prices");
-        foreach (var choice in result.Choices)
-        {
-            AddChoice(choice);
-        }
+        ShowInlineRuneshapingResult(result);
+    }
 
-        foreach (var unpriced in result.UnpricedRewards.Take(4))
+    public void HideRuneshapingInlineOverlay()
+    {
+        _inlineHideTimer.Stop();
+        ClearInlineLabels();
+        if (!_panel.Visible)
         {
-            AddLine($"{unpriced}   n/a", Color.LightGray, 13f, FontStyle.Regular);
+            Hide();
         }
-
-        if (result.UnpricedRewards.Count > 4)
-        {
-            AddLine($"+{result.UnpricedRewards.Count - 4} unpriced", Color.LightGray, 12f, FontStyle.Regular);
-        }
-
-        foreach (var note in result.Notes.Take(3))
-        {
-            AddLine(note, Color.FromArgb(150, 210, 255), 11f, FontStyle.Regular);
-        }
-
-        Width = 780;
-        Height = Math.Min(600, 62 + (result.Choices.Count + Math.Min(5, result.UnpricedRewards.Count) + Math.Min(3, result.Notes.Count)) * 44);
-        _closeButton.Location = new Point(Width - _closeButton.Width - 6, 6);
-        var x = result.ScreenBounds.Left + result.CaptureRegion.Right + 24;
-        var y = result.ScreenBounds.Top + result.CaptureRegion.Top + 10;
-        if (x + Width > result.ScreenBounds.Right - 24)
-        {
-            x = result.ScreenBounds.Left + Math.Max(24, result.CaptureRegion.X - Width - 24);
-        }
-
-        Location = new Point(x, y);
-        Show();
-        BringToFront();
     }
 
     public void ShowCurrencyResult(CurrencyScanResult result)
     {
+        _inlineHideTimer.Stop();
+        ClearInlineLabels();
+        TransparencyKey = Color.Empty;
+        BackColor = Color.Black;
+        Opacity = 0.88;
+        _panel.Visible = true;
+        _closeButton.Visible = true;
         _panel.Controls.Clear();
         AddHeader($"Currency Total: {result.TotalExalts:0.##} ex / {result.TotalDivines:0.####} div");
 
@@ -147,6 +149,7 @@ internal sealed class OverlayForm : Form
 
         Width = 820;
         Height = Math.Min(560, 70 + (result.TopStacks.Count + 2) * 40);
+        _closeButton.Location = new Point(Width - _closeButton.Width - 6, 6);
         var x = result.ScreenBounds.Left + 48;
         var y = result.ScreenBounds.Top + 1440;
         if (y + Height > result.ScreenBounds.Bottom - 24)
@@ -157,6 +160,65 @@ internal sealed class OverlayForm : Form
         Location = new Point(x, y);
         Show();
         BringToFront();
+    }
+
+    private void ShowInlineRuneshapingResult(ScanResult result)
+    {
+        _inlineHideTimer.Stop();
+        ClearInlineLabels();
+        _panel.Visible = false;
+        _closeButton.Visible = false;
+        Opacity = 1;
+        BackColor = InlineTransparencyColor;
+        TransparencyKey = InlineTransparencyColor;
+        Bounds = result.ScreenBounds;
+
+        var labels = result.OverlayLabels;
+        if (labels.Count == 0)
+        {
+            HideRuneshapingInlineOverlay();
+            Hide();
+            return;
+        }
+
+        _inlineLabels.AddRange(labels
+            .Select((label, index) => new { Label = label, Index = index })
+            .OrderBy(item => item.Label.LabelBounds.Top)
+            .ThenBy(item => item.Index)
+            .Select(item => item.Label));
+
+        Show();
+        BringToFront();
+        TopMost = false;
+        TopMost = true;
+        Invalidate();
+        _inlineHideTimer.Start();
+    }
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+        if (_inlineLabels.Count == 0)
+        {
+            return;
+        }
+
+        e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        foreach (var label in _inlineLabels)
+        {
+            var bounds = new Rectangle(
+                label.LabelBounds.X - Left,
+                label.LabelBounds.Y - Top,
+                label.LabelBounds.Width,
+                label.LabelBounds.Height);
+            DrawPricePill(e.Graphics, bounds, label.Text, ToColor(label.Color));
+        }
+    }
+
+    private void ClearInlineLabels()
+    {
+        _inlineLabels.Clear();
+        Invalidate();
     }
 
     private void AddHeader(string text)
@@ -194,5 +256,50 @@ internal sealed class OverlayForm : Form
             ChoiceColor.Yellow => Color.FromArgb(255, 220, 72),
             _ => Color.FromArgb(255, 80, 80)
         };
+    }
+
+    private static Size MeasurePillSize(string text)
+    {
+        using var font = new Font("Segoe UI", 10f, FontStyle.Bold);
+        var size = TextRenderer.MeasureText(text, font, Size.Empty, TextFormatFlags.NoPadding);
+        return new Size(Math.Clamp(size.Width + 20, 58, 170), 28);
+    }
+
+    private static void DrawPricePill(Graphics graphics, Rectangle bounds, string text, Color textColor)
+    {
+        using var font = new Font("Segoe UI", 10f, FontStyle.Bold);
+        using var backgroundBrush = new SolidBrush(Color.FromArgb(230, 9, 12, 14));
+        using var borderPen = new Pen(Color.FromArgb(210, textColor), 1f);
+        using var path = RoundedRectangle(new Rectangle(bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1), 7);
+        graphics.FillPath(backgroundBrush, path);
+        graphics.DrawPath(borderPen, path);
+
+        var textBounds = new Rectangle(bounds.X + 1, bounds.Y + 1, bounds.Width - 2, bounds.Height - 2);
+        TextRenderer.DrawText(
+            graphics,
+            text,
+            font,
+            new Rectangle(textBounds.X + 1, textBounds.Y + 1, textBounds.Width, textBounds.Height),
+            Color.FromArgb(230, 0, 0, 0),
+            TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding);
+        TextRenderer.DrawText(
+            graphics,
+            text,
+            font,
+            textBounds,
+            textColor,
+            TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding);
+    }
+
+    private static System.Drawing.Drawing2D.GraphicsPath RoundedRectangle(Rectangle bounds, int radius)
+    {
+        var diameter = radius * 2;
+        var path = new System.Drawing.Drawing2D.GraphicsPath();
+        path.AddArc(bounds.Left, bounds.Top, diameter, diameter, 180, 90);
+        path.AddArc(bounds.Right - diameter, bounds.Top, diameter, diameter, 270, 90);
+        path.AddArc(bounds.Right - diameter, bounds.Bottom - diameter, diameter, diameter, 0, 90);
+        path.AddArc(bounds.Left, bounds.Bottom - diameter, diameter, diameter, 90, 90);
+        path.CloseFigure();
+        return path;
     }
 }

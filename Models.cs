@@ -8,6 +8,14 @@ internal sealed record RewardChoice(
     ChoiceColor Color)
 {
     public string DisplayText => $"{Quantity}x {ItemName}   {Exalts:0.##} ex / {Divines:0.####} div";
+
+    public string CompactPriceText => Divines >= 1m
+        ? $"{Divines:0.##} div / {Exalts:0.##} ex"
+        : $"{Exalts:0.##} ex";
+
+    public string CompactPriceBasis => Divines >= 1m
+        ? "div>=1 show div+ex"
+        : "div<1 show ex";
 }
 
 internal enum ChoiceColor
@@ -23,7 +31,16 @@ internal sealed record ScanResult(
     IReadOnlyList<string> Notes,
     string RawOcrText,
     Rectangle CaptureRegion,
-    Rectangle ScreenBounds);
+    Rectangle ScreenBounds,
+    IReadOnlyList<RuneshapingOverlayLabel> OverlayLabels);
+
+internal sealed record RuneshapingOverlayLabel(
+    string Text,
+    ChoiceColor Color,
+    Rectangle LabelBounds,
+    Rectangle? RowBounds,
+    string PlacementMode,
+    string ValueBasis);
 
 internal sealed record RawReward(int Quantity, string ItemName);
 
