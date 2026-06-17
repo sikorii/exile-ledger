@@ -14,9 +14,10 @@ internal sealed class RuneshapingScanner
     private const int InlineOverlayLabelHeight = 28;
     private const int InlineOverlayMinLabelWidth = 58;
     private const int InlineOverlayMaxLabelWidth = 170;
+    private const string RowRetryPreprocessingMode = "row-upscale-threshold";
     private static readonly Rectangle Crop3840x2160 = new(407, 300, 680, 1080);
     private static readonly Regex RewardLine = new(
-        @"(?<qty>\d+)\s*[xX]\s+(?<name>[A-Za-z][A-Za-z0-9'\u2019 -]{2,})",
+        @"(?<qty>\d+)\s*[xX]\s+(?<name>[A-Za-z][A-Za-z0-9'\u2019 -]{2,}(?:\s+\(Level\s+\d{1,2}\))?)(?=\s*$|[/\\\]\[""\|])",
         RegexOptions.Compiled);
     private static readonly Regex QuantityLineStart = new(
         @"^\s*\d+\s*[xX]\b",
@@ -34,7 +35,7 @@ internal sealed class RuneshapingScanner
         @"^\s*(?<fragment>of|the|and)\s+(?<rest>[A-Za-z][A-Za-z0-9'\u2019 -]{1,})\s*$",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex NoQuantityRewardCandidate = new(
-        @"^\s*(?<name>[A-Za-z][A-Za-z0-9'\u2019 -]{5,})\s*$",
+        @"^\s*(?<name>[A-Za-z][A-Za-z0-9'\u2019 -]{5,}(?:\s+\(Level\s+\d{1,2}\))?)\s*$",
         RegexOptions.Compiled);
     private static readonly Regex QuantityLineWithTrailingFragment = new(
         @"^(?<prefix>\s*\d+\s*[xX]\s+.*?)(?<fragment>[A-Za-z]{1,5})$",
@@ -108,6 +109,7 @@ internal sealed class RuneshapingScanner
             new RuneshapingParserTestCase("no quantity canonical reward", "Uncut Spirit Gem", ["1x Uncut Spirit Gem"], []),
             new RuneshapingParserTestCase("tiny full vocabulary fallback", "2x Orb of Augmentatio", ["2x Orb of Augmentation"], []),
             new RuneshapingParserTestCase("one read as I", "Ix Warding Rune of Courage", ["1x Warding Rune of Courage"], []),
+            new RuneshapingParserTestCase("one read as l with parenthesized level", "lx Thaumaturgic Flux (Level 19)", ["1x Thaumaturgic Flux (Level 19)"], []),
             new RuneshapingParserTestCase("one read as l with trailing slash", "lx Mystic Alloy/", ["1x Mystic Alloy"], []),
             new RuneshapingParserTestCase("one read as l with trailing bracket", "lx Orb of Alchemy]", ["1x Orb of Alchemy"], []),
             new RuneshapingParserTestCase("trailing quote on reward name", "5x Random Currency\"", ["5x Random Currency"], []),
@@ -205,8 +207,20 @@ internal sealed class RuneshapingScanner
         var ignoredRewards = matchedRewards
             .Where(match => !match.Matched)
             .ToArray();
+        var rowRetryAttempts = await RetryIgnoredRuneshapingRowsAsync(
+            ocrResult,
+            crop,
+            debugImageDirectory,
+            tessData,
+            vocabulary,
+            cancellationToken).ConfigureAwait(false);
+        var retryRecoveredRewards = rowRetryAttempts
+            .Where(attempt => attempt.Accepted && attempt.Reward is not null)
+            .Select(attempt => attempt.Reward!)
+            .ToArray();
         var canonicalRewards = acceptedMatches
             .Select(match => match.Reward)
+            .Concat(retryRecoveredRewards)
             .ToArray();
         var rewardsForPricing = mergeWithRecentRuneshapingScans
             ? MergeRewardsForCurrentEncounter(canonicalRewards, notes)
@@ -221,7 +235,7 @@ internal sealed class RuneshapingScanner
         var priced = BuildPricedChoices(rewardsForPricing, prices, out var unpriced);
 
         var colored = AssignColors(priced);
-        var overlayLabels = BuildOverlayLabels(ocrResult, currentVisibleColored, prices, vocabulary, cropRegion, screenBounds);
+        var overlayLabels = BuildOverlayLabels(ocrResult, rowRetryAttempts, currentVisibleColored, prices, vocabulary, cropRegion, screenBounds);
         var overlayDebugLines = overlayLabels.Count == 0
             ? [
                 currentVisibleColored.Count == 0
@@ -268,6 +282,8 @@ internal sealed class RuneshapingScanner
                 .Concat(ignoredRewards.Length == 0
                     ? ["(none)"]
                     : ignoredRewards.Select(match => FormatIgnoredRewardDebugLine(match, vocabulary)))
+                .Concat(new[] { string.Empty, "Row-level OCR retry:" })
+                .Concat(FormatRowRetryDebugLines(rowRetryAttempts))
                 .Concat(new[] { string.Empty, "Runeshaping vocabulary:" })
                 .Concat([$"{vocabulary.CanonicalNames.Count} canonical rewards loaded from {vocabulary.SourcePath}"])
                 .Concat(string.IsNullOrWhiteSpace(vocabulary.LoadError) ? [] : [$"load warning: {vocabulary.LoadError}"])
@@ -317,6 +333,217 @@ internal sealed class RuneshapingScanner
         }
 
         return priced;
+    }
+
+    private static async Task<IReadOnlyList<RowOcrRetryAttempt>> RetryIgnoredRuneshapingRowsAsync(
+        RuneshapingOcrResult ocrResult,
+        Bitmap panelCrop,
+        string debugImageDirectory,
+        string tessData,
+        RuneshapingRewardVocabulary vocabulary,
+        CancellationToken cancellationToken)
+    {
+        if (ocrResult.Lines.Count == 0)
+        {
+            return [];
+        }
+
+        var attempts = new List<RowOcrRetryAttempt>();
+        var imageIndex = 4;
+        foreach (var line in ocrResult.Lines.Where(line => line.BoundsRectangle is not null))
+        {
+            var lineRewards = ParseRewards(line.Text, vocabulary, out _);
+            var lineMatches = MatchRewards(lineRewards, vocabulary).ToArray();
+            if (lineMatches.Any(match => match.Matched) ||
+                !ShouldRetryOcrLine(line.Text, lineRewards, lineMatches))
+            {
+                continue;
+            }
+
+            var retryCropBounds = ResolveRowRetryCropBounds(line.BoundsRectangle!.Value, panelCrop.Size);
+            try
+            {
+                using var retrySource = panelCrop.Clone(retryCropBounds, panelCrop.PixelFormat);
+                var sourceImagePath = Path.Combine(
+                    debugImageDirectory,
+                    $"{imageIndex++:00}-row-retry-line-{line.LineNumber:00}-source.png");
+                SaveBitmap(retrySource, sourceImagePath);
+
+                using var retryProcessed = PrepareRowRetryForOcr(retrySource);
+                var processedImagePath = Path.Combine(
+                    debugImageDirectory,
+                    $"{imageIndex++:00}-row-retry-line-{line.LineNumber:00}-preprocessed.png");
+                SaveBitmap(retryProcessed, processedImagePath);
+
+                var retryOcrResult = await RuneshapingOcrPipeline
+                    .RecognizeAsync(processedImagePath, tessData, cancellationToken)
+                    .ConfigureAwait(false);
+                var retryRawText = retryOcrResult.Text;
+                var retryMatch = MatchSingleRetriedReward(retryRawText, vocabulary, out var rejectionReason);
+                attempts.Add(new RowOcrRetryAttempt(
+                    line.LineNumber,
+                    line.Text,
+                    line.Bounds,
+                    retryCropBounds,
+                    RowRetryPreprocessingMode,
+                    retryOcrResult.Backend,
+                    retryRawText,
+                    retryMatch is not null,
+                    retryMatch?.Reward,
+                    retryMatch?.Method ?? string.Empty,
+                    rejectionReason));
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                attempts.Add(new RowOcrRetryAttempt(
+                    line.LineNumber,
+                    line.Text,
+                    line.Bounds,
+                    retryCropBounds,
+                    RowRetryPreprocessingMode,
+                    "failed",
+                    string.Empty,
+                    false,
+                    null,
+                    string.Empty,
+                    $"{ex.GetType().Name}: {ex.Message}"));
+            }
+        }
+
+        return attempts;
+    }
+
+    private static bool ShouldRetryOcrLine(
+        string text,
+        IReadOnlyList<RawReward> lineRewards,
+        IReadOnlyList<RuneshapingRewardMatch> lineMatches)
+    {
+        if (lineRewards.Count > 0 && lineMatches.All(match => !match.Matched))
+        {
+            return true;
+        }
+
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        return Regex.IsMatch(text, @"\b(?:\d+|[Il|])\s*[xX]\b|^\s*[xX]{1,2}\s+", RegexOptions.IgnoreCase) ||
+            Regex.IsMatch(text, @"\b(Rune|Orb|Alloy|Gem|Currency|Scrap|Whetstone|Bauble)\b", RegexOptions.IgnoreCase);
+    }
+
+    private static Rectangle ResolveRowRetryCropBounds(RectangleF processedBounds, Size panelCropSize)
+    {
+        var rowLeft = processedBounds.Left / RuneshapingOcrScale;
+        var rowTop = processedBounds.Top / RuneshapingOcrScale;
+        var rowRight = processedBounds.Right / RuneshapingOcrScale;
+        var rowBottom = processedBounds.Bottom / RuneshapingOcrScale;
+        var leftPadding = ScaleCropWidth(panelCropSize.Width, 32);
+        var textAreaLeft = ScaleCropWidth(panelCropSize.Width, 110);
+        var rightPadding = ScaleCropWidth(panelCropSize.Width, 24);
+        var verticalPadding = Math.Max(8, (int)Math.Round((rowBottom - rowTop) * 0.9));
+
+        var left = Math.Max(0, Math.Min((int)Math.Floor(rowLeft) - leftPadding, textAreaLeft));
+        var top = Math.Max(0, (int)Math.Floor(rowTop) - verticalPadding);
+        var right = Math.Min(panelCropSize.Width, Math.Max((int)Math.Ceiling(rowRight) + leftPadding, panelCropSize.Width - rightPadding));
+        var bottom = Math.Min(panelCropSize.Height, (int)Math.Ceiling(rowBottom) + verticalPadding);
+
+        if (right <= left)
+        {
+            right = Math.Min(panelCropSize.Width, left + Math.Max(1, panelCropSize.Width - left));
+        }
+
+        if (bottom <= top)
+        {
+            bottom = Math.Min(panelCropSize.Height, top + Math.Max(1, ScaleCropHeight(panelCropSize.Height, 36)));
+        }
+
+        return Rectangle.FromLTRB(left, top, right, bottom);
+    }
+
+    private static Bitmap PrepareRowRetryForOcr(Bitmap input)
+    {
+        const int scale = 4;
+        const int border = 18;
+        var output = new Bitmap(input.Width * scale + border * 2, input.Height * scale + border * 2, PixelFormat.Format24bppRgb);
+        using (var graphics = Graphics.FromImage(output))
+        {
+            graphics.Clear(Color.White);
+            graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            graphics.DrawImage(input, border, border, input.Width * scale, input.Height * scale);
+        }
+
+        for (var y = 0; y < output.Height; y++)
+        {
+            for (var x = 0; x < output.Width; x++)
+            {
+                var color = output.GetPixel(x, y);
+                var luminance = (int)(0.299 * color.R + 0.587 * color.G + 0.114 * color.B);
+                var neutralInk = Math.Abs(color.R - color.G) < 65 && Math.Abs(color.G - color.B) < 65;
+                var likelyText = luminance < 150 && neutralInk;
+                output.SetPixel(x, y, likelyText ? Color.Black : Color.White);
+            }
+        }
+
+        return output;
+    }
+
+    private static RuneshapingRewardMatch? MatchSingleRetriedReward(
+        string rawText,
+        RuneshapingRewardVocabulary vocabulary,
+        out string rejectionReason)
+    {
+        var rewards = ParseRewards(rawText, vocabulary, out _);
+        if (rewards.Count == 0)
+        {
+            rejectionReason = "noParsedReward";
+            return null;
+        }
+
+        var matches = MatchRewards(rewards, vocabulary)
+            .Where(match => match.Matched)
+            .ToArray();
+        if (matches.Length == 1)
+        {
+            rejectionReason = string.Empty;
+            return matches[0];
+        }
+
+        rejectionReason = matches.Length == 0
+            ? "ambiguousOrNoCanonicalMatch"
+            : $"multipleCanonicalMatches:{matches.Length}";
+        return null;
+    }
+
+    private static IReadOnlyList<string> FormatRowRetryDebugLines(IReadOnlyList<RowOcrRetryAttempt> attempts)
+    {
+        if (attempts.Count == 0)
+        {
+            return ["(none)"];
+        }
+
+        var lines = new List<string>();
+        foreach (var attempt in attempts)
+        {
+            var bounds = string.IsNullOrWhiteSpace(attempt.SourceBounds)
+                ? "(none)"
+                : $"({attempt.SourceBounds})";
+            lines.Add($"line-{attempt.LineNumber:00} source='{NormalizeDebugText(attempt.SourceText)}' bounds={bounds}");
+            lines.Add($"  retry crop=({FormatRectangle(attempt.RetryCropBounds)})");
+            lines.Add($"  mode={attempt.Mode} backend={attempt.Backend}");
+            lines.Add($"  raw='{NormalizeDebugText(attempt.RawText)}'");
+            lines.Add(attempt.Accepted && attempt.Reward is not null
+                ? $"  accepted canonical='{attempt.Reward.ItemName}' method={attempt.Method}"
+                : $"  rejected reason={attempt.RejectionReason}");
+        }
+
+        return lines;
+    }
+
+    private static string NormalizeDebugText(string value)
+    {
+        var text = Regex.Replace(value, @"\s+", " ").Trim();
+        return text.Length <= 140 ? text : text[..137] + "...";
     }
 
     private IReadOnlyList<RawReward> MergeRewardsForCurrentEncounter(IReadOnlyList<RawReward> visibleRewards, List<string> notes)
@@ -378,6 +605,7 @@ internal sealed class RuneshapingScanner
 
     private static IReadOnlyList<RuneshapingOverlayLabel> BuildOverlayLabels(
         RuneshapingOcrResult ocrResult,
+        IReadOnlyList<RowOcrRetryAttempt> rowRetryAttempts,
         IReadOnlyList<RewardChoice> coloredChoices,
         PoeNinjaPrices prices,
         RuneshapingRewardVocabulary vocabulary,
@@ -393,12 +621,30 @@ internal sealed class RuneshapingScanner
             .GroupBy(choice => RewardKey(choice.Quantity, choice.ItemName), StringComparer.OrdinalIgnoreCase)
             .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
         var labels = new List<RuneshapingOverlayLabel>();
+        var retryByLineNumber = rowRetryAttempts
+            .Where(attempt => attempt.Accepted && attempt.Reward is not null)
+            .GroupBy(attempt => attempt.LineNumber)
+            .ToDictionary(group => group.Key, group => group.First());
 
         foreach (var line in ocrResult.Lines.Where(line => line.BoundsRectangle is not null))
         {
             var lineRewards = ParseRewards(line.Text, vocabulary, out _);
             var lineMatches = MatchRewards(lineRewards, vocabulary)
-                .Where(match => match.Matched);
+                .Where(match => match.Matched)
+                .ToArray();
+            if (lineMatches.Length == 0 &&
+                retryByLineNumber.TryGetValue(line.LineNumber, out var retryAttempt) &&
+                retryAttempt.Reward is not null)
+            {
+                lineMatches =
+                [
+                    RuneshapingRewardMatch.Exact(
+                        retryAttempt.Reward,
+                        retryAttempt.Reward.ItemName,
+                        PoeNinjaPrices.Normalize(retryAttempt.Reward.ItemName))
+                ];
+            }
+
             var lineSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var match in lineMatches)
@@ -550,6 +796,16 @@ internal sealed class RuneshapingScanner
     private static int ScalePanelLength(int actualLength, int base3840Length)
     {
         return Math.Max(1, (int)Math.Round(base3840Length * actualLength / 1080d));
+    }
+
+    private static int ScaleCropWidth(int actualWidth, int base3840Width)
+    {
+        return Math.Max(1, (int)Math.Round(base3840Width * actualWidth / (double)Crop3840x2160.Width));
+    }
+
+    private static int ScaleCropHeight(int actualHeight, int base3840Height)
+    {
+        return Math.Max(1, (int)Math.Round(base3840Height * actualHeight / (double)Crop3840x2160.Height));
     }
 
     private static string FormatRectangle(Rectangle rectangle)
@@ -1673,6 +1929,19 @@ internal sealed class RuneshapingScanner
         string StitchKey = "",
         string RepairReason = "",
         IReadOnlyList<string>? SourceLines = null);
+
+    private sealed record RowOcrRetryAttempt(
+        int LineNumber,
+        string SourceText,
+        string SourceBounds,
+        Rectangle RetryCropBounds,
+        string Mode,
+        string Backend,
+        string RawText,
+        bool Accepted,
+        RawReward? Reward,
+        string Method,
+        string RejectionReason);
 
     private sealed record RuneshapingVocabularyItem(
         string CanonicalName,
