@@ -121,6 +121,21 @@ internal sealed class PoeNinjaPrices
         return new MarketValue(item.Exalts * quantity, item.Divines * quantity);
     }
 
+    public PoeNinjaPriceLookup? TryGetPriceLookup(string itemName)
+    {
+        if (!_itemsByNormalizedName.TryGetValue(Normalize(itemName), out var item))
+        {
+            return null;
+        }
+
+        return new PoeNinjaPriceLookup(
+            item.Name,
+            item.NormalizedName,
+            item.Category,
+            item.Exalts,
+            item.Divines);
+    }
+
     public PriceLookupDiagnostic DiagnoseMissing(string itemName, IReadOnlySet<string>? expectedCategories = null)
     {
         var normalized = Normalize(itemName);
@@ -502,6 +517,13 @@ internal sealed class PoeNinjaPrices
 }
 
 internal sealed record MarketValue(decimal Exalts, decimal Divines);
+
+internal sealed record PoeNinjaPriceLookup(
+    string Name,
+    string NormalizedName,
+    string Category,
+    decimal Exalts,
+    decimal Divines);
 
 internal sealed record PriceCacheSummary(
     DateTimeOffset FetchedUtc,
