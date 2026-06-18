@@ -516,7 +516,30 @@ internal sealed class PoeNinjaPrices
     };
 }
 
-internal sealed record MarketValue(decimal Exalts, decimal Divines);
+internal sealed record MarketValue(
+    decimal Exalts,
+    decimal Divines,
+    PriceSource Source = PriceSource.PoeNinja,
+    string? SourceCategory = null,
+    string? SourceApiId = null,
+    int? SourceQuantity = null,
+    DateTimeOffset? SourceLogTime = null,
+    string? SourceNote = null)
+{
+    public string SourceLabel => Source switch
+    {
+        PriceSource.Scout => "Scout",
+        PriceSource.PoeNinjaFallback => "poe.ninja fallback",
+        _ => "poe.ninja"
+    };
+}
+
+internal enum PriceSource
+{
+    PoeNinja,
+    Scout,
+    PoeNinjaFallback
+}
 
 internal sealed record PoeNinjaPriceLookup(
     string Name,

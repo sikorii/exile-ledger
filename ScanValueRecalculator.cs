@@ -2,7 +2,7 @@ namespace Poe2PriceChecker;
 
 internal static class ScanValueRecalculator
 {
-    public static CurrencyScanResult Recalculate(CurrencyScanResult result, PoeNinjaPrices prices)
+    public static CurrencyScanResult Recalculate(CurrencyScanResult result, LiveMarketPrices prices)
     {
         var stacks = new List<CurrencyStack>();
         var knownOccupied = 0;
@@ -51,8 +51,8 @@ internal static class ScanValueRecalculator
 
     public static RuneScanResult Recalculate(
         RuneScanResult result,
-        PoeNinjaPrices prices,
-        Func<IReadOnlyList<RuneStack>, PoeNinjaPrices, IReadOnlyList<RuneUpgradeSuggestion>> buildUpgradeSuggestions)
+        LiveMarketPrices prices,
+        Func<IReadOnlyList<RuneStack>, LiveMarketPrices, IReadOnlyList<RuneUpgradeSuggestion>> buildUpgradeSuggestions)
     {
         var stacks = new List<RuneStack>();
         var knownOccupied = 0;
@@ -100,7 +100,7 @@ internal static class ScanValueRecalculator
         };
     }
 
-    public static FixedStashScanResult Recalculate(FixedStashScanResult result, PoeNinjaPrices prices)
+    public static FixedStashScanResult Recalculate(FixedStashScanResult result, LiveMarketPrices prices)
     {
         var stacks = new List<FixedStashStack>();
         var knownOccupied = 0;

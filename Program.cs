@@ -323,7 +323,7 @@ static class Program
         var mappingStore = new CurrencyMappingStore(
             FixedStashScannerProfiles.ConfigPath(profile.MappingFileName),
             FixedStashScannerProfiles.ConfigPath(profile.CountOverrideFileName));
-        var prices = PoeNinjaPrices.FetchAsync(CancellationToken.None).GetAwaiter().GetResult();
+        var prices = LiveMarketPrices.FetchAsync(CancellationToken.None).GetAwaiter().GetResult();
         var lines = EssenceStaticIdentity.BuildCompletenessReport(profile, mappingStore, prices);
         File.WriteAllLines(Path.Combine(debugDirectory, "essence-static-profile.txt"), lines);
     }
