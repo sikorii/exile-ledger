@@ -87,7 +87,7 @@ internal static class EssenceStaticIdentity
     public static IReadOnlyList<string> BuildCompletenessReport(
         FixedStashScannerProfile profile,
         CurrencyMappingStore mappingStore,
-        PoeNinjaPrices prices)
+        LiveMarketPrices prices)
     {
         var resolvedNames = ResolveSlotNames(profile.Slots, mappingStore);
         var lines = new List<string>

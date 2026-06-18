@@ -6,7 +6,7 @@ internal sealed class CurrencyScanner
 
     private readonly string _debugDirectory;
     private readonly CurrencyMappingStore _mappingStore;
-    private PoeNinjaPrices? _cachedPrices;
+    private LiveMarketPrices? _cachedPrices;
     private DateTimeOffset _lastPriceRefresh = DateTimeOffset.MinValue;
 
     public CurrencyScanner(string debugDirectory, CurrencyMappingStore mappingStore)
@@ -29,7 +29,7 @@ internal sealed class CurrencyScanner
 
     public async Task RefreshPricesAsync(CancellationToken cancellationToken, bool forceRefresh = false)
     {
-        _cachedPrices = await PoeNinjaPrices.FetchAsync(cancellationToken, forceRefresh).ConfigureAwait(false);
+        _cachedPrices = await LiveMarketPrices.FetchAsync(cancellationToken, forceRefresh).ConfigureAwait(false);
         _lastPriceRefresh = DateTimeOffset.UtcNow;
     }
 
@@ -154,6 +154,7 @@ internal sealed class CurrencyScanner
             }
 
             stacks.Add(new CurrencyStack(itemName, quantity, value.Exalts, value.Divines));
+            countDebugLines.Add("  " + _cachedPrices.FormatSourceDebug(itemName, quantity, value));
             detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, itemName, quantity, value.Exalts, value.Divines, quantityRead));
         }
 

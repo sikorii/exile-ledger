@@ -8,17 +8,26 @@ internal sealed class Poe2ScoutPrices
     private const string BaseUrl = "https://poe2scout.com/api";
     private const string Realm = "poe2";
     private const string League = "Runes of Aldur";
-    private const string UserAgent = "Exile Ledger price-source-compare (contact: sikorii/exile-ledger GitHub)";
+    private const string UserAgent = "Exile Ledger (contact: sikorii/exile-ledger GitHub)";
 
     private readonly HttpClient _client;
     private readonly Dictionary<string, ScoutPriceSummary> _summariesByNormalizedName;
+    private readonly IReadOnlyList<string> _categories;
     private readonly Dictionary<string, ScoutPriceLookup> _detailsByApiId = new(StringComparer.OrdinalIgnoreCase);
 
-    private Poe2ScoutPrices(HttpClient client, Dictionary<string, ScoutPriceSummary> summariesByNormalizedName)
+    private Poe2ScoutPrices(
+        HttpClient client,
+        Dictionary<string, ScoutPriceSummary> summariesByNormalizedName,
+        IReadOnlyList<string> categories)
     {
         _client = client;
         _summariesByNormalizedName = summariesByNormalizedName;
+        _categories = categories;
     }
+
+    public int ItemCount => _summariesByNormalizedName.Count;
+
+    public IReadOnlyList<string> Categories => _categories;
 
     public static async Task<Poe2ScoutPrices> FetchAsync(CancellationToken cancellationToken)
     {
@@ -33,7 +42,15 @@ internal sealed class Poe2ScoutPrices
             await AddCategorySummariesAsync(client, category, summariesByNormalizedName, cancellationToken).ConfigureAwait(false);
         }
 
-        return new Poe2ScoutPrices(client, summariesByNormalizedName);
+        return new Poe2ScoutPrices(client, summariesByNormalizedName, categories);
+    }
+
+    public ScoutPriceLookup? TryGetCurrentPriceLookup(string itemName)
+    {
+        var normalized = PoeNinjaPrices.Normalize(itemName);
+        return _summariesByNormalizedName.TryGetValue(normalized, out var summary)
+            ? summary.ToLookup(null, "Scout category CurrentPrice.")
+            : null;
     }
 
     public async Task<ScoutPriceLookup?> TryGetPriceLookupAsync(string itemName, CancellationToken cancellationToken)
@@ -125,6 +142,11 @@ internal sealed class Poe2ScoutPrices
 
     private static void AddSummary(JsonElement item, Dictionary<string, ScoutPriceSummary> summariesByNormalizedName)
     {
+        if (item.ValueKind != JsonValueKind.Object)
+        {
+            return;
+        }
+
         if (!TryGetString(item, "Text", out var text) ||
             !TryGetString(item, "ApiId", out var apiId))
         {
@@ -260,6 +282,11 @@ internal sealed class Poe2ScoutPrices
 
     private static DateTimeOffset? TryGetFirstLogTime(JsonElement item)
     {
+        if (item.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
         if (!item.TryGetProperty("PriceLogs", out var logs) ||
             logs.ValueKind != JsonValueKind.Array)
         {
@@ -268,6 +295,11 @@ internal sealed class Poe2ScoutPrices
 
         foreach (var log in logs.EnumerateArray())
         {
+            if (log.ValueKind != JsonValueKind.Object)
+            {
+                continue;
+            }
+
             if (log.TryGetProperty("Time", out var timeElement) &&
                 timeElement.ValueKind == JsonValueKind.String &&
                 DateTimeOffset.TryParse(timeElement.GetString(), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var time))
@@ -283,6 +315,11 @@ internal sealed class Poe2ScoutPrices
 
     private static int? TryGetFirstLogQuantity(JsonElement item)
     {
+        if (item.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
         if (!item.TryGetProperty("PriceLogs", out var logs) ||
             logs.ValueKind != JsonValueKind.Array)
         {
@@ -291,6 +328,11 @@ internal sealed class Poe2ScoutPrices
 
         foreach (var log in logs.EnumerateArray())
         {
+            if (log.ValueKind != JsonValueKind.Object)
+            {
+                continue;
+            }
+
             return TryGetInt32(log, "Quantity");
         }
 

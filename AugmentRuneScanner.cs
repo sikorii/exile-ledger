@@ -9,7 +9,7 @@ internal sealed class AugmentRuneScanner
 
     private readonly string _debugDirectory;
     private readonly CurrencyMappingStore _mappingStore;
-    private PoeNinjaPrices? _cachedPrices;
+    private LiveMarketPrices? _cachedPrices;
     private DateTimeOffset _lastPriceRefresh = DateTimeOffset.MinValue;
 
     public AugmentRuneScanner(string debugDirectory, CurrencyMappingStore mappingStore)
@@ -27,7 +27,7 @@ internal sealed class AugmentRuneScanner
 
     public async Task RefreshPricesAsync(CancellationToken cancellationToken, bool forceRefresh = false)
     {
-        _cachedPrices = await PoeNinjaPrices.FetchAsync(cancellationToken, forceRefresh).ConfigureAwait(false);
+        _cachedPrices = await LiveMarketPrices.FetchAsync(cancellationToken, forceRefresh).ConfigureAwait(false);
         _lastPriceRefresh = DateTimeOffset.UtcNow;
     }
 
@@ -163,6 +163,7 @@ internal sealed class AugmentRuneScanner
             }
 
             stacks.Add(new RuneStack(itemName, quantity, value.Exalts, value.Divines));
+            countDebugLines.Add("  " + _cachedPrices.FormatSourceDebug(itemName, quantity, value));
             detections.Add(BuildDetection(slotIndex, scanSlot, actualLayout, true, itemName, quantity, value.Exalts, value.Divines, quantityRead));
         }
 
@@ -257,7 +258,7 @@ internal sealed class AugmentRuneScanner
 
     private static IEnumerable<RuneUpgradeSuggestion> BuildUpgradeSuggestions(
         IReadOnlyList<RuneStack> stacks,
-        PoeNinjaPrices prices)
+        LiveMarketPrices prices)
     {
         foreach (var stack in stacks)
         {
